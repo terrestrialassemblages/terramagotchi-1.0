@@ -1,4 +1,4 @@
-# Terramagochi
+# Terramagotchi
 
 ## Project setup
 ```
