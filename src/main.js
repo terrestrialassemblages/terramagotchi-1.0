@@ -10,7 +10,7 @@ export const sketch = (s) => {
     s.setup = () => {
         s.createCanvas(400, 400);
         s.noStroke();
-        application.testInitialiseParticles();
+        application.generate();
         cell_height = s.height / application.height
         cell_width = s.width / application.width
     };
@@ -22,12 +22,12 @@ export const sketch = (s) => {
 
         const grid = application.current_grid;
 
-        for (let y = 0; y < grid.length; y++) {
-            for (let x = 0; x < grid[0].length; x++) {
+        for (let y = 0; y < application.height; y++) {
+            for (let x = 0; x < application.width; x++) {
                 // If the current position in the grid is null, then it is air and we skip it.
-                if (grid[y][x] == null) continue;
+                if (grid.get(x, y) == null) continue;
                 // Set the fill color to be that of the current particle.
-                s.fill(grid[y][x].color);
+                s.fill(grid.get(x, y).color);
                 // We invert the y value by subtracting it from height, because p5 defaults to the top
                 // left of the canvas being the origin point, while we want it to be the bottom left.
                 s.rect(
