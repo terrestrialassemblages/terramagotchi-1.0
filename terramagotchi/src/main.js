@@ -25,7 +25,11 @@ export const sketch = (s) => {
                 if (!particle.rerender) continue;
                 particle.rerender = false;
                 // Set the fill color to be that of the current particle.
-                s.fill(particle.color);
+                if (particle.weight === 0) {
+                    s.fill(particle.color);
+                } else {
+                    random_color(s, particle.color)
+                }
                 // We invert the y value by subtracting it from height, because p5 defaults to the top
                 // left of the canvas being the origin point, while we want it to be the bottom left.
                 s.rect(
@@ -40,3 +44,11 @@ export const sketch = (s) => {
 };
 
 const sketchInstance = new p5(sketch);
+
+// Randomises saturation and brightness of a colour from x0.95 to x1.05
+const random_color = (s, color) => {
+    let c = s.color(color);
+    s.colorMode(s.HSB);
+    c = s.color(s.hue(c), s.saturation(c)*s.random(0.95,1.05), s.brightness(c)*s.random(0.95,1.05));
+    s.fill(c);
+}
