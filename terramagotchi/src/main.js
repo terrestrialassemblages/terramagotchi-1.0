@@ -20,14 +20,12 @@ export const sketch = (s) => {
         s.background("#87CEEB");
         application.update();
 
-        const grid = application.current_grid;
-
         for (let y = 0; y < application.height; y++) {
             for (let x = 0; x < application.width; x++) {
                 // If the current position in the grid is null, then it is air and we skip it.
-                if (grid.get(x, y) == null) continue;
+                if (application.grid.get(x, y) == null) continue;
                 // Set the fill color to be that of the current particle.
-                s.fill(grid.get(x, y).color);
+                s.fill(application.grid.get(x, y).color);
                 // We invert the y value by subtracting it from height, because p5 defaults to the top
                 // left of the canvas being the origin point, while we want it to be the bottom left.
                 s.rect(
