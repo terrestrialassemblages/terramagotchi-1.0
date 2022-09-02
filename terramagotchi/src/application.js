@@ -67,15 +67,10 @@ export class Application {
             let y = 0;
             while (++y < this.height - 2) {
                 if (
-                    this.grid.get(x, y).weight != this.grid.get(x, y + 1).weight &&
+                    this.grid.get(x, y).weight < this.grid.get(x, y + 1).weight &&
                     this.grid.get(x, y).has_gravity && this.grid.get(x, y + 1).has_gravity
                 ) {
-                    if (
-                        this.grid.get(x, y).weight <
-                        this.grid.get(x, y + 1).weight
-                    ) {
-                        this.grid.swap(x, y, x, ++y);
-                    }
+                    this.grid.swap(x, y, x, ++y);
                 }
             }
         }
