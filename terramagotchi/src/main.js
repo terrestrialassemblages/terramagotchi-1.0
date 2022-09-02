@@ -45,10 +45,14 @@ export const sketch = (s) => {
 
 const sketchInstance = new p5(sketch);
 
-// Randomises saturation and brightness of a colour from x0.95 to x1.05
-const random_color = (s, color) => {
+// Randomises saturation and brightness of a colour from 1-variance to 1+variance
+const random_color = (s, color, variance=0.05) => {
     let c = s.color(color);
+    let min = 1-variance;
+    let max = 1+variance;
     s.colorMode(s.HSB);
-    c = s.color(s.hue(c), s.saturation(c)*s.random(0.95,1.05), s.brightness(c)*s.random(0.95,1.05));
+    c = s.color(s.hue(c), 
+                s.saturation(c)*(Math.random()*(max-min)+min), 
+                s.brightness(c)*(Math.random()*(max-min)+min));
     s.fill(c);
 }
