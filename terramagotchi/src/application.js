@@ -1,11 +1,21 @@
-import { Particle, AirParticle } from "./particles";
-import { Grid } from "./grid";
+import {
+    BoundaryParticle,
+    StoneParticle,
+    SoilParticle,
+    WaterParticle,
+    AirParticle,
+} from "./particles";
+import { ParticleGrid } from "./particle_grid";
+import { RenderQueue } from "./render_queue";
 
 export class Application {
     constructor(width = 400, height = 400) {
+        // Stores a queue of displaced particle coordinates to re-render
+        this.render_queue = new RenderQueue();
+
         this.width = width;
         this.height = height;
-        this.grid = new Grid(width, height, null);
+        this.grid = new ParticleGrid(width, height, this.render_queue);
         this.organisms = [];
         this.light_level = 100;
         this.oxygen_level = 100;
@@ -13,10 +23,38 @@ export class Application {
     }
 
     generate() {
+        // for (let y = 0; y < this.height; y++) {
+        //     for (let x = 0; x < this.width; x++) {
+        //         if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1) {
+        //             this.grid.set(x, y, new BoundaryParticle());
+        //         } else if (Math.random() < 0.01) {
+        //             this.grid.set(x, y, new StoneParticle());
+        //         }
+        //     }
+        // }
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
-                if (Math.random() < 0.1 || y < this.height / 2) {
-                    this.grid.set(x, y, new Particle());
+                if (
+                    x == 0 ||
+                    y == 0 ||
+                    x == this.width - 1 ||
+                    y == this.height - 1
+                ) {
+                    this.grid.set(x, y, new BoundaryParticle());
+                } else if (
+                    y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
+                    25
+                ) {
+                    this.grid.set(x, y, new StoneParticle());
+                } else if (
+                    y + Math.floor(20 * Math.sin(((x - 50) * Math.PI) / 200)) <
+                    85
+                ) {
+                    this.grid.set(x, y, new SoilParticle());
+                } else if (y < 90) {
+                    this.grid.set(x, y, new WaterParticle());
+                } else if (y > 140 && Math.random() < 0.01) {
+                    this.grid.set(x, y, new StoneParticle());
                 } else {
                     this.grid.set(x, y, new AirParticle());
                 }
@@ -24,24 +62,26 @@ export class Application {
         }
     }
 
-    update() {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                // Particle(x,y) has gravity and Particle(x,y-1) is lighter
+    gravity_update() {
+        for (let x = 1; x < this.width - 1; x++) {
+            let y = 0;
+            while (++y < this.height - 2) {
                 if (
-                    y > 0 &&
-                    this.grid.get(x, y).has_gravity &&
-                    this.grid.get(x, y).weight > this.grid.get(x, y - 1).weight
+                    this.grid.get(x, y).weight != this.grid.get(x, y + 1).weight &&
+                    this.grid.get(x, y).has_gravity && this.grid.get(x, y + 1).has_gravity
                 ) {
-                    // Set Particle(x,y-1) below to Particle(x,y)
-                    const old_xy = this.grid.get(x, y);
-                    this.grid.set(x, y, this.grid.get(x, y - 1));
-                    this.grid.set(x, y - 1, old_xy);
-
-                    this.grid.get(x, y).rerender = true;
-                    this.grid.get(x, y - 1).rerender = true;
+                    if (
+                        this.grid.get(x, y).weight <
+                        this.grid.get(x, y + 1).weight
+                    ) {
+                        this.grid.swap(x, y, x, ++y);
+                    }
                 }
             }
         }
+    }
+
+    computer_interactions() {
+        for (let x = 2; x < this.width - 2; x++) {}
     }
 }
