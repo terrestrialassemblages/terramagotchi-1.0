@@ -7,5 +7,7 @@ export class WaterParticle extends InorganicParticle {
         this.has_gravity = true;
         this.weight = 1;
         this.support = 4;
+
+        this.water_content = 50;
     }
 }

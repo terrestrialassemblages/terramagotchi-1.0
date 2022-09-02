@@ -9,12 +9,14 @@ export const sketch = (s) => {
     const bg_color = "#87CEEB";
     let cell_height, cell_width;
 
+    let update_switch = false
+
     // The initial setup function.
     s.setup = () => {
         s.createCanvas(application.width * 3, application.height * 3);
         s.noStroke();
         s.colorMode(s.HSB);
-        //s.frameRate(20)
+        // s.frameRate(20)
         s.background(bg_color);
         application.generate();
         cell_height = s.height / application.height;
@@ -22,9 +24,15 @@ export const sketch = (s) => {
     };
 
     // The update function. Fires every frame
+    
     s.draw = () => {
         application.computer_interactions();
         application.gravity_update();
+        // if (update_switch)
+        //     application.computer_interactions();
+        // else
+        //     application.gravity_update();
+        // update_switch = !update_switch
 
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();

@@ -8,6 +8,8 @@ import {
 import { ParticleGrid } from "./particle_grid";
 import { RenderQueue } from "./render_queue";
 
+const THERMAL_TRANSFER_MINIMUM = 20; // minimum temperature for water/nutrient to transfer between soil particles
+
 export class Application {
     constructor(width = 400, height = 400) {
         // Stores a queue of displaced particle coordinates to re-render
@@ -19,7 +21,7 @@ export class Application {
         this.organisms = [];
         this.light_level = 100;
         this.oxygen_level = 100;
-        this.temperature_level = 30; // max 100
+        this.temperature_level = 25; // max 100
     }
 
     generate() {
@@ -58,7 +60,7 @@ export class Application {
                 } else if (y < 90) {
                     this.grid.set(x, y, new WaterParticle());
                 } else if (y > 140 && Math.random() < 0.01) {
-                    this.grid.set(x, y, new StoneParticle());
+                    this.grid.set(x, y, new AirParticle());
                 } else {
                     this.grid.set(x, y, new AirParticle());
                 }
@@ -127,6 +129,48 @@ export class Application {
     }
 
     computer_interactions() {
-        for (let x = 2; x < this.width - 2; x++) {}
+        let transfer_threshold = (this.temperature_level - THERMAL_TRANSFER_MINIMUM) / (100 - THERMAL_TRANSFER_MINIMUM)
+        for (let x = 1; x < this.width - 1; x++) {
+            for (let y = 1; y < this.height - 1; y++) {
+                // Limiting water/nutrient convection depending on environmental temperature
+                if (Math.random() >= transfer_threshold)
+                    continue;
+                let target_particle = this.grid.get(x, y);
+                switch (target_particle.constructor.name) {
+                    case "SoilParticle":
+                        // blatant thievery of water from neighbours
+                        if (this.grid.get(x,y+1) instanceof SoilParticle && this.grid.get(x,y+1).water_level > target_particle.water_level) {
+                            target_particle.water_level++;
+                            this.grid.get(x,y+1).water_level--;
+                        }
+                        if (this.grid.get(x,y-1) instanceof SoilParticle && this.grid.get(x,y-1).water_level > target_particle.water_level) {
+                            target_particle.water_level++;
+                            this.grid.get(x,y+1).water_level--;
+                        }
+                        if (this.grid.get(x+1,y) instanceof SoilParticle && this.grid.get(x+1,y).water_level > target_particle.water_level) {
+                            target_particle.water_level++;
+                            this.grid.get(x+1,y).water_level--;
+                        }
+                        if (this.grid.get(x-1,y) instanceof SoilParticle && this.grid.get(x-1,y).water_level > target_particle.water_level) {
+                            target_particle.water_level++;
+                            this.grid.get(x-1,y).water_level--;
+                        }
+                        break;
+                    
+                    case "WaterParticle":
+                        if (this.grid.get(x,y-1) instanceof SoilParticle && this.grid.get(x,y-1).water_level + target_particle.water_content < this.grid.get(x,y-1).water_capacity) {
+                            this.grid.get(x,y-1).water_level += target_particle.water_content;
+                            this.grid.set(x,y,new AirParticle())
+                        } else if (this.grid.get(x+1,y) instanceof SoilParticle && this.grid.get(x+1,y).water_level + target_particle.water_content < this.grid.get(x+1,y).water_capacity) {
+                            this.grid.get(x+1,y).water_level += target_particle.water_content;
+                            this.grid.set(x,y,new AirParticle())
+                        } else if (this.grid.get(x-1,y) instanceof SoilParticle && this.grid.get(x-1,y).water_level + target_particle.water_content < this.grid.get(x-1,y).water_capacity) {
+                            this.grid.get(x-1,y).water_level += target_particle.water_content;
+                            this.grid.set(x,y,new AirParticle())
+                        }
+                        break;
+                }
+            }
+        }
     }
 }
