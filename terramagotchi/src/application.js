@@ -66,11 +66,36 @@ export class Application {
         for (let x = 1; x < this.width - 1; x++) {
             let y = 0;
             while (++y < this.height - 2) {
-                if (
-                    this.grid.get(x, y).weight < this.grid.get(x, y + 1).weight &&
-                    this.grid.get(x, y).has_gravity && this.grid.get(x, y + 1).has_gravity
-                ) {
-                    this.grid.swap(x, y, x, ++y);
+                if (this.grid.get(x, y + 1).has_gravity) {
+                    if (
+                        this.grid.get(x, y).weight <
+                        this.grid.get(x, y + 1).weight
+                    ) {
+                        if (this.grid.get(x, y).has_gravity) {
+                            this.grid.swap(x, y, x, ++y);
+                        }
+                    } else {
+
+                        // Code for erosion
+                        if (this.grid.get(x,y+2).weight < this.grid.get(x,y+1).weight) {
+                            let support_count = 1 + (this.grid.get(x-1, y).weight >= this.grid.get(x, y + 1).weight) + (this.grid.get(x+1, y).weight >= this.grid.get(x, y + 1).weight)
+                            if (support_count < this.grid.get(x,y+1).support) {
+                                if (this.grid.get(x-1,y+1).weight < this.grid.get(x,y+1).weight && this.grid.get(x+1,y+1).weight < this.grid.get(x,y+1).weight) {
+                                    if (Math.random() < 0.5) {
+                                        this.grid.swap(x, y+1, x-1, y+2)
+                                    } else {
+                                        this.grid.swap(x, y+1, x+1, y+2)
+                                    }
+                                } else {
+                                    if (this.grid.get(x-1,y+1).weight < this.grid.get(x,y+1).weight)
+                                        this.grid.swap(x, y+1, x-1, y+2)
+                                    if (this.grid.get(x+1,y+1).weight < this.grid.get(x,y+1).weight)
+                                        this.grid.swap(x, y+1, x+1, y+2)
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
         }
