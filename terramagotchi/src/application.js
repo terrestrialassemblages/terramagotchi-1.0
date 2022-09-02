@@ -50,7 +50,7 @@ export class Application {
                     y +
                         Math.floor(
                             24 * Math.sin(((x - 50) * Math.PI) / 200) +
-                            2 * Math.sin(x / 8)
+                                2 * Math.sin(x / 8)
                         ) <
                     85
                 ) {
@@ -58,7 +58,7 @@ export class Application {
                 } else if (y < 90) {
                     this.grid.set(x, y, new WaterParticle());
                 } else if (y > 140 && Math.random() < 0.01) {
-                    this.grid.set(x, y, new AirParticle());
+                    this.grid.set(x, y, new StoneParticle());
                 } else {
                     this.grid.set(x, y, new AirParticle());
                 }
@@ -92,7 +92,7 @@ export class Application {
                                     this.grid.get(x, y + 1).weight);
                             if (
                                 Math.random() <
-                                    (this.temperature_level / 100) ** 2 &&
+                                    (this.temperature_level / 100) ** 2 && // temperature dependence, squared cos probability is lame
                                 support_count < this.grid.get(x, y + 1).support
                             ) {
                                 if (
