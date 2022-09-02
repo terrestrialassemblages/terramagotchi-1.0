@@ -19,7 +19,7 @@ export class Application {
         this.organisms = [];
         this.light_level = 100;
         this.oxygen_level = 100;
-        this.temperature_level = 100;
+        this.temperature_level = 30; // max 100
     }
 
     generate() {
@@ -47,14 +47,18 @@ export class Application {
                 ) {
                     this.grid.set(x, y, new StoneParticle());
                 } else if (
-                    y + Math.floor(20 * Math.sin(((x - 50) * Math.PI) / 200)) <
+                    y +
+                        Math.floor(
+                            24 * Math.sin(((x - 50) * Math.PI) / 200) +
+                            2 * Math.sin(x / 8)
+                        ) <
                     85
                 ) {
                     this.grid.set(x, y, new SoilParticle());
                 } else if (y < 90) {
                     this.grid.set(x, y, new WaterParticle());
                 } else if (y > 140 && Math.random() < 0.01) {
-                    this.grid.set(x, y, new StoneParticle());
+                    this.grid.set(x, y, new AirParticle());
                 } else {
                     this.grid.set(x, y, new AirParticle());
                 }
@@ -75,24 +79,45 @@ export class Application {
                             this.grid.swap(x, y, x, ++y);
                         }
                     } else {
-
                         // Code for erosion
-                        if (this.grid.get(x,y+2).weight < this.grid.get(x,y+1).weight) {
-                            let support_count = 1 + (this.grid.get(x-1, y).weight >= this.grid.get(x, y + 1).weight) + (this.grid.get(x+1, y).weight >= this.grid.get(x, y + 1).weight)
-                            if (support_count < this.grid.get(x,y+1).support) {
-                                if (this.grid.get(x-1,y+1).weight < this.grid.get(x,y+1).weight && this.grid.get(x+1,y+1).weight < this.grid.get(x,y+1).weight) {
+                        if (
+                            this.grid.get(x, y + 2).weight <
+                            this.grid.get(x, y + 1).weight
+                        ) {
+                            let support_count =
+                                1 +
+                                (this.grid.get(x - 1, y).weight >=
+                                    this.grid.get(x, y + 1).weight) +
+                                (this.grid.get(x + 1, y).weight >=
+                                    this.grid.get(x, y + 1).weight);
+                            if (
+                                Math.random() <
+                                    (this.temperature_level / 100) ** 2 &&
+                                support_count < this.grid.get(x, y + 1).support
+                            ) {
+                                if (
+                                    this.grid.get(x - 1, y + 1).weight <
+                                        this.grid.get(x, y + 1).weight &&
+                                    this.grid.get(x + 1, y + 1).weight <
+                                        this.grid.get(x, y + 1).weight
+                                ) {
                                     if (Math.random() < 0.5) {
-                                        this.grid.swap(x, y+1, x-1, y+2)
+                                        this.grid.swap(x, y + 1, x - 1, y + 2);
                                     } else {
-                                        this.grid.swap(x, y+1, x+1, y+2)
+                                        this.grid.swap(x, y + 1, x + 1, y + 2);
                                     }
                                 } else {
-                                    if (this.grid.get(x-1,y+1).weight < this.grid.get(x,y+1).weight)
-                                        this.grid.swap(x, y+1, x-1, y+2)
-                                    if (this.grid.get(x+1,y+1).weight < this.grid.get(x,y+1).weight)
-                                        this.grid.swap(x, y+1, x+1, y+2)
+                                    if (
+                                        this.grid.get(x - 1, y + 1).weight <
+                                        this.grid.get(x, y + 1).weight
+                                    )
+                                        this.grid.swap(x, y + 1, x - 1, y + 2);
+                                    if (
+                                        this.grid.get(x + 1, y + 1).weight <
+                                        this.grid.get(x, y + 1).weight
+                                    )
+                                        this.grid.swap(x, y + 1, x + 1, y + 2);
                                 }
-
                             }
                         }
                     }
