@@ -32,7 +32,7 @@ export const sketch = (s) => {
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();
             const particle = application.grid.get(x, y);
-            random_color(particle);
+            s.fill(particle.get_color(s));
 
             s.rect(
                 (s.width / application.width) * x,
@@ -43,28 +43,10 @@ export const sketch = (s) => {
         }
     };
 
-    const random_color = (particle) => {
-        /** Randomises saturation and brightness of a particle from 1-variance to 1+variance */
-        let c = s.color(particle.color);
-        let min = 1 - particle.color_variance;
-        let max = 1 + particle.color_variance;
-        // Makes brightness darker if water_level is higher
-        let brightness = particle instanceof OrganicParticle ? 
-            s.brightness(c) * (Math.random() * (max - min) + min) - particle.water_level / 8 :
-            s.brightness(c) * (Math.random() * (max - min) + min);
-
-        c = s.color(
-            s.hue(c),
-            s.saturation(c) * (Math.random() * (max - min) + min),
-            brightness
-        );
-        s.fill(c);
-    };
-
     // Debug code for drawing water
     s.mouseDragged = () => {
-        const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
-        application.grid.set(x, y, new StoneParticle());
+        const [x, y] = [Math.floor(s.mouseX/cell_width), application.height - 1 - Math.floor(s.mouseY/cell_height)];
+        application.grid.set(x, y, new WaterParticle());
     }
 };
 
