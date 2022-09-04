@@ -150,18 +150,26 @@ export class Application {
                         if (this.grid.get(x,y+1) instanceof SoilParticle && this.grid.get(x,y+1).water_level > target_particle.water_level) {
                             target_particle.water_level++;
                             this.grid.get(x,y+1).water_level--;
+                            this.grid.get(x,y+1).update_color = true;
+                            this.render_queue.push(x,y+1);
                         }
                         if (this.grid.get(x,y-1) instanceof SoilParticle && this.grid.get(x,y-1).water_level > target_particle.water_level) {
                             target_particle.water_level++;
-                            this.grid.get(x,y+1).water_level--;
+                            this.grid.get(x,y-1).water_level--;
+                            this.grid.get(x,y-1).update_color = true;
+                            this.render_queue.push(x,y-1);
                         }
                         if (this.grid.get(x+1,y) instanceof SoilParticle && this.grid.get(x+1,y).water_level > target_particle.water_level) {
                             target_particle.water_level++;
                             this.grid.get(x+1,y).water_level--;
+                            this.grid.get(x+1,y).update_color = true;
+                            this.render_queue.push(x+1,y);
                         }
                         if (this.grid.get(x-1,y) instanceof SoilParticle && this.grid.get(x-1,y).water_level > target_particle.water_level) {
                             target_particle.water_level++;
                             this.grid.get(x-1,y).water_level--;
+                            this.grid.get(x-1,y).update_color = true;
+                            this.render_queue.push(x-1,y);
                         }
                         break;
                     
@@ -169,15 +177,18 @@ export class Application {
                         if (this.grid.get(x,y-1) instanceof SoilParticle && this.grid.get(x,y-1).water_level + target_particle.water_content < this.grid.get(x,y-1).water_capacity) {
                             this.grid.get(x,y-1).water_level += target_particle.water_content;
                             this.grid.set(x,y,new AirParticle());
-                            this.render_queue.push(x,y-1)
+                            this.grid.get(x,y-1).update_color = true;
+                            this.render_queue.push(x,y-1);
                         } else if (this.grid.get(x+1,y) instanceof SoilParticle && this.grid.get(x+1,y).water_level + target_particle.water_content < this.grid.get(x+1,y).water_capacity) {
                             this.grid.get(x+1,y).water_level += target_particle.water_content;
                             this.grid.set(x,y,new AirParticle());
-                            this.render_queue.push(x+1,y)
+                            this.grid.get(x+1,y).update_color = true;
+                            this.render_queue.push(x+1,y);
                         } else if (this.grid.get(x-1,y) instanceof SoilParticle && this.grid.get(x-1,y).water_level + target_particle.water_content < this.grid.get(x-1,y).water_capacity) {
                             this.grid.get(x-1,y).water_level += target_particle.water_content;
                             this.grid.set(x,y,new AirParticle());
-                            this.render_queue.push(x-1,y)
+                            this.grid.get(x-1,y).update_color = true;
+                            this.render_queue.push(x-1,y);
                         }
                         break;
                 }
