@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { OrganicParticle, StoneParticle, WaterParticle } from "./particles";
+import { SoilParticle, StoneParticle, WaterParticle } from "./particles";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -43,10 +43,23 @@ export const sketch = (s) => {
         }
     };
 
-    // Debug code for drawing water
+    /** 
+     * Debug code for drawing 
+     * 1 = Stone
+     * 2 = Soil
+     * 3 = Water
+     */ 
+    let drawing = 49; // Default to drawing stone
+    let keys = {}, p;
+    keys[49] = StoneParticle;
+    keys[50] = SoilParticle;
+    keys[51] = WaterParticle;
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
-        application.grid.set(x, y, new StoneParticle());
+        application.grid.set(x, y, new keys[drawing]());
+    }
+    s.keyPressed = () => {
+        drawing = s.keyCode;
     }
 };
 
