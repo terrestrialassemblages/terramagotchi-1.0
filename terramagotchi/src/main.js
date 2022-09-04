@@ -50,7 +50,7 @@ export const sketch = (s) => {
      * 3 = Water
      */ 
     let drawing = 49; // Default to drawing stone
-    let keys = {}, p;
+    let keys = {};
     keys[49] = StoneParticle;
     keys[50] = SoilParticle;
     keys[51] = WaterParticle;
