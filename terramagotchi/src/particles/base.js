@@ -6,4 +6,8 @@ export class BaseParticle {
         this.weight = 0;
         this.support = 4
     }
+
+    update(x, y, grid) {
+        
+    }
 }

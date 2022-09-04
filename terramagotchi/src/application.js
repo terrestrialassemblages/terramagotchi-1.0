@@ -68,6 +68,14 @@ export class Application {
         }
     }
 
+    update() {
+        for (let x = 1; x < this.width - 1; x++) {
+            for (let y = 1; y < this.height - 1; y++) {
+                this.grid.get(x, y).update(x, y, this.grid)
+            }
+        }
+    }
+
     gravity_update() {
         for (let x = 1; x < this.width - 1; x++) {
             let y = 0;

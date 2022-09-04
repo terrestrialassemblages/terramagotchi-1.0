@@ -29,6 +29,7 @@ export const sketch = (s) => {
     s.draw = () => {
         application.computer_interactions();
         application.gravity_update();
+        application.update();
         // if (update_switch)
         //     application.computer_interactions();
         // else
