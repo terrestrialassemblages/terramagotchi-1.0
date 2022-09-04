@@ -4,6 +4,6 @@ export class OrganicParticle extends BaseParticle {
     constructor() {
         super();
         this.nutrient_level = 0;
-        this.water_level = 20;
+        this.water_level = 70;
     }
 }

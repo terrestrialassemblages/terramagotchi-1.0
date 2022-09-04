@@ -93,12 +93,12 @@ export class Application {
         for (let x = 1; x < this.width - 1; x++) {
             let y = 0;
             while (++y < this.height - 2) {
-                if (this.grid.get(x, y + 1).has_gravity) {
+                if (this.grid.get(x, y + 1).moveable) {
                     if (
                         this.grid.get(x, y).weight <
                         this.grid.get(x, y + 1).weight
                     ) {
-                        if (this.grid.get(x, y).has_gravity) {
+                        if (this.grid.get(x, y).moveable) {
                             this.grid.swap(x, y, x, ++y);
                         }
                     } else {

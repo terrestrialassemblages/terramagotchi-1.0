@@ -5,8 +5,13 @@ export class StoneParticle extends InorganicParticle {
         super();
         this.color = "#918E85"; // source: https://www.color-name.com/stone-grey.color
         this.color_variance = 0.07;
-        this.has_gravity = true;
+        this.moveable = true;
         this.weight = 2;
         this.support = 2
+    }
+
+    update() {
+        this.compute_erosion()
+        this.compute_gravity()
     }
 }

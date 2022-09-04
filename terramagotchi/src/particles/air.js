@@ -5,7 +5,7 @@ export class AirParticle extends InorganicParticle {
         super();
         this.color = "#87CEEB";
         this.color_variance = 0;
-        this.has_gravity = true;
+        this.moveable = true;
         this.weight = 0;
     }
 }
