@@ -48,13 +48,13 @@ export class Application {
                 } else if (
                     y +
                         Math.floor(
-                            24 * Math.sin(((x - 50) * Math.PI) / 200) +
-                                2 * Math.sin(x / 8)
+                            50 * Math.sin(((x + 100) * Math.PI) / 200) +
+                                4 * Math.sin((x+20) / 12)
                         ) <
                     85
                 ) {
                     this.grid.set(x, y, new SoilParticle());
-                } else if (y < 90) {
+                } else if (y < 100) {
                     this.grid.set(x, y, new WaterParticle());
                 } else if (y > 140 && Math.random() < 0.01) {
                     this.grid.set(x, y, new AirParticle());

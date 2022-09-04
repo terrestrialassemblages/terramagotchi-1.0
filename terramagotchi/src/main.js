@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { OrganicParticle, WaterParticle } from "./particles";
+import { OrganicParticle, StoneParticle, WaterParticle } from "./particles";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -10,7 +10,7 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(500, 240);
+    const application = new Application(240, 240);
     const bg_color = "#87CEEB";
     let cell_size = 3; // Defines, in pixels, the size of each cell in our 2D grid on the canvas
 
@@ -64,7 +64,7 @@ export const sketch = (s) => {
     // Debug code for drawing water
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
-        application.grid.set(x, y, new WaterParticle());
+        application.grid.set(x, y, new StoneParticle());
     }
 };
 
