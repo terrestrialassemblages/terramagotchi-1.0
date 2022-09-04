@@ -6,7 +6,6 @@ export class WaterParticle extends InorganicParticle {
         this.color = "#5080D0"; // idk, just put in some blue
         this.moveable = true;
         this.weight = 1;
-        this.support = 4;
         this.water_content = 50;
     }
 

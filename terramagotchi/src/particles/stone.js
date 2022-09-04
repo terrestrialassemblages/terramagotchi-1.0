@@ -7,11 +7,10 @@ export class StoneParticle extends InorganicParticle {
         this.color_variance = 0.07;
         this.moveable = true;
         this.weight = 2;
-        this.support = 2
     }
 
     update(x, y, grid) {
-        this.compute_erosion(x, y, grid)
         this.compute_gravity(x, y, grid)
+        this.compute_erosion(x, y, grid)
     }
 }
