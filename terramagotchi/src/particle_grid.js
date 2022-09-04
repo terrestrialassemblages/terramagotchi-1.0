@@ -1,4 +1,3 @@
-import { RenderQueue } from "./render_queue";
 
 export class ParticleGrid {
     constructor(width, height, render_queue) {

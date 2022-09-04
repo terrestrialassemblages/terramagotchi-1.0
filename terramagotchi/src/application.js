@@ -8,23 +8,30 @@ import {
 import { ParticleGrid } from "./particle_grid";
 import { RenderQueue } from "./render_queue";
 
+
+// Global constants to limit particle processes
 const THERMAL_TRANSFER_MINIMUM = 20; // minimum temperature for water/nutrient to transfer between soil particles
 
 export class Application {
     constructor(width = 400, height = 400) {
-        // Stores a queue of displaced particle coordinates to re-render
-        this.render_queue = new RenderQueue();
-
         this.width = width;
         this.height = height;
+
+        this.render_queue = new RenderQueue();
         this.grid = new ParticleGrid(width, height, this.render_queue);
         this.organisms = [];
+
+        // Environment variables
         this.light_level = 100;
         this.oxygen_level = 100;
         this.temperature_level = 25; // max 100
     }
 
     generate() {
+        /**
+         * Populates the application grid with particles
+         */
+
         // for (let y = 0; y < this.height; y++) {
         //     for (let x = 0; x < this.width; x++) {
         //         if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1) {
@@ -69,6 +76,9 @@ export class Application {
     }
 
     update() {
+        /**
+         * Calls update function inside each particle to generate next grid state.
+         */
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
                 this.grid.get(x, y).update(x, y, this.grid)
@@ -77,6 +87,9 @@ export class Application {
     }
 
     gravity_update() {
+        /**
+         * Deprecated function, to be moved
+         */
         for (let x = 1; x < this.width - 1; x++) {
             let y = 0;
             while (++y < this.height - 2) {
@@ -137,6 +150,9 @@ export class Application {
     }
 
     computer_interactions() {
+        /**
+         * Deprecated function, to be removed
+         */
         let transfer_threshold = (this.temperature_level - THERMAL_TRANSFER_MINIMUM) / (100 - THERMAL_TRANSFER_MINIMUM)
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
