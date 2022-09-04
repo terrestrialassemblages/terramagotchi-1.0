@@ -160,13 +160,16 @@ export class Application {
                     case "WaterParticle":
                         if (this.grid.get(x,y-1) instanceof SoilParticle && this.grid.get(x,y-1).water_level + target_particle.water_content < this.grid.get(x,y-1).water_capacity) {
                             this.grid.get(x,y-1).water_level += target_particle.water_content;
-                            this.grid.set(x,y,new AirParticle())
+                            this.grid.set(x,y,new AirParticle());
+                            this.render_queue.push(x,y-1)
                         } else if (this.grid.get(x+1,y) instanceof SoilParticle && this.grid.get(x+1,y).water_level + target_particle.water_content < this.grid.get(x+1,y).water_capacity) {
                             this.grid.get(x+1,y).water_level += target_particle.water_content;
-                            this.grid.set(x,y,new AirParticle())
+                            this.grid.set(x,y,new AirParticle());
+                            this.render_queue.push(x+1,y)
                         } else if (this.grid.get(x-1,y) instanceof SoilParticle && this.grid.get(x-1,y).water_level + target_particle.water_content < this.grid.get(x-1,y).water_capacity) {
                             this.grid.get(x-1,y).water_level += target_particle.water_content;
-                            this.grid.set(x,y,new AirParticle())
+                            this.grid.set(x,y,new AirParticle());
+                            this.render_queue.push(x-1,y)
                         }
                         break;
                 }
