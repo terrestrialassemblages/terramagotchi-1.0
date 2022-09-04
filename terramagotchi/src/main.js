@@ -27,14 +27,7 @@ export const sketch = (s) => {
     // The update function. Fires every frame
     
     s.draw = () => {
-        application.computer_interactions();
-        application.gravity_update();
         application.update();
-        // if (update_switch)
-        //     application.computer_interactions();
-        // else
-        //     application.gravity_update();
-        // update_switch = !update_switch
 
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();
@@ -70,7 +63,7 @@ export const sketch = (s) => {
 
     // Debug code for drawing water
     s.mouseDragged = () => {
-        const [x, y] = [Math.floor(s.mouseX/cell_width), application.height - 1 - Math.floor(s.mouseY/cell_height)];
+        const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
         application.grid.set(x, y, new WaterParticle());
     }
 };

@@ -7,12 +7,11 @@ export class SoilParticle extends OrganicParticle {
         this.moveable = true;
         this.weight = 2;
         this.support = 3;
-
         this.water_capacity = 80;
     }
 
-    update() {
-        this.compute_erosion()
-        this.compute_gravity()
+    update(x, y, grid) {
+        this.compute_erosion(x, y, grid)
+        this.compute_gravity(x, y, grid)
     }
 }
