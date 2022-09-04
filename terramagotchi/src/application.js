@@ -31,16 +31,6 @@ export class Application {
         /**
          * Populates the application grid with particles
          */
-
-        // for (let y = 0; y < this.height; y++) {
-        //     for (let x = 0; x < this.width; x++) {
-        //         if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1) {
-        //             this.grid.set(x, y, new BoundaryParticle());
-        //         } else if (Math.random() < 0.01) {
-        //             this.grid.set(x, y, new StoneParticle());
-        //         }
-        //     }
-        // }
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 if (
