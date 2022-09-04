@@ -4,10 +4,13 @@ export class WaterParticle extends InorganicParticle {
     constructor() {
         super();
         this.base_color = "#5080D0"; // idk, just put in some blue
-        this.has_gravity = true;
+        this.moveable = true;
         this.weight = 1;
-        this.support = 4;
-
         this.water_content = 50;
+    }
+
+    update(x, y, grid) {
+        // water flow update to go here
+        this.compute_gravity(x, y, grid)
     }
 }

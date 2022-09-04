@@ -1,40 +1,33 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { OrganicParticle, WaterParticle } from "./particles";
+import { OrganicParticle, StoneParticle, WaterParticle } from "./particles";
 
+// cringe safety feature
 p5.disableFriendlyErrors = true;
 
 export const sketch = (s) => {
-    const application = new Application(500, 240);
+    /**
+     * Function class for constructing a p5.js object
+     */
+    const application = new Application(240, 240);
     const bg_color = "#87CEEB";
-    let cell_height, cell_width;
-
-    let update_switch = false
+    let cell_size = 3; // Defines, in pixels, the size of each cell in our 2D grid on the canvas
 
     // The initial setup function.
     s.setup = () => {
-        s.createCanvas(application.width * 3, application.height * 3);
+        s.createCanvas(application.width * cell_size, application.height * cell_size);
         s.noStroke();
         s.colorMode(s.HSB);
         // s.frameRate(20)
         s.background(bg_color);
         application.generate();
-        cell_height = s.height / application.height;
-        cell_width = s.width / application.width;
     };
 
     // The update function. Fires every frame
     
     s.draw = () => {
-        application.computer_interactions();
-        application.gravity_update();
         application.update();
-        // if (update_switch)
-        //     application.computer_interactions();
-        // else
-        //     application.gravity_update();
-        // update_switch = !update_switch
 
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();
@@ -44,8 +37,8 @@ export const sketch = (s) => {
             s.rect(
                 (s.width / application.width) * x,
                 (s.height / application.height) * (application.height - 1 - y),
-                cell_width,
-                cell_height
+                cell_size,
+                cell_size
             );
         }
     };
