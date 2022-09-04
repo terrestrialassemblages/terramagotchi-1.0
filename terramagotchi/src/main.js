@@ -45,8 +45,8 @@ export const sketch = (s) => {
 
     // Debug code for drawing water
     s.mouseDragged = () => {
-        const [x, y] = [Math.floor(s.mouseX/cell_width), application.height - 1 - Math.floor(s.mouseY/cell_height)];
-        application.grid.set(x, y, new WaterParticle());
+        const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
+        application.grid.set(x, y, new StoneParticle());
     }
 };
 
