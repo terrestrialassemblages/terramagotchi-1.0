@@ -7,10 +7,12 @@ export class WaterParticle extends InorganicParticle {
         this.moveable = true;
         this.weight = 1;
         this.water_content = 50;
+        this.flow_direction = 1;
     }
 
     update(x, y, grid) {
         // water flow update to go here
         this.compute_gravity(x, y, grid)
+        this.computer_flow(x,y,grid)
     }
 }
