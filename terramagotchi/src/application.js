@@ -7,6 +7,7 @@ import {
 } from "./particles";
 import { ParticleGrid } from "./particle_grid";
 import { RenderQueue } from "./render_queue";
+import { Bug } from "./organism"
 
 
 // Global constants to limit particle processes
@@ -19,7 +20,7 @@ export class Application {
 
         this.render_queue = new RenderQueue();
         this.grid = new ParticleGrid(width, height, this.render_queue);
-        this.organisms = [];
+        this.organisms = [new Bug()];
 
         // Environment variables
         this.light_level = 100;
@@ -73,6 +74,10 @@ export class Application {
             for (let y = 1; y < this.height - 1; y++) {
                 this.grid.get(x, y).update(x, y, this.grid)
             }
+        }
+
+        for (let bug of this.organisms) {
+            bug.update(this.grid)
         }
     }
 }
