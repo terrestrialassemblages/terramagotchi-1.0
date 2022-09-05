@@ -61,14 +61,22 @@ export class BaseParticle {
         let can_move_infront = particle_infront.moveable && particle_infront.weight < this.weight
         let can_move_behind = particle_behind.moveable && particle_behind.weight < this.weight
 
-        // Has space to move infront or behind current position
-        if (this.moveable && (can_move_infront || can_move_behind)) {
-            // Particle ahead cannot be moved
-            if (!can_move_infront) {
-                // Swap direction
-                this.flow_direction *= -1;
-            }
+        // Particle ahead cannot be moved
+        if (!can_move_infront) {
+            // Swap direction
+            this.flow_direction *= -1;
 
+            const temp1 = particle_infront
+            particle_infront = particle_behind
+            particle_behind = temp1
+
+            const temp2 = can_move_infront
+            can_move_infront = can_move_behind
+            can_move_behind = temp2
+        }
+
+        // Has space to move infront3
+        if (this.moveable && can_move_infront) {
             // Move ahead
             grid.swap(x,y,x+this.flow_direction,y);
             // Set movable to false
