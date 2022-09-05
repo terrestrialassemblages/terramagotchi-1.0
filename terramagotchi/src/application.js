@@ -74,5 +74,7 @@ export class Application {
                 this.grid.get(x, y).update(x, y, this.grid)
             }
         }
+
+        this.grid.incrimentFrame()
     }
 }
