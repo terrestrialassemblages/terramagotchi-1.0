@@ -15,7 +15,6 @@ export class WaterParticle extends InorganicParticle {
         if (this.last_frame == grid.frame())
             return;
 
-        // water flow update to go here
         this.compute_gravity(x, y, grid)
         this.computer_flow(x,y,grid)
 
