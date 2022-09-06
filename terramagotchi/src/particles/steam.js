@@ -16,7 +16,7 @@ export class SteamParticle extends GasParticle {
 
     update(x, y, grid) {
 
-        if (this.last_frame == grid.frame())
+        if (this.last_tick == grid.tick)
             return;
 
         // Countdown condensation time
@@ -33,6 +33,6 @@ export class SteamParticle extends GasParticle {
         // Rise steam as a Gas Particle
         this.compute_rise(x,y,grid);
 
-        this.last_frame = grid.frame();
+        this.last_tick = grid.tick;
     }
 }

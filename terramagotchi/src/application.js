@@ -94,6 +94,6 @@ export class Application {
             }
         } */
 
-        this.grid.increment_frame()
+        this.grid.increment_tick()
     }
 }

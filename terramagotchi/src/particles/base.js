@@ -3,7 +3,7 @@ export class BaseParticle {
         this.base_color = "#000000";
         this.color_variance = 0.05;
 
-        this.last_frame = -1
+        this.last_tick = -1
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
             Protects plants/leaves from have heavy particles fall through */
@@ -12,10 +12,14 @@ export class BaseParticle {
         this.color = this.base_color;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
         this.update_color = false;
+
+        if (this.moveable) {
+            console.log("Working??")
+        }
     }
 
-    update(x, y, grid, frame) {
-        this.last_frame = frame;
+    update(x, y, grid) {
+        console.log("We got there")
     }
 
     compute_gravity(x, y, grid) {
