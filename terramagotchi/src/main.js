@@ -54,6 +54,7 @@ export const sketch = (s) => {
     keys[49] = StoneParticle;
     keys[50] = SoilParticle;
     keys[51] = WaterParticle;
+    keys[52] = SteamParticle;
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
         application.grid.set(x, y, new keys[drawing]());

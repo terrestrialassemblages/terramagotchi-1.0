@@ -1,4 +1,5 @@
 import { GasParticle } from "./gas";
+import { WaterParticle } from "./water";
 
 export class SteamParticle extends GasParticle {
     constructor() {
