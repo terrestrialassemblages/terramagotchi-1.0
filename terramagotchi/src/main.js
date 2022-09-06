@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { SoilParticle, StoneParticle, WaterParticle } from "./particles";
+import { SoilParticle, StoneParticle, WaterParticle, SteamParticle } from "./particles";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;

@@ -1,6 +1,6 @@
 import { BaseParticle } from "./base";
 
-export class FluidParticle extends BaseParticle {
+export class LiquidParticle extends BaseParticle {
     constructor() {
         super();
         this.flow_direction = 1;
@@ -10,8 +10,8 @@ export class FluidParticle extends BaseParticle {
         let particle_infront = grid.get(x+this.flow_direction,y);
         let particle_behind = grid.get(x-this.flow_direction,y);
 
-        let can_move_infront = particle_infront.moveable && particle_infront.weight < this.weight
-        let can_move_behind = particle_behind.moveable && particle_behind.weight < this.weight
+        let can_move_infront = particle_infront.moveable && particle_infront.weight < this.weight;
+        let can_move_behind = particle_behind.moveable && particle_behind.weight < this.weight;
 
         // Particle ahead cannot be moved
         if (!can_move_infront && can_move_behind) {

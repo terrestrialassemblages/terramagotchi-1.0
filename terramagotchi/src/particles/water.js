@@ -1,6 +1,6 @@
-import { FluidParticle } from "./fluid";
+import { LiquidParticle } from "./liquid";
 
-export class WaterParticle extends FluidParticle {
+export class WaterParticle extends LiquidParticle {
     constructor() {
         super();
         this.base_color = "#5080D0"; // idk, just put in some blue
@@ -14,9 +14,9 @@ export class WaterParticle extends FluidParticle {
         if (this.last_frame == grid.frame())
             return;
 
-        this.compute_gravity(x, y, grid)
-        this.compute_flow(x,y,grid)
+        this.compute_gravity(x, y, grid);
+        this.compute_flow(x,y,grid);
 
-        this.last_frame = grid.frame()
+        this.last_frame = grid.frame();
     }
 }
