@@ -68,7 +68,11 @@ export class Application {
 
     update() {
         /**
-         * Calls update function inside each particle to generate next grid state.
+         * Handles the transition from the current grid state to the next.
+         * Calls update function inside each particle to generate how they change
+         * between grid states.
+         * Then calls update function in organisms to check how they move.
+         * (filter removes dead bugs from grid)
          */
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
@@ -76,8 +80,10 @@ export class Application {
             }
         }
 
+        // Updates
         for (let bug of this.organisms) {
             bug.update(this.grid)
         }
+        this.organisms = this.organisms.filter(bug => bug.alive)
     }
 }
