@@ -48,6 +48,7 @@ export const sketch = (s) => {
      * 1 = Stone
      * 2 = Soil
      * 3 = Water
+     * 4 = Steam
      */ 
     let drawing = 49; // Default to drawing stone
     let keys = {};

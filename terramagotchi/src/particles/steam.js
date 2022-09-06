@@ -11,7 +11,7 @@ export class SteamParticle extends GasParticle {
 
         // Initial values used to slow down horizontal movement based on time
         this.initial_condensation_time = this.condensation_time
-        this.initial_horizontal_chance = this.horizontal_chance
+        this.initial_horizontal_movement_probability = this.horizontal_movement_probability
     }
 
     update(x, y, grid) {
@@ -22,10 +22,10 @@ export class SteamParticle extends GasParticle {
         // Countdown condensation time
         this.condensation_time--
         // Slow down horizontal movement when closer to condensation
-        this.horizontal_chance = this.condensation_time / this.initial_condensation_time * this.initial_horizontal_chance;
+        this.horizontal_movement_probability = this.condensation_time / this.initial_condensation_time * this.initial_horizontal_movement_probability;
 
         // Turn steam into water
-        if (this.condensation_time == 0) {
+        if (this.condensation_time <= 0) {
             grid.set(x,y,new WaterParticle());
             return;
         }
