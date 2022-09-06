@@ -30,7 +30,7 @@ export class ParticleGrid {
         return this.__frame
     }
 
-    incrimentFrame() {
+    increment_frame() {
         this.__frame++
     }
 }
