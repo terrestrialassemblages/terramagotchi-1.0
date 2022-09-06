@@ -11,7 +11,6 @@ export class BaseParticle {
         this.weight = 0;
         this.color = this.base_color;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
-        this.flow_direction = 0; // Purely for flowing particles to change direction (move to water class?)
         this.update_color = false;
     }
 
@@ -51,37 +50,6 @@ export class BaseParticle {
                 if (offset != 0)
                     grid.swap(x, y, x+offset, y)
             }
-        }
-    }
-
-    computer_flow(x,y,grid) {
-        let particle_infront = grid.get(x+this.flow_direction,y);
-        let particle_behind = grid.get(x-this.flow_direction,y);
-
-        let can_move_infront = particle_infront.moveable && particle_infront.weight < this.weight
-        let can_move_behind = particle_behind.moveable && particle_behind.weight < this.weight
-
-        // Particle ahead cannot be moved
-        if (!can_move_infront && can_move_behind) {
-            // Swap direction
-            this.flow_direction *= -1;
-
-            let temp1 = particle_infront;
-            particle_infront = particle_behind;
-            particle_behind = temp1;
-
-            let temp2 = can_move_infront;
-            can_move_infront = can_move_behind;
-            can_move_behind = temp2;
-        }
-
-        // Has space to move infront
-        if (can_move_infront) {
-            // Move ahead
-            grid.swap(x,y,x+this.flow_direction,y);
-            // Reattempt gravity after flowing
-            if (this.moveable)
-                this.compute_gravity(x+this.flow_direction, y, grid);
         }
     }
 
