@@ -16,7 +16,8 @@ export const sketch = (s) => {
 
     // The initial setup function.
     s.setup = () => {
-        s.createCanvas(application.width * cell_size, application.height * cell_size);
+        const canvas = s.createCanvas(application.width * cell_size, application.height * cell_size);
+        canvas.canvas.style = "" // Remove inline styling.
         s.noStroke();
         s.colorMode(s.HSB);
         // s.frameRate(20)
