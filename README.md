@@ -14,8 +14,8 @@ npm run build
 
 
 ## Authors
-Giovanni Glendining
-Dominik Lange-Nawka
-Blake Louis
-Lucas RiedlShah
-Dion Wharerau
+Giovanni Glendining  
+Dominik Lange-Nawka  
+Blake Louis  
+Lucas RiedlShah  
+Dion Wharerau  

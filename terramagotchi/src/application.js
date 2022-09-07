@@ -2,11 +2,13 @@ import {
     BoundaryParticle,
     StoneParticle,
     SoilParticle,
+    CompostParticle,
     WaterParticle,
     AirParticle,
 } from "./particles";
 import { ParticleGrid } from "./particle_grid";
 import { RenderQueue } from "./render_queue";
+import { Bug } from "./organism"
 
 
 // Global constants to limit particle processes
@@ -19,7 +21,7 @@ export class Application {
 
         this.render_queue = new RenderQueue();
         this.grid = new ParticleGrid(width, height, this.render_queue);
-        this.organisms = [];
+        this.organisms = [new Bug(120, 120)];
 
         // Environment variables
         this.light_level = 100;
@@ -67,6 +69,12 @@ export class Application {
 
     update() {
         /**
+         * Handles the transition from the current grid state to the next.
+         * Calls update function inside each particle to generate how they change
+         * between grid states.
+         * Then calls update function in organisms to check how they move.
+         * (filter removes dead bugs from grid)
+         * 
          * Bottom to Top, Left to right
          * Calls update function inside each particle to generate next grid state.
          */
@@ -76,6 +84,11 @@ export class Application {
             }
         }
 
+        // Updates
+        for (let bug of this.organisms) {
+            bug.update(this.grid)
+        }
+        this.organisms = this.organisms.filter(bug => bug.alive)
 
         /**
          * Bottom to Top, Random x order

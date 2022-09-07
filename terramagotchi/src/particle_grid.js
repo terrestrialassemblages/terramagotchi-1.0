@@ -8,6 +8,14 @@ export class ParticleGrid {
         this.__tick = 0
     }
 
+    get_height() {
+        return this.__height
+    }
+
+    get_width() {
+        return this.__h__widthight
+    }
+
     get(x, y) {
         return this.__list[y * this.__width + x]
     }
@@ -26,6 +34,10 @@ export class ParticleGrid {
         this.__render_queue.push(x2, y2)
     }
 
+    queue_push(x, y) {
+        this.__render_queue.push(x, y)
+    }
+    
     get tick() {
         return this.__tick
     }

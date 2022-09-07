@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { SoilParticle, StoneParticle, WaterParticle, SteamParticle } from "./particles";
+import { SoilParticle, StoneParticle, WaterParticle, SteamParticle, CompostParticle } from "./particles";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -29,14 +29,28 @@ export const sketch = (s) => {
     s.draw = () => {
         application.update();
 
+        // Iterates through all particles in the applications particle grid that
+        // have changed and need to be rendered again
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();
             const particle = application.grid.get(x, y);
             s.fill(particle.get_color(s));
 
             s.rect(
-                (s.width / application.width) * x,
-                (s.height / application.height) * (application.height - 1 - y),
+                cell_size * x,
+                cell_size * (application.height - 1 - y),
+                cell_size,
+                cell_size
+            );
+        }
+
+        // Draws bugs lol
+        for (let bug of application.organisms) {
+            s.fill(bug.body_color);
+
+            s.rect(
+                cell_size * bug.x,
+                cell_size * (application.height - 1 - bug.y),
                 cell_size,
                 cell_size
             );
@@ -56,6 +70,7 @@ export const sketch = (s) => {
     keys[50] = SoilParticle;
     keys[51] = WaterParticle;
     keys[52] = SteamParticle;
+    keys[54] = CompostParticle;
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
         if (typeof keys[drawing] === "function") {
