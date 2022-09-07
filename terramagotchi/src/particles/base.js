@@ -3,6 +3,8 @@ export class BaseParticle {
         this.base_color = "#000000";
         this.color_variance = 0.05;
 
+        this.last_tick = 0
+
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
             Protects plants/leaves from have heavy particles fall through */
@@ -11,6 +13,11 @@ export class BaseParticle {
         this.color = this.base_color;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
         this.update_color = false;
+
+        /** moveable_x and moveable_y describe whether, in a given frame, the particle
+         * has the ability to move across the x or y axis */
+        this.moveable_x = false;
+        this.moveable_y = false;
     }
 
     update(x, y, grid) {}
@@ -23,11 +30,11 @@ export class BaseParticle {
          * Sets moveable flag to false for both after move so particles cannot move
          * twice in one update
          */
-        this.moveable = true;
+        this.moveable_y = true
         let particle_below = grid.get(x, y-1)
-        if (particle_below.moveable && this.weight > particle_below.weight) {
-            particle_below.moveable = false;
-            this.moveable = false;
+        if (particle_below.moveable_y && this.weight > particle_below.weight) {
+            particle_below.moveable_y = false;
+            this.moveable_y = false;
             grid.swap(x, y, x, y-1);
         }
     }
@@ -38,14 +45,17 @@ export class BaseParticle {
          */
         if (grid.get(x-1,y+1).weight < this.weight && grid.get(x,y+1).weight < this.weight && grid.get(x+1,y+1).weight < this.weight) {
             let free_neighbours = [0]
-            if (grid.get(x-1, y).moveable && grid.get(x-1, y).weight < this.weight && grid.get(x-1, y-1).weight < this.weight)
+            if (grid.get(x-1, y).moveable_x && grid.get(x-1, y).weight < this.weight && grid.get(x-1, y-1).weight < this.weight)
                 free_neighbours.push(-1)
-            if (grid.get(x+1, y).moveable && grid.get(x+1, y).weight < this.weight && grid.get(x+1, y-1).weight < this.weight)
+            if (grid.get(x+1, y).moveable_x && grid.get(x+1, y).weight < this.weight && grid.get(x+1, y-1).weight < this.weight)
                 free_neighbours.push(+1)
             if (free_neighbours.length > 1) {
                 let offset = free_neighbours[Math.floor(Math.random()*free_neighbours.length)];
-                if (offset != 0)
+                if (offset != 0) {
+                    this.moveable_x = false
+                    grid.get(x+offset, y).moveable_x = false
                     grid.swap(x, y, x+offset, y)
+                }
             }
         }
     }

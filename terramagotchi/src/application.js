@@ -74,6 +74,9 @@ export class Application {
          * between grid states.
          * Then calls update function in organisms to check how they move.
          * (filter removes dead bugs from grid)
+         * 
+         * Bottom to Top, Left to right
+         * Calls update function inside each particle to generate next grid state.
          */
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
@@ -86,5 +89,24 @@ export class Application {
             bug.update(this.grid)
         }
         this.organisms = this.organisms.filter(bug => bug.alive)
+
+        /**
+         * Bottom to Top, Random x order
+         * Calls update function inside each particle to generate next grid state.
+         
+        let x_order = Array.from({length: this.width - 2}, (_, i) => i + 1)
+        for (let i = x_order.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [x_order[i], x_order[j]] = [x_order[j], x_order[i]];
+        }
+
+         for (let i = 0; i < x_order.length; i++) {
+            let x = x_order[i]
+            for (let y = 1; y < this.height - 1; y++) {
+                this.grid.get(x, y).update(x, y, this.grid)
+            }
+        } */
+
+        this.grid.increment_tick()
     }
 }

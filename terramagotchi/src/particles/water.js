@@ -1,6 +1,6 @@
-import { InorganicParticle } from "./inorganic";
+import { LiquidParticle } from "./liquid";
 
-export class WaterParticle extends InorganicParticle {
+export class WaterParticle extends LiquidParticle {
     constructor() {
         super();
         this.base_color = "#5080D0"; // idk, just put in some blue
@@ -10,7 +10,13 @@ export class WaterParticle extends InorganicParticle {
     }
 
     update(x, y, grid) {
-        // water flow update to go here
-        this.compute_gravity(x, y, grid)
+
+        if (this.last_tick == grid.tick)
+            return;
+
+        this.compute_gravity(x, y, grid);
+        this.compute_flow(x,y,grid);
+
+        this.last_tick = grid.tick;
     }
 }
