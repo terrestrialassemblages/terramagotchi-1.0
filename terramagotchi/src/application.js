@@ -2,6 +2,7 @@ import {
     BoundaryParticle,
     StoneParticle,
     SoilParticle,
+    CompostParticle,
     WaterParticle,
     AirParticle,
 } from "./particles";
@@ -20,7 +21,7 @@ export class Application {
 
         this.render_queue = new RenderQueue();
         this.grid = new ParticleGrid(width, height, this.render_queue);
-        this.organisms = [new Bug()];
+        this.organisms = [new Bug(120, 120)];
 
         // Environment variables
         this.light_level = 100;

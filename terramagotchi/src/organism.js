@@ -1,4 +1,4 @@
-import { AirParticle } from "./particles";
+import { CompostParticle } from "./particles";
 
 const MAX_WATER = 300;
 const MAX_FOOD = 300;
@@ -13,13 +13,13 @@ export class Bug {
      * @param {int} x   Initial x-coordinate of bug
      * @param {int} y   Initial y-coordinate of bug
      */
-    constructor(x = 50, y = 50) {
+    constructor(x = 120, y = 120) {
         this.x = x
         this.y = y
         this.head_color = "#000000"
-        this.body_color = "#9032FF"
+        this.body_color = "#FF32FF"
 
-        this.water_level = 200
+        this.water_level = 20
         this.food_level = 200
         this.body_length = 1
         
@@ -37,8 +37,10 @@ export class Bug {
 
         // If the particle below is moveable and has a weight < 1 (e.g air, water, steam)
         // Then the bug performs the action of falling this frame
-        if (particle_below.moveable && particle_below.weight < 1)
+        if (particle_below.moveable && particle_below.weight < 1) {
             this.move(grid, 0, -1, false)
+            return
+        }
 
         // If the bug's position overlaps with a heavy particle, move it upwards
         else if (particle_current.weight >= 1) {
@@ -46,13 +48,11 @@ export class Bug {
                 this.die(grid)
             else
                 this.move(grid, 0, 1, false)
-        
-        // Now we handle the BUG ACTIONS; base on what it wants/doesn't want
-        } else {
-
-            let action_probability = Math.min((this.water_level/MAX_WATER), (this.food_level/MAX_FOOD))
-
+            return;
         }
+
+        // Now we handle the BUG ACTIONS; base on what it wants/doesn't want
+        let action_probability = Math.min((this.water_level/MAX_WATER), (this.food_level/MAX_FOOD))
 
     }
 
@@ -84,6 +84,6 @@ export class Bug {
 
         this.alive = false
         if (replace_with_compost)
-            grid.set(this.x, this.y, new AirParticle()) // to be updated with CompostParticle
+            grid.set(this.x, this.y, new CompostParticle()) // to be updated with CompostParticle
     }
 }
