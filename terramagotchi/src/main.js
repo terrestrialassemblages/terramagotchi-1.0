@@ -58,7 +58,9 @@ export const sketch = (s) => {
     keys[52] = SteamParticle;
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
-        application.grid.set(x, y, new keys[drawing]());
+        if (typeof keys[drawing] === "function") {
+            application.grid.set(x, y, new keys[drawing]());
+        }
     }
     s.keyPressed = () => {
         drawing = s.keyCode;
