@@ -5,6 +5,7 @@ export class ParticleGrid {
         this.__height = height
         this.__list = new Array(width * height)
         this.__render_queue = render_queue
+        this.__tick = 0
     }
 
     get(x, y) {
@@ -23,5 +24,13 @@ export class ParticleGrid {
         
         this.__render_queue.push(x1, y1)
         this.__render_queue.push(x2, y2)
+    }
+
+    get tick() {
+        return this.__tick
+    }
+
+    increment_tick() {
+        this.__tick++
     }
 }

@@ -10,6 +10,7 @@ export class AirParticle extends InorganicParticle {
     }
 
     update(x, y, grid) {
-        this.moveable = true; // important lol
+        this.moveable_x = true; // important lol
+        this.moveable_y = true; // important lol
     }
 }

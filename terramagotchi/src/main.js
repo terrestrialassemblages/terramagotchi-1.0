@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { Application } from "./application";
-import { SoilParticle, StoneParticle, WaterParticle } from "./particles";
+import { SoilParticle, StoneParticle, WaterParticle, SteamParticle } from "./particles";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -48,12 +48,14 @@ export const sketch = (s) => {
      * 1 = Stone
      * 2 = Soil
      * 3 = Water
+     * 4 = Steam
      */ 
     let drawing = 49; // Default to drawing stone
     let keys = {};
     keys[49] = StoneParticle;
     keys[50] = SoilParticle;
     keys[51] = WaterParticle;
+    keys[52] = SteamParticle;
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
         application.grid.set(x, y, new keys[drawing]());
