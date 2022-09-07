@@ -29,6 +29,9 @@ export class Bug {
         // this.energy = 10 // just an idea
 
         this.alive = true
+
+        this.confidence = 10
+        this.state = []
     }
 
     update(grid) {
