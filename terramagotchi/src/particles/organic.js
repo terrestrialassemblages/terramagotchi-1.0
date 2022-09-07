@@ -5,11 +5,16 @@ export class OrganicParticle extends BaseParticle {
         super();
         this.nutrient_level = 0;
         this.water_level = 70;
+        this.update_color = true;
     }
 
     get_color(s) {
-        // If the colour needs updating and is initialised, decrease brightness by water_level
-        if (this.update_color && this.color !== "#000000") {
+        // If the colour needs updating, decrease brightness by water_level
+        if (this.update_color) {
+            // Initialise colour if needed
+            if (this.color === "#000000") {
+                super.get_color(s);
+            }
             this.color = s.color(
                 s.hue(this.color),
                 s.saturation(this.color),
