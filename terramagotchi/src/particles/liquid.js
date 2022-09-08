@@ -35,9 +35,9 @@ export class LiquidParticle extends BaseParticle {
         if (can_move_forward) {
             // Move ahead
             environment.swap(x, y, x + this.flow_direction, y);
-            // Reattempt gravity after flowing
-            if (this.moveable_y)
-                this.compute_gravity(x + this.flow_direction, y, environment);
+            return [x + this.flow_direction, y];
         }
+
+        return [x, y];
     }
 }

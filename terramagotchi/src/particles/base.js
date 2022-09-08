@@ -32,12 +32,13 @@ export class BaseParticle {
          * twice in one update
          */
         this.moveable_y = true;
-        let particle_below = environment.get(x, y - 1);
+        const particle_below = environment.get(x, y - 1);
         if (particle_below.moveable_y && this.weight > particle_below.weight) {
             particle_below.moveable_y = false;
             this.moveable_y = false;
-            environment.swap(x, y, x, y - 1);
+            environment.swap(x, y, x, --y);
         }
+        return [x, y];
     }
 
     compute_erosion(x, y, environment) {
@@ -45,23 +46,27 @@ export class BaseParticle {
          * Prevents single-cell hills from forming through artificial erosion
          */
         if (
+            this.moveable_y &&
             environment.get(x - 1, y + 1).weight < this.weight &&
             environment.get(x, y + 1).weight < this.weight &&
             environment.get(x + 1, y + 1).weight < this.weight
         ) {
             let free_neighbours = [0];
+
             if (
                 environment.get(x - 1, y).moveable_x &&
                 environment.get(x - 1, y).weight < this.weight &&
                 environment.get(x - 1, y - 1).weight < this.weight
             )
                 free_neighbours.push(-1);
+
             if (
                 environment.get(x + 1, y).moveable_x &&
                 environment.get(x + 1, y).weight < this.weight &&
                 environment.get(x + 1, y - 1).weight < this.weight
             )
                 free_neighbours.push(+1);
+
             if (free_neighbours.length > 1) {
                 let offset =
                     free_neighbours[
@@ -71,9 +76,11 @@ export class BaseParticle {
                     this.moveable_x = false;
                     environment.get(x + offset, y).moveable_x = false;
                     environment.swap(x, y, x + offset, y);
+                    return [x + offset, y];
                 }
             }
         }
+        return [x, y];
     }
 
     // Function to initalise random colour variation and update colour when needed

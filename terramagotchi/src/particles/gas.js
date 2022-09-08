@@ -32,7 +32,10 @@ export class GasParticle extends BaseParticle {
                 random_x_neighbour.weight <= this.weight
             ) {
                 environment.swap(x, y, x + random_direction, y);
+                return [x + random_direction, y];
             }
         }
+
+        return [x, y];
     }
 }

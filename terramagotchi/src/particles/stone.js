@@ -10,7 +10,7 @@ export class StoneParticle extends InorganicParticle {
     }
 
     update(x, y, environment) {
-        this.compute_gravity(x, y, environment);
+        [x, y] = this.compute_gravity(x, y, environment);
         this.compute_erosion(x, y, environment);
     }
 }
