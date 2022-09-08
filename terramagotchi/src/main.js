@@ -51,31 +51,26 @@ export const sketch = (s) => {
         }
     };
 
-    /**
-     * Debug code for drawing
-     * 1 = Stone
-     * 2 = Soil
-     * 3 = Water
-     * 4 = Steam
-     */
-    let drawing = 49; // Default to drawing stone
-    let keys = {};
-    keys[49] = StoneParticle;
-    keys[50] = SoilParticle;
-    keys[51] = WaterParticle;
-    keys[52] = SteamParticle;
-    keys[53] = CompostParticle;
+    // Debug code for drawing
+    let current_material = 1; // Default to stone
+    let keys = {
+        1: StoneParticle,
+        2: SoilParticle,
+        3: WaterParticle,
+        4: SteamParticle,
+        5: CompostParticle,
+    };
+
+    s.keyPressed = () => {
+        if (s.key in Object.keys(keys)) current_material = s.key;
+    };
+
     s.mouseDragged = () => {
         const [x, y] = [
             Math.floor(s.mouseX / cell_size),
             application.height - 1 - Math.floor(s.mouseY / cell_size),
         ];
-        if (typeof keys[drawing] === "function") {
-            application.environment.set(x, y, new keys[drawing]());
-        }
-    };
-    s.keyPressed = () => {
-        drawing = s.keyCode;
+        application.environment.set(x, y, new keys[current_material]());
     };
 };
 
