@@ -12,7 +12,7 @@ export const sketch = (s) => {
      */
     const application = new Application(240, 240);
     const bg_color = "#87CEEB";
-    let cell_size = 3; // Defines, in pixels, the size of each cell in our 2D grid on the canvas
+    let cell_size = 3; // Defines cell size in pixels.
 
     // The initial setup function.
     s.setup = () => {
@@ -30,11 +30,11 @@ export const sketch = (s) => {
     s.draw = () => {
         application.update();
 
-        // Iterates through all particles in the applications particle grid that
+        // Iterates through all particles in the applications environment that
         // have changed and need to be rendered again
         while (application.render_queue.size() > 0) {
             const [x, y] = application.render_queue.pop();
-            const particle = application.grid.get(x, y);
+            const particle = application.environment.get(x, y);
             s.fill(particle.get_color(s));
 
             s.rect(
@@ -46,7 +46,7 @@ export const sketch = (s) => {
         }
 
         // Draws bugs lol
-        for (let bug of application.organisms) {
+        for (let bug of application.environment.organisms) {
             s.fill(bug.body_color);
 
             s.rect(
@@ -75,7 +75,7 @@ export const sketch = (s) => {
     s.mouseDragged = () => {
         const [x, y] = [Math.floor(s.mouseX/cell_size), application.height - 1 - Math.floor(s.mouseY/cell_size)];
         if (typeof keys[drawing] === "function") {
-            application.grid.set(x, y, new keys[drawing]());
+            application.environment.set(x, y, new keys[drawing]());
         }
     }
     s.keyPressed = () => {

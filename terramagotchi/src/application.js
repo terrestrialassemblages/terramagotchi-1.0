@@ -6,7 +6,7 @@ import {
     WaterParticle,
     AirParticle,
 } from "./particles";
-import { ParticleGrid } from "./particle_grid";
+import { Environment } from "./environment";
 import { RenderQueue } from "./render_queue";
 import { Bug } from "./organism"
 
@@ -20,18 +20,12 @@ export class Application {
         this.height = height;
 
         this.render_queue = new RenderQueue();
-        this.grid = new ParticleGrid(width, height, this.render_queue);
-        this.organisms = [new Bug(120, 120)];
-
-        // Environment variables
-        this.light_level = 100;
-        this.oxygen_level = 100;
-        this.temperature_level = 25; // max 100
+        this.environment = new Environment(width, height, this.render_queue);
     }
 
     generate() {
         /**
-         * Populates the application grid with particles
+         * Populates the application environment with particles
          */
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -41,12 +35,12 @@ export class Application {
                     x == this.width - 1 ||
                     y == this.height - 1
                 ) {
-                    this.grid.set(x, y, new BoundaryParticle());
+                    this.environment.set(x, y, new BoundaryParticle());
                 } else if (
                     y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
                     25
                 ) {
-                    this.grid.set(x, y, new StoneParticle());
+                    this.environment.set(x, y, new StoneParticle());
                 } else if (
                     y +
                         Math.floor(
@@ -55,13 +49,13 @@ export class Application {
                         ) <
                     85
                 ) {
-                    this.grid.set(x, y, new SoilParticle());
+                    this.environment.set(x, y, new SoilParticle());
                 } else if (y < 100) {
-                    this.grid.set(x, y, new WaterParticle());
+                    this.environment.set(x, y, new WaterParticle());
                 } else if (y > 140 && Math.random() < 0.01) {
-                    this.grid.set(x, y, new AirParticle());
+                    this.environment.set(x, y, new AirParticle());
                 } else {
-                    this.grid.set(x, y, new AirParticle());
+                    this.environment.set(x, y, new AirParticle());
                 }
             }
         }
@@ -69,30 +63,30 @@ export class Application {
 
     update() {
         /**
-         * Handles the transition from the current grid state to the next.
+         * Handles the transition from the current environment state to the next.
          * Calls update function inside each particle to generate how they change
-         * between grid states.
+         * between environment states.
          * Then calls update function in organisms to check how they move.
-         * (filter removes dead bugs from grid)
+         * (filter removes dead bugs from environment)
          * 
          * Bottom to Top, Left to right
-         * Calls update function inside each particle to generate next grid state.
+         * Calls update function inside each particle to generate next environment state.
          */
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
-                this.grid.get(x, y).update(x, y, this.grid)
+                this.environment.get(x, y).update(x, y, this.environment)
             }
         }
 
         // Updates
-        for (let bug of this.organisms) {
-            bug.update(this.grid)
+        for (let bug of this.environment.organisms) {
+            bug.update(this.environment)
         }
-        this.organisms = this.organisms.filter(bug => bug.alive)
+        this.environment.organisms = this.environment.organisms.filter(bug => bug.alive)
 
         /**
          * Bottom to Top, Random x order
-         * Calls update function inside each particle to generate next grid state.
+         * Calls update function inside each particle to generate next environment state.
          
         let x_order = Array.from({length: this.width - 2}, (_, i) => i + 1)
         for (let i = x_order.length - 1; i > 0; i--) {
@@ -103,10 +97,10 @@ export class Application {
          for (let i = 0; i < x_order.length; i++) {
             let x = x_order[i]
             for (let y = 1; y < this.height - 1; y++) {
-                this.grid.get(x, y).update(x, y, this.grid)
+                this.environment.get(x, y).update(x, y, this.environment)
             }
         } */
 
-        this.grid.increment_tick()
+        this.environment.increment_tick()
     }
 }

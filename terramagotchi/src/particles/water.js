@@ -9,14 +9,13 @@ export class WaterParticle extends LiquidParticle {
         this.water_content = 50;
     }
 
-    update(x, y, grid) {
-
-        if (this.last_tick == grid.tick)
+    update(x, y, environment) {
+        if (this.last_tick == environment.tick)
             return;
 
-        this.compute_gravity(x, y, grid);
-        this.compute_flow(x,y,grid);
+        this.compute_gravity(x, y, environment);
+        this.compute_flow(x,y,environment);
 
-        this.last_tick = grid.tick;
+        this.last_tick = environment.tick;
     }
 }

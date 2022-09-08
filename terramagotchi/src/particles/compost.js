@@ -11,8 +11,8 @@ export class CompostParticle extends OrganicParticle {
         this.nutrient_level = 20
     }
 
-    update(x, y, grid) {
-        this.compute_gravity(x, y, grid)
-        this.compute_erosion(x, y, grid)
+    update(x, y, environment) {
+        this.compute_gravity(x, y, environment)
+        this.compute_erosion(x, y, environment)
     }
 }

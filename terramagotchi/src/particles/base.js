@@ -21,9 +21,9 @@ export class BaseParticle {
         this.moveable_y = false;
     }
 
-    update(x, y, grid) {}
+    update(x, y, environment) {}
 
-    compute_gravity(x, y, grid) {
+    compute_gravity(x, y, environment) {
         /**
          * Gravity update function. Moves particles down if
          *      The particle below is moveable, and
@@ -32,30 +32,30 @@ export class BaseParticle {
          * twice in one update
          */
         this.moveable_y = true
-        let particle_below = grid.get(x, y-1)
+        let particle_below = environment.get(x, y-1)
         if (particle_below.moveable_y && this.weight > particle_below.weight) {
             particle_below.moveable_y = false;
             this.moveable_y = false;
-            grid.swap(x, y, x, y-1);
+            environment.swap(x, y, x, y-1);
         }
     }
 
-    compute_erosion(x, y, grid) {
+    compute_erosion(x, y, environment) {
         /**
          * Prevents single-cell hills from forming through artificial erosion
          */
-        if (grid.get(x-1,y+1).weight < this.weight && grid.get(x,y+1).weight < this.weight && grid.get(x+1,y+1).weight < this.weight) {
+        if (environment.get(x-1,y+1).weight < this.weight && environment.get(x,y+1).weight < this.weight && environment.get(x+1,y+1).weight < this.weight) {
             let free_neighbours = [0]
-            if (grid.get(x-1, y).moveable_x && grid.get(x-1, y).weight < this.weight && grid.get(x-1, y-1).weight < this.weight)
+            if (environment.get(x-1, y).moveable_x && environment.get(x-1, y).weight < this.weight && environment.get(x-1, y-1).weight < this.weight)
                 free_neighbours.push(-1)
-            if (grid.get(x+1, y).moveable_x && grid.get(x+1, y).weight < this.weight && grid.get(x+1, y-1).weight < this.weight)
+            if (environment.get(x+1, y).moveable_x && environment.get(x+1, y).weight < this.weight && environment.get(x+1, y-1).weight < this.weight)
                 free_neighbours.push(+1)
             if (free_neighbours.length > 1) {
                 let offset = free_neighbours[Math.floor(Math.random()*free_neighbours.length)];
                 if (offset != 0) {
                     this.moveable_x = false
-                    grid.get(x+offset, y).moveable_x = false
-                    grid.swap(x, y, x+offset, y)
+                    environment.get(x+offset, y).moveable_x = false
+                    environment.swap(x, y, x+offset, y)
                 }
             }
         }

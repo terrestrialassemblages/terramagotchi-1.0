@@ -6,9 +6,9 @@ export class LiquidParticle extends BaseParticle {
         this.flow_direction = 1;
     }
 
-    compute_flow(x, y, grid) {
-        let particle_forward = grid.get(x+this.flow_direction,y);
-        let particle_backward = grid.get(x-this.flow_direction,y);
+    compute_flow(x, y, environment) {
+        let particle_forward = environment.get(x+this.flow_direction,y);
+        let particle_backward = environment.get(x-this.flow_direction,y);
 
         let can_move_forward = particle_forward.moveable_x && particle_forward.weight < this.weight;
         let can_move_backward = particle_backward.moveable_x && particle_backward.weight < this.weight;
@@ -30,10 +30,10 @@ export class LiquidParticle extends BaseParticle {
         // Has space to move forward
         if (can_move_forward) {
             // Move ahead
-            grid.swap(x,y,x+this.flow_direction,y);
+            environment.swap(x,y,x+this.flow_direction,y);
             // Reattempt gravity after flowing
             if (this.moveable)
-                this.compute_gravity(x+this.flow_direction, y, grid);
+                this.compute_gravity(x+this.flow_direction, y, environment);
         }
     }
 }

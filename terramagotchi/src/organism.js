@@ -34,23 +34,23 @@ export class Bug {
         this.state = []
     }
 
-    update(grid) {
-        let particle_below = grid.get(this.x, this.y-1)
-        let particle_current = grid.get(this.x, this.y)
+    update(environment) {
+        let particle_below = environment.get(this.x, this.y-1)
+        let particle_current = environment.get(this.x, this.y)
 
         // If the particle below is moveable and has a weight < 1 (e.g air, water, steam)
         // Then the bug performs the action of falling this frame
         if (particle_below.moveable && particle_below.weight < 1) {
-            this.move(grid, 0, -1, false)
+            this.move(environment, 0, -1, false)
             return
         }
 
         // If the bug's position overlaps with a heavy particle, move it upwards
         else if (particle_current.weight >= 1) {
-            if (this.y >= grid.get_height() - 2)
-                this.die(grid)
+            if (this.y >= environment.height - 2)
+                this.die(environment)
             else
-                this.move(grid, 0, 1, false)
+                this.move(environment, 0, 1, false)
             return;
         }
 
@@ -59,10 +59,10 @@ export class Bug {
 
     }
 
-    move(grid, dx, dy, consume_energy = true) {
+    move(environment, dx, dy, consume_energy = true) {
         /** Move function used to handle any action where the bug decides to
          * move itself to a new location
-         * @param {ParticleGrid} grid           The grid which the bug lives on
+         * @param {Environment} environment     The environment which the bug lives on
          * @param {int} dx                      x-displacement
          * @param {int} dy                      y-displacement
          * @param {boolean} consume_energy      Boolean for whether this movement was
@@ -75,18 +75,19 @@ export class Bug {
             this.food_level -= 1
         }
         
-        grid.queue_push(this.x, this.y)
+        // This function should be passed the queue instead of accessing it through environment.
+        environment.__render_queue.push(this.x, this.y)
         this.x += dx
         this.y += dy
     }
 
-    die(grid, replace_with_compost = true) {
+    die(environment, replace_with_compost = true) {
         // Function for when conditions are met such that the bug can no longer live
         // e.g., lack of food/water, lifespan reached, temperature too high, etc.
 
 
         this.alive = false
         if (replace_with_compost)
-            grid.set(this.x, this.y, new CompostParticle()) // to be updated with CompostParticle
+        environment.set(this.x, this.y, new CompostParticle()) // to be updated with CompostParticle
     }
 }

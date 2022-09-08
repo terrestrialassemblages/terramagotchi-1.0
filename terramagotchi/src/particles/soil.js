@@ -9,12 +9,8 @@ export class SoilParticle extends OrganicParticle {
         this.water_capacity = 80;
     }
 
-    update(x, y, grid) {
-        if (this.water_level != x) {
-            this.water_level = x // Code for testing bug pathing
-            grid.queue_push(x, y)
-        }
-        this.compute_gravity(x, y, grid)
-        this.compute_erosion(x, y, grid)
+    update(x, y, environment) {
+        this.compute_gravity(x, y, environment)
+        this.compute_erosion(x, y, environment)
     }
 }

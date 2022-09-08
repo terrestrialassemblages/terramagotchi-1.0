@@ -14,9 +14,9 @@ export class SteamParticle extends GasParticle {
         this.initial_horizontal_movement_probability = this.horizontal_movement_probability
     }
 
-    update(x, y, grid) {
+    update(x, y, environment) {
 
-        if (this.last_tick == grid.tick)
+        if (this.last_tick == environment.tick)
             return;
 
         // Countdown condensation time
@@ -26,13 +26,13 @@ export class SteamParticle extends GasParticle {
 
         // Turn steam into water
         if (this.condensation_time <= 0) {
-            grid.set(x,y,new WaterParticle());
+            environment.set(x,y,new WaterParticle());
             return;
         }
 
         // Rise steam as a Gas Particle
-        this.compute_rise(x,y,grid);
+        this.compute_rise(x,y,environment);
 
-        this.last_tick = grid.tick;
+        this.last_tick = environment.tick;
     }
 }
