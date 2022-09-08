@@ -11,8 +11,9 @@ export class BaseParticle {
         this.moveable = false;
         this.weight = 0;
         this.color = this.base_color;
+        this.saturation_offset = 0;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
-        this.update_color = false;
+        this.do_update_color = false;
 
         /** moveable_x and moveable_y describe whether, in a given frame, the particle
          * has the ability to move across the x or y axis */
@@ -67,11 +68,12 @@ export class BaseParticle {
             let c = s.color(this.base_color);
             let min = 1 - this.color_variance;
             let max = 1 + this.color_variance;
-            this.brightness_offset = Math.random() * (max - min) + min
+            this.brightness_offset = Math.random() * (max - min) + min;
+            this.saturation_offset = Math.random() * (max - min) + min;
 
             c = s.color(
                 s.hue(c),
-                s.saturation(c) * (Math.random() * (max - min) + min),
+                s.saturation(c) * this.saturation_offset,
                 s.brightness(c) * this.brightness_offset
             );
             this.color = c;
