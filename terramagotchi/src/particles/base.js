@@ -21,6 +21,14 @@ export class BaseParticle {
         this.moveable_y = false;
     }
 
+    // Reset all tick-sensitive variables
+    refresh() {
+        if (this.moveable) {
+            this.moveable_x = true;
+            this.moveable_y = true;
+        }
+    }
+
     update(x, y, environment) {}
 
     compute_gravity(x, y, environment) {
@@ -31,11 +39,10 @@ export class BaseParticle {
          * Sets moveable flag to false for both after move so particles cannot move
          * twice in one update
          */
-        this.moveable_y = true;
         const particle_below = environment.get(x, y - 1);
-        if (particle_below.moveable_y && this.weight > particle_below.weight) {
-            particle_below.moveable_y = false;
+        if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
             this.moveable_y = false;
+            particle_below.moveable_y = false;
             environment.swap(x, y, x, --y);
         }
         return [x, y];

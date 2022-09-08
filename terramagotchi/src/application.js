@@ -11,24 +11,23 @@ export class Application {
     }
 
     update() {
-        /**
-         * Handles the transition from the current environment state to the next.
-         * Calls update function inside each particle to generate how they change
-         * between environment states.
-         *
-         * Bottom to Top, Left to right
-         * Calls update function inside each particle.
-         */
+
+        // Refreshes all tick-sensitive variables on all particles before updating environment.
+        for(let i = 0; i < this.width * this.height; i++) {
+            this.environment.get(i).refresh();
+        }
+
+        
+        // Updates each particles' positions and states.
+        // Order: Bottom to Top, Left to right
         for (let x = 1; x < this.width - 1; x++) {
             for (let y = 1; y < this.height - 1; y++) {
                 this.environment.get(x, y).update(x, y, this.environment);
             }
         }
 
-        /**
-         * Bottom to Top, Random x order
-         * Calls update function inside each particle to generate next environment state.
-         */
+        // Updates each particles' positions and states.
+        // Order: Bottom to Top, Left to right
         // let x_order = Array.from({length: this.width - 2}, (_, i) => i + 1)
         // for (let i = x_order.length - 1; i > 0; i--) {
         //     const j = Math.floor(Math.random() * (i + 1));

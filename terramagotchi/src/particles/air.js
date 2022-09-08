@@ -8,9 +8,4 @@ export class AirParticle extends InorganicParticle {
         this.moveable = true;
         this.weight = 0;
     }
-
-    update(x, y, environment) {
-        this.moveable_x = true; // important lol
-        this.moveable_y = true; // important lol
-    }
 }

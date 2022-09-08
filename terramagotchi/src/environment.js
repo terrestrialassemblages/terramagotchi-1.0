@@ -61,8 +61,14 @@ export class Environment {
         }
     }
 
-    get(x, y) {
-        return this.__particle_grid[y * this.width + x];
+    // Using 1 arguement: Returns particle at grid index (i)
+    // Using 2 arguements: Returns particle at grid position (x, y) as (i, j)
+    // P.S. Feel free to change if you think this is a horrendous implementation!!!
+    get(i, j) {
+        if (arguments.length == 1) {
+            return this.__particle_grid[i];
+        }
+        return this.__particle_grid[j * this.width + i];
     }
 
     set(x, y, value) {
