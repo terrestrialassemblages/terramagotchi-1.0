@@ -3,7 +3,7 @@ import { OrganicParticle } from "./organic";
 export class CompostParticle extends OrganicParticle {
     constructor() {
         super();
-        this.base_color = "#00FF00 "; // source: https://www.color-name.com/soil.color
+        this.base_color = "#00FF00";
         this.moveable = true;
         this.weight = 2;
         

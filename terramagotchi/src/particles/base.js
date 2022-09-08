@@ -1,18 +1,18 @@
 export class BaseParticle {
     constructor() {
         this.base_color = "#000000";
+        this.color = "#000000";
         this.color_variance = 0.05;
+        this.saturation_offset = 0;
+        this.brightness_offset = 0; // Purely for organic particles wetness visual currently
 
-        this.last_tick = 0
+        this.weight = 0;
+        this.last_tick = 0;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
             Protects plants/leaves from have heavy particles fall through */
         this.moveable = false;
-        this.weight = 0;
-        this.color = this.base_color;
-        this.saturation_offset = 0;
-        this.brightness_offset = 0; // Purely for organic particles wetness visual currently
         this.do_update_color = false;
 
         /** moveable_x and moveable_y describe whether, in a given frame, the particle
@@ -31,12 +31,12 @@ export class BaseParticle {
          * Sets moveable flag to false for both after move so particles cannot move
          * twice in one update
          */
-        this.moveable_y = true
-        let particle_below = environment.get(x, y-1)
+        this.moveable_y = true;
+        let particle_below = environment.get(x, y - 1);
         if (particle_below.moveable_y && this.weight > particle_below.weight) {
             particle_below.moveable_y = false;
             this.moveable_y = false;
-            environment.swap(x, y, x, y-1);
+            environment.swap(x, y, x, y - 1);
         }
     }
 
@@ -44,18 +44,33 @@ export class BaseParticle {
         /**
          * Prevents single-cell hills from forming through artificial erosion
          */
-        if (environment.get(x-1,y+1).weight < this.weight && environment.get(x,y+1).weight < this.weight && environment.get(x+1,y+1).weight < this.weight) {
-            let free_neighbours = [0]
-            if (environment.get(x-1, y).moveable_x && environment.get(x-1, y).weight < this.weight && environment.get(x-1, y-1).weight < this.weight)
-                free_neighbours.push(-1)
-            if (environment.get(x+1, y).moveable_x && environment.get(x+1, y).weight < this.weight && environment.get(x+1, y-1).weight < this.weight)
-                free_neighbours.push(+1)
+        if (
+            environment.get(x - 1, y + 1).weight < this.weight &&
+            environment.get(x, y + 1).weight < this.weight &&
+            environment.get(x + 1, y + 1).weight < this.weight
+        ) {
+            let free_neighbours = [0];
+            if (
+                environment.get(x - 1, y).moveable_x &&
+                environment.get(x - 1, y).weight < this.weight &&
+                environment.get(x - 1, y - 1).weight < this.weight
+            )
+                free_neighbours.push(-1);
+            if (
+                environment.get(x + 1, y).moveable_x &&
+                environment.get(x + 1, y).weight < this.weight &&
+                environment.get(x + 1, y - 1).weight < this.weight
+            )
+                free_neighbours.push(+1);
             if (free_neighbours.length > 1) {
-                let offset = free_neighbours[Math.floor(Math.random()*free_neighbours.length)];
+                let offset =
+                    free_neighbours[
+                        Math.floor(Math.random() * free_neighbours.length)
+                    ];
                 if (offset != 0) {
-                    this.moveable_x = false
-                    environment.get(x+offset, y).moveable_x = false
-                    environment.swap(x, y, x+offset, y)
+                    this.moveable_x = false;
+                    environment.get(x + offset, y).moveable_x = false;
+                    environment.swap(x, y, x + offset, y);
                 }
             }
         }
