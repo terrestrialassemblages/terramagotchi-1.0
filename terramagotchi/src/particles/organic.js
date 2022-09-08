@@ -3,9 +3,27 @@ import { BaseParticle } from "./base";
 export class OrganicParticle extends BaseParticle {
     constructor() {
         super();
-        this.nutrient_level = 0;
-        this.water_level = 70;
+        this.__nutrient_level = 0;
+        this.__water_level = 70;
         this.update_color = true;
+    }
+
+    set water_level(level) {
+        this.__water_level = level;
+        this.update_color = true;
+    }
+
+    set nutrient_level(level) {
+        this.__nutrient_level = level;
+        this.update_color = true; // Nutrient level has no effect on colour currently
+    }
+
+    get water_level() {
+        return this.__water_level;
+    }
+
+    get nutrient_level() {
+        return this.__nutrient_level;
     }
 
     get_color(s) {

@@ -12,7 +12,6 @@ export class SoilParticle extends OrganicParticle {
     update(x, y, grid) {
         if (this.water_level != x) {
             this.water_level = x // Code for testing bug pathing
-            this.update_color = true
             grid.queue_push(x, y)
         }
         this.compute_gravity(x, y, grid)
