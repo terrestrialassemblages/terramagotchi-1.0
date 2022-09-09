@@ -47,7 +47,7 @@ export class LiquidParticle extends BaseParticle {
             if (can_move_forward) {
                 // Move ahead
                 this.moveable_x = false;
-                //environment.get(x+this.flow_direction,y).moveable_x = false;
+                environment.get(this.x+this.flow_direction,this.y).moveable_x = false;
                 environment.swap(
                     this.x,
                     this.y,

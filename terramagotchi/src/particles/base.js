@@ -22,7 +22,6 @@ export class BaseParticle {
         this.moveable_y = false;
 
         this.rerender = true;
-        this.do_update_color = false;
     }
 
     // Reset all tick-sensitive variables
