@@ -70,7 +70,7 @@ export const sketch = (s) => {
             Math.floor(s.mouseX / cell_size),
             application.height - 1 - Math.floor(s.mouseY / cell_size),
         ];
-        application.environment.set(x, y, new keys[current_material]());
+        application.environment.set(new keys[current_material](x, y));
     };
 };
 

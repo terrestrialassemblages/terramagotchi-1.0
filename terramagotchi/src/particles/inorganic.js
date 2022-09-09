@@ -1,7 +1,7 @@
 import { BaseParticle } from "./base";
 
 export class InorganicParticle extends BaseParticle {
-    constructor() {
-        super();
+    constructor(x, y) {
+        super(x, y);
     }
 }

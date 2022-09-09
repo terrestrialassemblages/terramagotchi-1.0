@@ -1,5 +1,9 @@
 export class BaseParticle {
-    constructor() {
+    constructor(x, y) {
+        if (x == undefined || y == undefined) throw "x and y are required parameters."
+        this.x = x
+        this.y = y
+
         this.base_color = "#000000";
         this.color = "#000000";
         this.color_variance = 0.05;
@@ -29,9 +33,9 @@ export class BaseParticle {
         }
     }
 
-    update(x, y, environment) {}
+    update(environment) {}
 
-    compute_gravity(x, y, environment) {
+    compute_gravity(environment) {
         /**
          * Gravity update function. Moves particles down if
          *      The particle below is moveable, and
@@ -39,38 +43,37 @@ export class BaseParticle {
          * Sets moveable flag to false for both after move so particles cannot move
          * twice in one update
          */
-        const particle_below = environment.get(x, y - 1);
+        const particle_below = environment.get(this.x, this.y - 1);
         if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
             this.moveable_y = false;
             particle_below.moveable_y = false;
-            environment.swap(x, y, x, --y);
+            environment.swap(this.x, this.y, this.x, this.y - 1);
         }
-        return [x, y];
     }
 
-    compute_erosion(x, y, environment) {
+    compute_erosion(environment) {
         /**
          * Prevents single-cell hills from forming through artificial erosion
          */
         if (
             this.moveable_y &&
-            environment.get(x - 1, y + 1).weight < this.weight &&
-            environment.get(x, y + 1).weight < this.weight &&
-            environment.get(x + 1, y + 1).weight < this.weight
+            environment.get(this.x - 1, this.y + 1).weight < this.weight &&
+            environment.get(this.x, this.y + 1).weight < this.weight &&
+            environment.get(this.x + 1, this.y + 1).weight < this.weight
         ) {
             let free_neighbours = [0];
 
             if (
-                environment.get(x - 1, y).moveable_x &&
-                environment.get(x - 1, y).weight < this.weight &&
-                environment.get(x - 1, y - 1).weight < this.weight
+                environment.get(this.x - 1, this.y).moveable_x &&
+                environment.get(this.x - 1, this.y).weight < this.weight &&
+                environment.get(this.x - 1, this.y - 1).weight < this.weight
             )
                 free_neighbours.push(-1);
 
             if (
-                environment.get(x + 1, y).moveable_x &&
-                environment.get(x + 1, y).weight < this.weight &&
-                environment.get(x + 1, y - 1).weight < this.weight
+                environment.get(this.x + 1, this.y).moveable_x &&
+                environment.get(this.x + 1, this.y).weight < this.weight &&
+                environment.get(this.x + 1, this.y - 1).weight < this.weight
             )
                 free_neighbours.push(+1);
 
@@ -81,13 +84,11 @@ export class BaseParticle {
                     ];
                 if (offset != 0) {
                     this.moveable_x = false;
-                    environment.get(x + offset, y).moveable_x = false;
-                    environment.swap(x, y, x + offset, y);
-                    return [x + offset, y];
+                    environment.get(this.x + offset, this.y).moveable_x = false;
+                    environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
             }
         }
-        return [x, y];
     }
 
     // Function to initalise random colour variation and update colour when needed

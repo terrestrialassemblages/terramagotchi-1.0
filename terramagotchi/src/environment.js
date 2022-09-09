@@ -35,12 +35,12 @@ export class Environment {
                     x == this.width - 1 ||
                     y == this.height - 1
                 ) {
-                    this.set(x, y, new BoundaryParticle());
+                    this.set(new BoundaryParticle(x, y));
                 } else if (
                     y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
                     25
                 ) {
-                    this.set(x, y, new StoneParticle());
+                    this.set(new StoneParticle(x, y));
                 } else if (
                     y +
                         Math.floor(
@@ -49,47 +49,61 @@ export class Environment {
                         ) <
                     85
                 ) {
-                    this.set(x, y, new SoilParticle());
+                    this.set(new SoilParticle(x, y));
                 } else if (y < 100) {
-                    this.set(x, y, new WaterParticle());
+                    this.set(new WaterParticle(x, y));
                 } else if (y > 140 && Math.random() < 0.01) {
-                    this.set(x, y, new AirParticle());
+                    this.set(new AirParticle(x, y));
                 } else {
-                    this.set(x, y, new AirParticle());
+                    this.set(new AirParticle(x, y));
                 }
             }
         }
+
     }
 
-    // Using 1 arguement: Returns particle at grid index (i)
-    // Using 2 arguements: Returns particle at grid position (x, y) as (i, j)
-    // P.S. Feel free to change if you think this is a horrendous implementation!!!
-    get(i, j) {
-        if (arguments.length == 1) {
-            return this.__particle_grid[i];
+    update() {
+        for (let particle of [...this.__particle_grid]) {
+            particle.update(this);
         }
-        return this.__particle_grid[j * this.width + i];
+        this.__tick++;
     }
 
-    set(x, y, value) {
-        this.__particle_grid[y * this.width + x] = value;
-        this.__render_queue.push(x, y);
+    refresh() {
+        for (let particle of this.__particle_grid) {
+            particle.refresh();
+        }
+    }
+
+    get(x, y) {
+        return this.__particle_grid[y * this.width + x];
+    }
+
+    set(particle) {
+        // Set old particle to destroyed so it doesn't get updated.
+        const old_particle = this.get(particle.x, particle.y);
+        if (old_particle) old_particle.destroyed = true;
+        
+        this.__particle_grid[particle.y * this.width + particle.x] = particle;
+        this.__render_queue.push(particle.x, particle.y);
     }
 
     swap(x1, y1, x2, y2) {
-        const temp = this.__particle_grid[y1 * this.width + x1];
-        this.__particle_grid[y1 * this.width + x1] =
-            this.__particle_grid[y2 * this.width + x2];
-        this.__particle_grid[y2 * this.width + x2] = temp;
+        const particle1 = this.get(x1, y1)
+        particle1.x = x2
+        particle1.y = y2
+        const particle2 = this.get(x2, y2)
+        particle2.x = x1
+        particle2.y = y1
+
+        this.__particle_grid[y1 * this.width + x1] = particle2
+        this.__particle_grid[y2 * this.width + x2] = particle1
+
         this.__render_queue.push(x1, y1);
         this.__render_queue.push(x2, y2);
     }
 
     get tick() {
         return this.__tick;
-    }
-
-    increment_tick() {
-        this.__tick++;
     }
 }

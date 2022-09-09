@@ -1,18 +1,26 @@
 import { BaseParticle } from "./base";
 
 export class LiquidParticle extends BaseParticle {
-    constructor() {
-        super();
+    constructor(x, y) {
+        super(x, y);
         this.flow_direction = 1;
     }
 
-    compute_flow(x, y, environment) {
-        
+    compute_flow(environment) {
         // Can move horizontally and vertically this tick, and isn't above a ligher particle.
-        if (this.moveable_x && this.moveable_y && environment.get(x,y-1).weight >= this.weight) {
-
-            let particle_forward = environment.get(x + this.flow_direction, y);
-            let particle_backward = environment.get(x - this.flow_direction, y);
+        if (
+            this.moveable_x &&
+            this.moveable_y &&
+            environment.get(this.x, this.y - 1).weight >= this.weight
+        ) {
+            let particle_forward = environment.get(
+                this.x + this.flow_direction,
+                this.y
+            );
+            let particle_backward = environment.get(
+                this.x - this.flow_direction,
+                this.y
+            );
 
             let can_move_forward =
                 particle_forward.moveable_x &&
@@ -40,11 +48,13 @@ export class LiquidParticle extends BaseParticle {
                 // Move ahead
                 this.moveable_x = false;
                 //environment.get(x+this.flow_direction,y).moveable_x = false;
-                environment.swap(x, y, x + this.flow_direction, y);
-                return [x + this.flow_direction, y];
+                environment.swap(
+                    this.x,
+                    this.y,
+                    this.x + this.flow_direction,
+                    this.y
+                );
             }
         }
-
-        return [x, y];
     }
 }

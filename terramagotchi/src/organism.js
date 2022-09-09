@@ -88,6 +88,6 @@ export class Bug {
 
         this.alive = false
         if (replace_with_compost)
-        environment.set(this.x, this.y, new CompostParticle()) // to be updated with CompostParticle
+        environment.set(new CompostParticle(this.x, this.y)) // to be updated with CompostParticle
     }
 }

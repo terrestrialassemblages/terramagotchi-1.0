@@ -2,8 +2,8 @@ import { GasParticle } from "./gas";
 import { WaterParticle } from "./water";
 
 export class SteamParticle extends GasParticle {
-    constructor() {
-        super();
+    constructor(x, y) {
+        super(x, y);
         this.base_color = "#DDDDDD";
         this.moveable = true;
         this.weight = 0;
@@ -14,7 +14,7 @@ export class SteamParticle extends GasParticle {
         this.initial_x_movement_probability = this.x_movement_probability;
     }
 
-    update(x, y, environment) {
+    update(environment) {
         if (this.last_tick == environment.tick) return;
 
         // Count down condensation time.
@@ -26,12 +26,12 @@ export class SteamParticle extends GasParticle {
 
         // Turn steam into water.
         if (this.condensation_time <= 0) {
-            environment.set(x, y, new WaterParticle());
+            environment.set(new WaterParticle(this.x, this.y));
             return;
         }
 
         // Rise steam as a gas particle.
-        this.compute_rise(x, y, environment);
+        this.compute_rise(environment);
 
         this.last_tick = environment.tick;
     }

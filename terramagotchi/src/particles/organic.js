@@ -1,8 +1,8 @@
 import { BaseParticle } from "./base";
 
 export class OrganicParticle extends BaseParticle {
-    constructor() {
-        super();
+    constructor(x, y) {
+        super(x, y);
         this.__nutrient_level = 0;
         this.__water_level = 70;
         this.do_update_color = true;
