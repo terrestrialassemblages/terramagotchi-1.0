@@ -15,8 +15,6 @@ export class SteamParticle extends GasParticle {
     }
 
     update(environment) {
-        if (this.last_tick == environment.tick) return;
-
         // Count down condensation time.
         this.condensation_time--;
         // Slow down horizontal movement when closer to condensation.
@@ -32,7 +30,5 @@ export class SteamParticle extends GasParticle {
 
         // Rise steam as a gas particle.
         this.compute_rise(environment);
-
-        this.last_tick = environment.tick;
     }
 }

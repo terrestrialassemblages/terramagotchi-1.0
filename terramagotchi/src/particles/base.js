@@ -11,7 +11,6 @@ export class BaseParticle {
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
 
         this.weight = 0;
-        this.last_tick = 0;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
