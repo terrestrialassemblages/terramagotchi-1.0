@@ -61,7 +61,9 @@ export class Environment {
 
     update() {
         for (let particle of [...this.__particle_grid]) {
-            particle.update(this);
+            if (!particle.destroyed) {
+                particle.update(this);
+            }
         }
         this.__tick++;
     }
