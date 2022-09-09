@@ -6,14 +6,14 @@ export class OrganicParticle extends BaseParticle {
 
         this.__nutrient_level = 0;
         this.nutrient_capacity = 100;
-        this.__nutrient_render_step = 5;
-
-        this.__water_level = 50;
+        this.__nutrient_render_step = 7;
+3
+        this.__water_level = 0;
         this.water_capacity = 100;
-        this.__water_render_step = 5;
+        this.__water_render_step = 7;
 
         this.__water_transferred = false;
-        this.__water_transferred = false;
+        this.__nutrient_transferred = false;
     }
 
     set water_level(level) {
@@ -45,19 +45,32 @@ export class OrganicParticle extends BaseParticle {
     refresh() {
         super.refresh();
         this.__water_transferred = false;
+        this.__nutrient_transferred = false;
     }
 
     absorb_water(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
         let [offset_x, offset_y] = potential_neighbours[Math.floor(Math.random()*potential_neighbours.length)];
         let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
-        
+
+        // Check if random neighbour is a valid type (feel free to rewrite implementation)
+        let neighbour_valid_type = false;
+        for (const valid_type of valid_neighbour_types) {
+            if (random_neighbour instanceof valid_type) {
+                neighbour_valid_type = true;
+                break;
+            }
+        }
+
+        // Method 1
         //let transfer_amount = 5;
+        // Method 2
         let transfer_amount = Math.floor(Math.random() * 10);
+        // Method 3
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + Math.random()));
 
-        // Attempt to absorb water from random organic neighbour
-        if (random_neighbour instanceof OrganicParticle && 
+        // Attempt to absorb water from random neighbour
+        if (neighbour_valid_type && 
             this.water_level + transfer_amount <= this.water_capacity && 
             random_neighbour.water_level >= transfer_amount && 
             this.water_level + transfer_amount < random_neighbour.water_level &&
@@ -74,16 +87,55 @@ export class OrganicParticle extends BaseParticle {
         }
     }
 
+    absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
+        // Choose random neighbour
+        let [offset_x, offset_y] = potential_neighbours[Math.floor(Math.random()*potential_neighbours.length)];
+        let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
+
+        // Check if random neighbour is a valid type (feel free to rewrite implementation)
+        let neighbour_valid_type = false;
+        for (const valid_type of valid_neighbour_types) {
+            if (random_neighbour instanceof valid_type) {
+                neighbour_valid_type = true;
+                break;
+            }
+        }
+
+        // Method 1
+        //let transfer_amount = 5;
+        // Method 2
+        //let transfer_amount = Math.floor(Math.random() * 2);
+        // Method 3
+        let transfer_amount = Math.floor((random_neighbour.nutrient_level - this.nutrient_level) / (1.5 + Math.random()));
+
+        // Attempt to absorb nutrient from random neighbour
+        if (neighbour_valid_type && 
+            this.nutrient_level + transfer_amount <= this.nutrient_capacity && 
+            random_neighbour.nutrient_level >= transfer_amount && 
+            this.nutrient_level + transfer_amount < random_neighbour.nutrient_level &&
+            !random_neighbour.__nutrient_transferred &&
+            !this.__nutrient_transferred) {
+
+            // Transfer nutrient
+            this.nutrient_level += Math.max(transfer_amount, 1);
+            random_neighbour.nutrient_level -= Math.max(transfer_amount, 1);
+
+            // Ensure nutrient is not transfered again this tick
+            this.__nutrient_transferred = true;
+            random_neighbour.__nutrient_transferred = true;
+        }
+    }
+
     get_color(s) {
-                s.brightness(this.base_color) * this.brightness_offset - this.__water_level / 6
-            )
-            this.do_update_color = false;
-        } else {
-        //s.push()
-        //s.colorMode(s.RGB)
-        //this.color = s.color(this.water_level / (100/255))
-        //s.pop()
-        //return this.color
+
+        //if (this.nutrient_capacity != 0) {
+        //    s.push()
+        //    s.colorMode(s.RGB)
+        //    //this.color = s.color((this.water_level - 30) * 10)
+        //    this.color = s.color((this.nutrient_level - 30) * 10)
+        //    s.pop()
+        //    return this.color
+        //}
 
         // Initialise colour if needed
         if (this.color === "#000000") {
@@ -92,7 +144,7 @@ export class OrganicParticle extends BaseParticle {
 
         this.color = s.color(
             s.hue(this.color),
-            s.saturation(this.base_color) * this.saturation_offset + this.nutrient_level / 4,
+            s.saturation(this.base_color) * this.saturation_offset,
             s.brightness(this.base_color) * this.brightness_offset - this.water_level / 4
         )
         return this.color;
