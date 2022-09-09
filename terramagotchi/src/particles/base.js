@@ -22,6 +22,7 @@ export class BaseParticle {
         this.moveable_x = false;
         this.moveable_y = false;
 
+        this.destroyed = false;
         this.rerender = true;
         this.do_update_color = false;
     }
