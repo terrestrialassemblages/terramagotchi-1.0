@@ -1,6 +1,8 @@
 import p5 from "p5";
 
 import { Application } from "./application";
+
+// Testing code: Imports for testing particles by manually adding
 import {
     SoilParticle,
     StoneParticle,
@@ -38,7 +40,7 @@ export const sketch = (s) => {
 
         // Iterates through all particles in the application's environment that
         // have changed and need to be rendered.
-        for (let particle of application.environment.__particle_grid) {
+        for (let particle of application.environment.particle_grid) {
             if (particle.rerender) {
                 particle.rerender = false;
                 s.fill(particle.get_color(s));

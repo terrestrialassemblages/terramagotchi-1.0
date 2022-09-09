@@ -10,7 +10,7 @@ export class BaseParticle {
         this.saturation_offset = 0;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
 
-        this.weight = 0;
+        this.weight = 3;
         this.last_tick = 0;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
@@ -47,8 +47,6 @@ export class BaseParticle {
          */
         const particle_below = environment.get(this.x, this.y - 1);
         if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
-            this.moveable_y = false;
-            particle_below.moveable_y = false;
             environment.swap(this.x, this.y, this.x, this.y - 1);
         }
     }
@@ -85,8 +83,6 @@ export class BaseParticle {
                         Math.floor(Math.random() * free_neighbours.length)
                     ];
                 if (offset != 0) {
-                    this.moveable_x = false;
-                    environment.get(this.x + offset, this.y).moveable_x = false;
                     environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
             }
