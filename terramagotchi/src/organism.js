@@ -75,8 +75,7 @@ export class Bug {
             this.food_level -= 1
         }
         
-        // This function should be passed the queue instead of accessing it through environment.
-        environment.__render_queue.push(this.x, this.y)
+        environment.get(this.x, this.y).rerender = true;
         this.x += dx
         this.y += dy
     }

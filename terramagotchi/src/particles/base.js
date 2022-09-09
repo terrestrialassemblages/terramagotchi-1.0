@@ -17,12 +17,13 @@ export class BaseParticle {
             Includes gravity and erosion 
             Protects plants/leaves from have heavy particles fall through */
         this.moveable = false;
-        this.do_update_color = false;
-
         /** moveable_x and moveable_y describe whether, in a given frame, the particle
          * has the ability to move across the x or y axis */
         this.moveable_x = false;
         this.moveable_y = false;
+
+        this.rerender = true;
+        this.do_update_color = false;
     }
 
     // Reset all tick-sensitive variables

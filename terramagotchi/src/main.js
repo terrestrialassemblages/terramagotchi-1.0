@@ -38,16 +38,17 @@ export const sketch = (s) => {
 
         // Iterates through all particles in the application's environment that
         // have changed and need to be rendered.
-        while (application.render_queue.size() > 0) {
-            const [x, y] = application.render_queue.pop();
-            const particle = application.environment.get(x, y);
-            s.fill(particle.get_color(s));
-            s.rect(
-                cell_size * x,
-                cell_size * (application.height - 1 - y),
-                cell_size,
-                cell_size
-            );
+        for (let particle of application.environment.__particle_grid) {
+            if (particle.rerender) {
+                particle.rerender = false;
+                s.fill(particle.get_color(s));
+                s.rect(
+                    cell_size * particle.x,
+                    cell_size * (application.height - 1 - particle.y),
+                    cell_size,
+                    cell_size
+                );
+            }
         }
     };
 

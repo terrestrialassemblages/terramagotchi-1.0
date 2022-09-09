@@ -8,7 +8,7 @@ import {
 } from "./particles";
 
 export class Environment {
-    constructor(width, height, render_queue) {
+    constructor(width, height) {
         this.__tick = 0;
         this.__particle_grid = new Array(width * height); // We store the particle grid as a 1D array for optimization.
 
@@ -18,9 +18,6 @@ export class Environment {
         this.light_level = 100; // max 100
         this.oxygen_level = 100; // max 100
         this.temperature_level = 25; // max 100
-
-        // Stored for internal uses only, if anything needs to access render_queue, they should do so via Application.
-        this.__render_queue = render_queue;
     }
 
     generate() {
@@ -85,22 +82,23 @@ export class Environment {
         if (old_particle) old_particle.destroyed = true;
         
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
-        this.__render_queue.push(particle.x, particle.y);
+        particle.rerender = true;
     }
 
     swap(x1, y1, x2, y2) {
         const particle1 = this.get(x1, y1)
+        const particle2 = this.get(x2, y2)
+
         particle1.x = x2
         particle1.y = y2
-        const particle2 = this.get(x2, y2)
         particle2.x = x1
         particle2.y = y1
 
         this.__particle_grid[y1 * this.width + x1] = particle2
         this.__particle_grid[y2 * this.width + x2] = particle1
 
-        this.__render_queue.push(x1, y1);
-        this.__render_queue.push(x2, y2);
+        particle1.rerender = true;
+        particle2.rerender = true;
     }
 
     get tick() {
