@@ -9,6 +9,7 @@ import {
 
 import {
     PlantParticle,
+    SeedParticle,
     DeadPlantParticle,
     LeafParticle,
     DeadLeafParticle,
@@ -66,7 +67,7 @@ export class Environment {
                 }
             }
         }
-
+        this.set(new SeedParticle(180, 180))
         this.refresh()
     }
 

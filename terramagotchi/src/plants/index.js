@@ -1,4 +1,5 @@
 export * from "./plant";
+export * from "./seed";
 export * from "./deadplant";
 export * from "./leaf";
 export * from "./deadleaf";

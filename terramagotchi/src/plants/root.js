@@ -1,8 +1,8 @@
-import { OrganicParticle } from "../particles/organic";
+import { PlantConstructor } from "./plant_constructor";
 
-export class RootParticle extends OrganicParticle {
-    constructor(x, y) {
-        super(x, y);
+export class RootParticle extends PlantConstructor {
+    constructor(x, y, plant_dna=null) {
+        super(x, y, plant_dna);
         this.base_color = "#92745B";
         this.moveable = false;
         this.weight = 3;
@@ -11,8 +11,8 @@ export class RootParticle extends OrganicParticle {
     }
 
     update(environment) {
-        this.plantstuff()
+        this.rootstuff(environment)
     }
 
-    plantstuff() {}
+    rootstuff(environment) {}
 }
