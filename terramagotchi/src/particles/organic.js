@@ -18,11 +18,13 @@ export class OrganicParticle extends BaseParticle {
         this.__rerender_threshold = 7
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
+
+        this.__transfer_difference_minimum = 3
     }
 
     set water_level(level) {
 
-        if (Math.floor(this.__water_level / this.__rerender_threshold) != Math.floor(level / this.__rerender_threshold)) {
+        if ((this.__water_level / this.__rerender_threshold >> 0) != (level / this.__rerender_threshold >> 0)) {
             this.rerender = true;
         }
 
@@ -31,7 +33,7 @@ export class OrganicParticle extends BaseParticle {
 
     set nutrient_level(level) {
 
-        if (Math.floor(this.__nutrient_level / this.__rerender_threshold) != Math.floor(level / this.__rerender_threshold)) {
+        if ((this.__nutrient_level / this.__rerender_threshold >> 0) != (level / this.__rerender_threshold >> 0)) {
             this.rerender = true;
         }
 
@@ -54,7 +56,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_water(environment, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.floor(Math.random() * 4)];
+        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.random() * 4 >> 0];
         let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
 
         // Check if random neighbour is a valid type (feel free to rewrite implementation)
@@ -93,7 +95,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_nutrients(environment, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.floor(Math.random() * 4)];
+        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.random() * 4 >> 0];
         let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
 
         // Check if random neighbour is a valid type (feel free to rewrite implementation)

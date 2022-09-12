@@ -21,7 +21,7 @@ export class WaterParticle extends LiquidParticle {
 
     disperse_water(environment) {
         // Choose a random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.floor(Math.random()*4)];
+        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.random()*4 >> 0];
         let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
 
         // Attempt to disperse water to random organic neighbour
