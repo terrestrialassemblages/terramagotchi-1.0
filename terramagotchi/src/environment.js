@@ -7,6 +7,10 @@ import {
     AirParticle,
 } from "./particles";
 
+import {
+    PlantParticle,
+} from "./plants";
+
 export class Environment {
     constructor(width, height) {
         this.__tick = 0;
