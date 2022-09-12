@@ -57,6 +57,7 @@ export class Environment {
             }
         }
 
+        this.refresh()
     }
 
     update() {
@@ -80,8 +81,8 @@ export class Environment {
 
     set(particle) {
         // Set old particle to destroyed so it doesn't get updated.
-        const old_particle = this.get(particle.x, particle.y);
-        if (old_particle) old_particle.destroyed = true;
+        const destroyed_particle = this.get(particle.x, particle.y);
+        if (destroyed_particle) destroyed_particle.destroyed = true;
         
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
         particle.rerender = true;
@@ -99,11 +100,25 @@ export class Environment {
         this.__particle_grid[y1 * this.width + x1] = particle2
         this.__particle_grid[y2 * this.width + x2] = particle1
 
+        if (x1 != x2) {
+            particle1.moveable_x = false
+            particle2.moveable_x = false
+        }
+
+        if (y1 != y2) {
+            particle1.moveable_y = false
+            particle2.moveable_y = false
+        }
+
         particle1.rerender = true;
         particle2.rerender = true;
     }
 
     get tick() {
         return this.__tick;
+    }
+
+    get particle_grid() {
+        return this.__particle_grid
     }
 }

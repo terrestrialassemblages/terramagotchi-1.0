@@ -19,8 +19,6 @@ export class GasParticle extends BaseParticle {
             ) {
                 // Move upwards
                 environment.swap(this.x, this.y, this.x, this.y + 1);
-                this.moveable_y = false;
-
             }
 
             // Randomly decide to move horizontally
@@ -34,7 +32,6 @@ export class GasParticle extends BaseParticle {
                     random_x_neighbour.weight <= this.weight
                 ) {
                     environment.swap(this.x, this.y, this.x + random_direction, this.y);
-                    this.moveable_x = false;
                 }
             }
         }
