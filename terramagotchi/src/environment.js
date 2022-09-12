@@ -9,6 +9,12 @@ import {
 
 import {
     PlantParticle,
+    DeadPlantParticle,
+    LeafParticle,
+    DeadLeafParticle,
+    FlowerParticle,
+    RootParticle,
+    PlantNodeParticle,
 } from "./plants";
 
 export class Environment {
