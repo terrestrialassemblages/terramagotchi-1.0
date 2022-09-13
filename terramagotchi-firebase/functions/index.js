@@ -18,3 +18,17 @@ exports.addWater = functions
             });
         });
     });
+
+exports.addDirt = functions
+.region("asia-east1")
+.https.onCall((data, context) => {
+    const docRef = admin
+        .firestore()
+        .collection("main")
+        .doc("1QIFdCtX47EaoDuE3XRx");
+    docRef.get().then((doc) => {
+        docRef.update({
+            dirt: doc.data().dirt + 1,
+        });
+    });
+});

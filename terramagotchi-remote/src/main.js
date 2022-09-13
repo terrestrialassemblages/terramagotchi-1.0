@@ -18,8 +18,14 @@ const functions = getFunctions(app, "asia-east1");
 
 // Function for incrementing the firestore water value by 1
 const addWater = httpsCallable(functions, "addWater");
-
 const water_button = document.getElementById("water-button");
 water_button.addEventListener('click', () => {
     addWater();
+});
+
+// Function for incrementing the firestore dirt value by 1
+const addDirt = httpsCallable(functions, "addDirt");
+const dirt_button = document.getElementById("dirt-button");
+dirt_button.addEventListener('click', () => {
+    addDirt();
 });
