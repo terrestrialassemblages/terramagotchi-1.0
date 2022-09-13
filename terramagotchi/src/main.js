@@ -13,7 +13,7 @@ const app = initializeApp({
     messagingSenderId: "983152859921",
     appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
 });
-import { doc, onSnapshot, getFirestore } from "firebase/firestore";
+import { doc, collection, onSnapshot, getFirestore } from "firebase/firestore";
 const db = getFirestore(app);
 
 // Testing code: Imports for testing particles by manually adding

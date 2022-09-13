@@ -4,12 +4,12 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
-  authDomain: "terramagotchi.firebaseapp.com",
-  projectId: "terramagotchi",
-  storageBucket: "terramagotchi.appspot.com",
-  messagingSenderId: "983152859921",
-  appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
+    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
+    authDomain: "terramagotchi.firebaseapp.com",
+    projectId: "terramagotchi",
+    storageBucket: "terramagotchi.appspot.com",
+    messagingSenderId: "983152859921",
+    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
 };
 
 // Initialize Firebase
@@ -24,8 +24,8 @@ water_button.addEventListener('click', () => {
 });
 
 // Function for incrementing the firestore dirt value by 1
-const addDirt = httpsCallable(functions, "addDirt");
-const dirt_button = document.getElementById("dirt-button");
+const addSoil = httpsCallable(functions, "addSoil");
+const dirt_button = document.getElementById("soil-button");
 dirt_button.addEventListener('click', () => {
-    addDirt();
+    addSoil();
 });

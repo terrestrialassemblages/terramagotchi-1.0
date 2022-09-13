@@ -4,31 +4,26 @@ admin.initializeApp(functions.config().firebase);
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
+const colRef = admin.firestore().collection("main");
 
 exports.addWater = functions
     .region("asia-east1")
     .https.onCall((data, context) => {
-        const docRef = admin
-            .firestore()
-            .collection("main")
-            .doc("1QIFdCtX47EaoDuE3XRx");
+        const docRef = colRef.doc("water");
         docRef.get().then((doc) => {
             docRef.update({
-                water: doc.data().water + 1,
+                value: doc.data().value + 1,
             });
         });
     });
 
-exports.addDirt = functions
+exports.addSoil = functions
 .region("asia-east1")
 .https.onCall((data, context) => {
-    const docRef = admin
-        .firestore()
-        .collection("main")
-        .doc("1QIFdCtX47EaoDuE3XRx");
+    const docRef = colRef.doc("soil");
     docRef.get().then((doc) => {
         docRef.update({
-            dirt: doc.data().dirt + 1,
+            value: doc.data().value + 1,
         });
     });
 });
