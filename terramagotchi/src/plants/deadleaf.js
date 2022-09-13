@@ -6,8 +6,6 @@ export class DeadLeafParticle extends PlantConstructor {
         this.base_color = "#92745B";
         this.moveable = true;
         this.weight = 2;
-        this.water_capacity = 200;
-        this.nutrient_capacity = 200;
     }
 
     update(environment) {

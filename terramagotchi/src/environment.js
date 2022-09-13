@@ -16,6 +16,7 @@ import {
     FlowerParticle,
     RootParticle,
     PlantNodeParticle,
+    StemParticle,
 } from "./plants";
 
 export class Environment {
