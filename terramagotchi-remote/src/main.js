@@ -29,3 +29,10 @@ const dirt_button = document.getElementById("soil-button");
 dirt_button.addEventListener('click', () => {
     addSoil();
 });
+
+// Function for toggling time of day
+const toggleTime = httpsCallable(functions, "toggleTime");
+const time_button = document.getElementById("time-button");
+time_button.addEventListener('click', () => {
+    toggleTime();
+});

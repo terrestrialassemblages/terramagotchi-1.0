@@ -27,3 +27,14 @@ exports.addSoil = functions
         });
     });
 });
+
+exports.toggleTime = functions
+.region("asia-east1")
+.https.onCall((data, context) => {
+    const docRef = colRef.doc("time");
+    docRef.get().then((doc) => {
+        docRef.update({
+            value: doc.data().value === "day" ? "night" : "day",
+        });
+    });
+});
