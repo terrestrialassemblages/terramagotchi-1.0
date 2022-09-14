@@ -1,4 +1,3 @@
-import { SoilParticle } from "../particles";
 import { PlantConstructor } from "./plant_constructor";
 import { SoilParticle } from "../particles/soil";
 
