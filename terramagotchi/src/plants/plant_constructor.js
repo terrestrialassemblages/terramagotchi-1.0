@@ -15,9 +15,9 @@ export class PlantConstructor extends OrganicParticle {
 
         this.color_variance = 0
 
-        this.water_capacity = 20
-        this.nutrient_capacity = 20
-        this.activation_level = 10
+        this.water_capacity = 50
+        this.nutrient_capacity = 50
+        this.activation_level = 0
 
         this.__living_plant_particle_types = [PlantParticle, LeafParticle, FlowerParticle, RootParticle, PlantNodeParticle, StemParticle]
         
@@ -31,12 +31,12 @@ export class PlantConstructor extends OrganicParticle {
                 __current_dy: 0,
                 __current_length: 0,
 
-                branching_factor:    [[0], [-1, 1]],
-                branch_spread:       [0, 15],
+                branching_factor:    [[0], [-1, 0, 1], [-1, 0, 1], [-1, 0, 1]],
+                branch_spread:       [0, 10, 20, 30],
 
                 stem_width:  1,
-                stem_length: 11,
-                stem_shortening_factor: 4,
+                stem_length: 20,
+                stem_shortening_factor: 0,
                 leaf_width:  3,
                 leaf_height: 2,
 

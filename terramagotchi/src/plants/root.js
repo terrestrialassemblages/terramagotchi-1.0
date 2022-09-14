@@ -1,4 +1,6 @@
 import { PlantConstructor } from "./plant_constructor";
+import { SoilParticle } from "../particles/soil";
+
 
 export class RootParticle extends PlantConstructor {
     constructor(x, y, plant_dna=null) {
@@ -9,7 +11,8 @@ export class RootParticle extends PlantConstructor {
     }
 
     update(environment) {
-        this.rootstuff(environment)
+        this.absorb_nutrients(environment, [SoilParticle])
+        this.absorb_water(environment, [SoilParticle])
     }
 
     rootstuff(environment) {}

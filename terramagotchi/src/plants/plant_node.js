@@ -1,5 +1,6 @@
 import { AirParticle } from "../particles";
 import { PlantConstructor } from "./plant_constructor";
+import { StemParticle } from "./stem";
 
 export class PlantNodeParticle extends PlantConstructor {
     constructor(x, y, plant_dna=null) {
@@ -19,7 +20,7 @@ export class PlantNodeParticle extends PlantConstructor {
         let normalised_directions =  [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
         for (let i = 0; i < this.desired_actions.length; i++) {
             let norm_i = (((normalised_current_angle + this.desired_actions[i]) % 8) + 8) % 8
-            this.desired_actions = normalised_directions[norm_i]
+            this.desired_actions[i] = [...normalised_directions[norm_i], this.desired_actions[i]]
         }
 
         this.base_color = "#FF0000";
@@ -28,7 +29,6 @@ export class PlantNodeParticle extends PlantConstructor {
     }
 
     update(environment) {
-
         this.absorb_nutrients(environment, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__living_plant_particle_types)
         
@@ -42,7 +42,7 @@ export class PlantNodeParticle extends PlantConstructor {
 
         if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level) {
             this.desired_actions.sort(function() { return 0.5 - Math.random();})
-            let [action_x, action_y] = this.desired_actions[0]
+            let [action_x, action_y, theta] = this.desired_actions[0]
 
             if (environment.get(this.x + action_x, this.y + action_y) instanceof AirParticle) {
                 
@@ -54,10 +54,19 @@ export class PlantNodeParticle extends PlantConstructor {
 
     }
 
-    perform_first_action(environment, direction) {
-        // Normalise the dna current_angle to each of 8 directions from pixel
-        // Start -1 to left and +1 to right, 0 at normalised target pixel
-        // Yeet
+    perform_first_action(environment) {
+        let [action_x, action_y, theta] = this.desired_actions.shift()
+        
+        let new_dna = {...this.dna}
+        new_dna.__current_length = 1
+        new_dna.__current_dx = Math.abs(action_x)
+        new_dna.__current_dy = Math.abs(action_y)
+        new_dna.__current_angle = this.dna.__current_angle + theta*new_dna.branch_spread.shift()
+        new_dna.__current_angle = ((new_dna.__current_angle % 360) + 360) % 360
+        new_dna.stem_length -= new_dna.stem_shortening_factor
+
+        let new_stem_particle = new StemParticle(this.x + action_x, this.y + action_y, new_dna)
+        environment.set(new_stem_particle)
     }
 
     bloom_flower(environment) {
