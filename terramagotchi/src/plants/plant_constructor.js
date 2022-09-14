@@ -39,6 +39,8 @@ export class PlantConstructor extends OrganicParticle {
                 stem_shortening_factor: 0,
                 leaf_width:  3,
                 leaf_height: 2,
+                root_length_max: 30,
+                root_node_spawn_distance: 10,
 
                 stem_color:      "#00FF00",
                 flower_color:    "#FF0000",

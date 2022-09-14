@@ -34,6 +34,7 @@ export class SeedParticle extends PlantConstructor {
     try_germinate(environment) {
         if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
             let new_root = new RootParticle(this.x, this.y - 1, this.dna)
+            new_root.is_node = true;
             let new_plant_node = new PlantNodeParticle(this.x, this.y, this.dna)
             environment.set(new_root)
             environment.set(new_plant_node)
