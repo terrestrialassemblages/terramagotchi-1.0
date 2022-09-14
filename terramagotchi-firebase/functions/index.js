@@ -7,6 +7,10 @@ admin.initializeApp(functions.config().firebase);
 const colRef = admin.firestore().collection("main");
 
 exports.addWater = functions
+    .runWith({
+        // Keep 1 instance warm
+        minInstances: 1,
+    })
     .region("asia-east1")
     .https.onCall((data, context) => {
         const docRef = colRef.doc("water");
