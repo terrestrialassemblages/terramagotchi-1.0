@@ -65,7 +65,7 @@ export const sketch = (s) => {
     };
 
     s.keyPressed = () => {
-        if (s.key in Object.keys(keys)) current_material = s.key;
+        if (s.key in keys) current_material = s.key;
     };
 
     s.mouseDragged = () => {
