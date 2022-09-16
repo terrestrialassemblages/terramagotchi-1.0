@@ -27,6 +27,13 @@ export class StemParticle extends PlantConstructor {
         }
     }
 
+    check_growth_conditions(environment) {
+        if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level) {
+            let [offset_x, offset_y] = this.growth_direction
+            return (environment.get(this.x+offset_x, this.y+offset_y) instanceof AirParticle)
+        }
+    }
+
     grow(environment) {
         let [offset_x, offset_y] = this.growth_direction
         let new_plant_dna = {...this.dna}
@@ -42,35 +49,36 @@ export class StemParticle extends PlantConstructor {
         environment.set(new_particle)
     }
 
-    check_growth_conditions(environment) {
-        if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level) {
-            let [offset_x, offset_y] = this.growth_direction
-            return (environment.get(this.x+offset_x, this.y+offset_y) instanceof AirParticle)
-        }
-    }
-
     calculate_growth_direction() {
         let theta = this.dna.__current_angle
+        console.log(theta)
+        if (isNaN(theta))
+            console.log(this.dna)
         theta = ((theta % 360) + 360) % 360
         let valid_directions = []
         if (270 <= theta && theta < 360) {
-            valid_directions = [[-1, 0], [0, 1]]
-        } else if (0 <= theta && theta < 90) {
-            valid_directions = [[0, 1], [1, 0]]
-        } else if (90 <= theta && theta < 180) {
             valid_directions = [[1, 0], [0, -1]]
+        } else if (0 <= theta && theta < 90) {
+            valid_directions = [[1, 0], [0, 1]]
+        } else if (90 <= theta && theta < 180) {
+            valid_directions = [[-1, 0], [0, 1]]
         } else {
-            valid_directions = [[0, -1], [-1, 0]]
+            valid_directions = [[-1, 0], [0, -1]]
         }
         let [direction_1, direction_2] = valid_directions
+        // console.log(valid_directions)
+        // console.log(this.dna.__current_angle)
         let direction_1_error = this.calculate_direction_error(direction_1)
         let direction_2_error = this.calculate_direction_error(direction_2)
+        // console.log(direction_1_error, direction_2_error)
         return (direction_1_error < direction_2_error) ? direction_1 : direction_2
     }
 
     calculate_direction_error(direction) {
         let [offset_x, offset_y] = direction
-        let new_theta = Math.atan2(-this.dna.__current_dx-offset_x, this.dna.__current_dy+offset_y) * 180 / Math.PI
+        let new_theta = Math.atan2(this.dna.__current_dy + offset_y, this.dna.__current_dx + offset_x) * 180 / Math.PI
+        new_theta = ((new_theta % 360) + 360) % 360
+        // console.log(new_theta)
         return Math.abs(new_theta - this.dna.__current_angle)
     }
 }

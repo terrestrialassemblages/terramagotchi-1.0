@@ -14,12 +14,19 @@ export class PlantNodeParticle extends PlantConstructor {
             this.is_flower = true
         } else {
             this.desired_actions = this.dna.branching_factor.shift()
+            this.current_spread = this.dna.branch_spread.shift()
         }
 
-        let normalised_current_angle = ((((this.dna.__current_angle + 22.5) / 45 >> 0) % 8) + 8) % 8
-        let normalised_directions =  [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
+        this.dna.__current_angle = ((this.dna.__current_angle % 360) + 360) % 360
+        let normalised_current_angle = (((((this.dna.__current_angle + 22.5) % 360) / 45 >> 0) % 8) + 8) % 8
+        let normalised_directions =  [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]
+
         for (let i = 0; i < this.desired_actions.length; i++) {
             let norm_i = (((normalised_current_angle + this.desired_actions[i]) % 8) + 8) % 8
+            console.log(normalised_current_angle)
+            console.log(this.desired_actions)
+            console.log(norm_i)
+            console.log(normalised_directions)
             this.desired_actions[i] = [...normalised_directions[norm_i], this.desired_actions[i]]
         }
 
@@ -58,10 +65,13 @@ export class PlantNodeParticle extends PlantConstructor {
         let [action_x, action_y, theta] = this.desired_actions.shift()
         
         let new_dna = {...this.dna}
+        new_dna.branch_spread = [...this.dna.branch_spread]
+        new_dna.branching_factor = JSON.parse(JSON.stringify(this.dna.branching_factor))
+
         new_dna.__current_length = 1
         new_dna.__current_dx = Math.abs(action_x)
         new_dna.__current_dy = Math.abs(action_y)
-        new_dna.__current_angle = this.dna.__current_angle + theta*new_dna.branch_spread.shift()
+        new_dna.__current_angle = new_dna.__current_angle + theta*this.current_spread
         new_dna.__current_angle = ((new_dna.__current_angle % 360) + 360) % 360
         new_dna.stem_length -= new_dna.stem_shortening_factor
 

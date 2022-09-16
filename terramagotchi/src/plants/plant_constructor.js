@@ -26,17 +26,17 @@ export class PlantConstructor extends OrganicParticle {
         if (plant_dna == null) {
             let new_plant_dna = {
 
-                __current_angle: 0,
+                __current_angle: 90,
                 __current_dx: 0,
                 __current_dy: 0,
                 __current_length: 0,
 
-                branching_factor:    [[0], [-1, 0, 1], [-1, 0, 1], [-1, 0, 1]],
-                branch_spread:       [0, 10, 20, 30],
+                branching_factor:    [[1], [1, -2], [-1, 0, 1], [-1, 0, 1], [-1, 0, 1]],
+                branch_spread:       [5, 15, 45, 45, 45],
 
                 stem_width:  1,
-                stem_length: 20,
-                stem_shortening_factor: 0,
+                stem_length: 27,
+                stem_shortening_factor: 2,
                 leaf_width:  3,
                 leaf_height: 2,
                 root_length_max: 30,
