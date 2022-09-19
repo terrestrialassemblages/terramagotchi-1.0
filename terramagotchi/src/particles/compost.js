@@ -7,13 +7,13 @@ export class CompostParticle extends OrganicParticle {
         this.base_color = "#00FF00";
         this.moveable = true;
         this.weight = 2;
-        
-        this.water_level = 0
-        this.water_capacity = 0
-        this.nutrient_level = 0
-        this.nutrient_capacity = 0
 
-        this.nutrient_content = 100
+        this.water_level = 0;
+        this.water_capacity = 0;
+        this.nutrient_level = 0;
+        this.nutrient_capacity = 0;
+
+        this.nutrient_content = 1000;
     }
 
     update(environment) {
@@ -25,19 +25,29 @@ export class CompostParticle extends OrganicParticle {
 
     disperse_nutrients(environment) {
 
-        // Someone plz replace with proper Poisson Distribution stuff
-        if (Math.random() > 0.001) {
-            return;
-        }
-
         // Choose a random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.floor(Math.random()*4)];
-        let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
+        let [offset_x, offset_y] = [
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+        ][Math.floor(Math.random() * 4)];
+        let random_neighbour = environment.get(
+            this.x + offset_x,
+            this.y + offset_y
+        );
 
         // Attempt to disperse nutrient to random organic neighbour
-        if (random_neighbour instanceof OrganicParticle && random_neighbour.nutrient_level < random_neighbour.nutrient_capacity) {
+        if (
+            random_neighbour instanceof OrganicParticle &&
+            random_neighbour.nutrient_level < random_neighbour.nutrient_capacity
+        ) {
             // Transfer as much nutrient as possible to neighbour
-            let transfer_amount = Math.min(this.nutrient_content, random_neighbour.nutrient_capacity - random_neighbour.nutrient_level)
+            let transfer_amount = Math.min(
+                this.nutrient_content,
+                random_neighbour.nutrient_capacity -
+                    random_neighbour.nutrient_level
+            );
             random_neighbour.nutrient_level += transfer_amount;
             this.nutrient_content -= transfer_amount;
 
