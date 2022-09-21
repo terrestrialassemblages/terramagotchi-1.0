@@ -1,8 +1,8 @@
 import { AirParticle } from "../particles";
-import { PlantConstructor } from "./plant_constructor";
+import { Plant } from "./plant";
 import { StemParticle } from "./stem";
 
-export class PlantNodeParticle extends PlantConstructor {
+export class PlantNodeParticle extends Plant {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
@@ -23,10 +23,6 @@ export class PlantNodeParticle extends PlantConstructor {
 
         for (let i = 0; i < this.desired_actions.length; i++) {
             let norm_i = (((normalised_current_angle + this.desired_actions[i]) % 8) + 8) % 8
-            console.log(normalised_current_angle)
-            console.log(this.desired_actions)
-            console.log(norm_i)
-            console.log(normalised_directions)
             this.desired_actions[i] = [...normalised_directions[norm_i], this.desired_actions[i]]
         }
 

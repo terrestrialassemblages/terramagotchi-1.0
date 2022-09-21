@@ -1,8 +1,8 @@
 import { PlantNodeParticle } from ".";
 import { AirParticle } from "../particles";
-import { PlantConstructor } from "./plant_constructor";
+import { Plant } from "./plant";
 
-export class StemParticle extends PlantConstructor {
+export class StemParticle extends Plant {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#FFFFFF";
@@ -51,9 +51,6 @@ export class StemParticle extends PlantConstructor {
 
     calculate_growth_direction() {
         let theta = this.dna.__current_angle
-        console.log(theta)
-        if (isNaN(theta))
-            console.log(this.dna)
         theta = ((theta % 360) + 360) % 360
         let valid_directions = []
         if (270 <= theta && theta < 360) {
@@ -66,11 +63,8 @@ export class StemParticle extends PlantConstructor {
             valid_directions = [[-1, 0], [0, -1]]
         }
         let [direction_1, direction_2] = valid_directions
-        // console.log(valid_directions)
-        // console.log(this.dna.__current_angle)
         let direction_1_error = this.calculate_direction_error(direction_1)
         let direction_2_error = this.calculate_direction_error(direction_2)
-        // console.log(direction_1_error, direction_2_error)
         return (direction_1_error < direction_2_error) ? direction_1 : direction_2
     }
 
@@ -78,7 +72,6 @@ export class StemParticle extends PlantConstructor {
         let [offset_x, offset_y] = direction
         let new_theta = Math.atan2(this.dna.__current_dy + offset_y, this.dna.__current_dx + offset_x) * 180 / Math.PI
         new_theta = ((new_theta % 360) + 360) % 360
-        // console.log(new_theta)
         return Math.abs(new_theta - this.dna.__current_angle)
     }
 }

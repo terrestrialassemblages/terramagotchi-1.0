@@ -1,8 +1,8 @@
-import { PlantConstructor } from "./plant_constructor";
+import { Plant } from "./plant";
 import { SoilParticle } from "../particles/soil";
 
 
-export class RootParticle extends PlantConstructor {
+export class RootParticle extends Plant {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#6B3226"; // source: https://www.color-name.com/root-brown.color

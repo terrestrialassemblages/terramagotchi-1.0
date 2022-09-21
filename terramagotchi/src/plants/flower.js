@@ -1,6 +1,6 @@
-import { PlantConstructor } from "./plant_constructor";
+import { Plant } from "./plant";
 
-export class FlowerParticle extends PlantConstructor {
+export class FlowerParticle extends Plant {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#92745B";

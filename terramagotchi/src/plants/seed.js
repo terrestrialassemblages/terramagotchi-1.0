@@ -1,9 +1,9 @@
 import { SoilParticle, CompostParticle, AirParticle } from "../particles";
-import { PlantConstructor } from "./plant_constructor";
+import { Plant } from "./plant";
 import { RootParticle } from "./root";
 import { PlantNodeParticle } from "./plant_node";
 
-export class SeedParticle extends PlantConstructor {
+export class SeedParticle extends Plant {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#FF80FF";
