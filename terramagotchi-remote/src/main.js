@@ -14,25 +14,19 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const functions = getFunctions(app, "asia-east1");
+const functions = getFunctions(app, "australia-southeast1");
+const userInteract = httpsCallable(functions, "userInteract");
 
-// Function for incrementing the firestore water value by 1
-const addWater = httpsCallable(functions, "addWater");
 const water_button = document.getElementById("water-button");
 water_button.addEventListener('click', () => {
-    addWater();
+    userInteract({ document: "water" }).then((result) => {
+        console.log(result.data.message)
+    });
 });
 
-// Function for incrementing the firestore dirt value by 1
-const addSoil = httpsCallable(functions, "addSoil");
-const dirt_button = document.getElementById("soil-button");
-dirt_button.addEventListener('click', () => {
-    addSoil();
-});
-
-// Function for toggling time of day
-const toggleTime = httpsCallable(functions, "toggleTime");
-const time_button = document.getElementById("time-button");
-time_button.addEventListener('click', () => {
-    toggleTime();
+const soil_button = document.getElementById("soil-button");
+soil_button.addEventListener('click', () => {
+    userInteract({ document: "soil" }).then((result) => {
+        console.log(result.data.message)
+    });
 });

@@ -2,43 +2,24 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
 const colRef = admin.firestore().collection("main");
 
-exports.addWater = functions
+// Singular cloud function for user interaction, parses document as the parameter
+exports.userInteract = functions
     .runWith({
-        // Keep 1 instance warm
-        minInstances: 1,
+        // Reduces cold starts by keeping 5 instances of the function "warm"
+        minInstances: 5,
     })
-    .region("asia-east1")
+    .region("australia-southeast1")
     .https.onCall((data, context) => {
-        const docRef = colRef.doc("water");
+        const docRef = colRef.doc(data.document);
         docRef.get().then((doc) => {
             docRef.update({
                 value: doc.data().value + 1,
             });
+        }).catch((error) => {
+            return error.message
         });
-    });
 
-exports.addSoil = functions
-.region("asia-east1")
-.https.onCall((data, context) => {
-    const docRef = colRef.doc("soil");
-    docRef.get().then((doc) => {
-        docRef.update({
-            value: doc.data().value + 1,
-        });
+        return { message: "Successfully updated " + data.document }
     });
-});
-
-exports.toggleTime = functions
-.region("asia-east1")
-.https.onCall((data, context) => {
-    const docRef = colRef.doc("time");
-    docRef.get().then((doc) => {
-        docRef.update({
-            value: doc.data().value === "day" ? "night" : "day",
-        });
-    });
-});
