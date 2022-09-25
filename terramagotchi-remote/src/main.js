@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import { getAuth, signInAnonymously, RecaptchaVerifier, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
@@ -13,21 +14,59 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const functions = getFunctions(app, "australia-southeast1");
+const auth = getAuth(app);
 const userInteract = httpsCallable(functions, "userInteract");
+
+// Recaptcha verification setup
+window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+    "size": "invisible",
+    "callback": (response) => {
+        signInAnonymously(auth).then(() => {
+            console.log("Authenticated Successfully!");
+        }).catch((err) => {
+            console.error(err);
+        })
+    }
+}, auth);
+
+recaptchaVerifier.render().then((widgetId) => {
+    window.recaptchaWidgetId = widgetId;
+});
+
+//If a user exists, uid is set to the current user
+let uid = null
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        uid = user.uid;
+    } else {
+        uid = null
+    }
+});
 
 // Gets the instance_id from /?id={uuid}
 const instance = (new URL(document.location)).searchParams.get("id");
 
 const water_button = document.getElementById("water-button");
 water_button.addEventListener('click', () => {
-    userInteract({ document: "water", instance_id: instance }).then((result) => {
-        console.log(result.data.message)
-    });
+    if (uid !== null) {
+        userInteract({ document: "water", instance_id: instance }).then((result) => {
+            console.log(result.data.message)
+        });
+    } else {
+        recaptchaVerifier.verify();
+    }
 });
 
 const soil_button = document.getElementById("soil-button");
 soil_button.addEventListener('click', () => {
-    userInteract({ document: "soil", instance_id: instance }).then((result) => {
-        console.log(result.data.message)
-    });
+    if (uid !== null) {
+        userInteract({ document: "soil", instance_id: instance }).then((result) => {
+            console.log(result.data.message)
+        });
+    } else {
+        recaptchaVerifier.verify();
+    }
 });
+
+
+
