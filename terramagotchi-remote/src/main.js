@@ -51,7 +51,11 @@ water_button.addEventListener('click', () => {
     if (uid !== null) {
         userInteract({ document: "water", instance_id: instance }).then((result) => {
             console.log(result.data.message)
+            water_button.setAttribute("disabled", true);
         });
+        setTimeout(() => {
+            water_button.removeAttribute("disabled");
+        }, 2000);
     } else {
         recaptchaVerifier.verify();
     }
@@ -62,7 +66,11 @@ soil_button.addEventListener('click', () => {
     if (uid !== null) {
         userInteract({ document: "soil", instance_id: instance }).then((result) => {
             console.log(result.data.message)
+            soil_button.setAttribute("disabled", true);
         });
+        setTimeout(() => {
+            soil_button.removeAttribute("disabled");
+        }, 2000);
     } else {
         recaptchaVerifier.verify();
     }
