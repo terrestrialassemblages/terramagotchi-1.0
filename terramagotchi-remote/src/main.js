@@ -46,35 +46,25 @@ onAuthStateChanged(auth, (user) => {
 // Gets the instance_id from /?id={uuid}
 const instance = (new URL(document.location)).searchParams.get("id");
 
-const water_button = document.getElementById("water-button");
-water_button.addEventListener('click', () => {
+const particle_button_click = (type, button) => {
     if (uid !== null) {
-        userInteract({ document: "water", instance_id: instance }).then((result) => {
+        userInteract({ document: type, instance_id: instance }).then((result) => {
             console.log(result.data.message)
-            water_button.setAttribute("disabled", true);
+            button.setAttribute("disabled", true);
         });
         setTimeout(() => {
-            water_button.removeAttribute("disabled");
+            button.removeAttribute("disabled");
         }, 2000);
     } else {
         recaptchaVerifier.verify();
     }
-});
+}
+
+const water_button = document.getElementById("water-button");
+water_button.addEventListener('click', () => particle_button_click("water", water_button));
 
 const soil_button = document.getElementById("soil-button");
-soil_button.addEventListener('click', () => {
-    if (uid !== null) {
-        userInteract({ document: "soil", instance_id: instance }).then((result) => {
-            console.log(result.data.message)
-            soil_button.setAttribute("disabled", true);
-        });
-        setTimeout(() => {
-            soil_button.removeAttribute("disabled");
-        }, 2000);
-    } else {
-        recaptchaVerifier.verify();
-    }
-});
+soil_button.addEventListener('click', () => particle_button_click("soil", soil_button));
 
 
 
