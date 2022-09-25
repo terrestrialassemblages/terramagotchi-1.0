@@ -1,20 +1,6 @@
-import p5 from "p5"
-
-import { Application } from "./application"
-import { FastRandom } from "./fast-random";
-
-// Initialise firebase
-import { initializeApp } from "firebase/app";
-const app = initializeApp({
-    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
-    authDomain: "terramagotchi.firebaseapp.com",
-    projectId: "terramagotchi",
-    storageBucket: "terramagotchi.appspot.com",
-    messagingSenderId: "983152859921",
-    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
-});
-import { doc, collection, onSnapshot, getFirestore } from "firebase/firestore";
-const db = getFirestore(app);
+import p5 from "p5";
+import { Application } from "./application";
+import { onSnapshot } from "firebase/firestore";
 
 // Testing code: Imports for testing particles by manually adding
 import {
