@@ -10,14 +10,17 @@ exports.userInteract = functions
     })
     .region("australia-southeast1")
     .https.onCall((data, context) => {
-        const colRef = admin.firestore().collection(data.instance_id);
-        const docRef = colRef.doc(data.document);
+        try {
+            const colRef = admin.firestore().collection(data.instance_id);
+            const docRef = colRef.doc(data.document);
 
-        docRef.get().then((doc) => {
-            docRef.update({
-                value: doc.data().value + 1,
+            docRef.get().then((doc) => {
+                docRef.update({
+                    value: doc.data().value + 1,
+                });
             });
-        });
-        
+        } catch(err) { 
+            return { message: "Invalid Instance ID: " + data.instance_id }
+        }
         return { message: "Sent " + data.document + " to instance " + data.instance_id}
     });
