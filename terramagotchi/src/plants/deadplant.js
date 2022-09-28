@@ -1,4 +1,5 @@
 import { Plant } from "./plant";
+import { CompostParticle } from "../particles";
 
 export class DeadPlantParticle extends Plant {
     constructor(x, y, plant_dna=null) {
