@@ -52,6 +52,20 @@ export const sketch = (s) => {
                 );
             }
         }
+
+        // Render pass_through particles ontop (TESTING)
+        for (let particle of application.environment.__pass_through_layer) {
+            if (particle.rerender) {
+                particle.rerender = false;
+                s.fill(particle.get_color(s));
+                s.rect(
+                    cell_size * particle.x,
+                    cell_size * (application.height - 1 - particle.y),
+                    cell_size,
+                    cell_size
+                );
+            }
+        }
     };
 
     // Debug code for drawing

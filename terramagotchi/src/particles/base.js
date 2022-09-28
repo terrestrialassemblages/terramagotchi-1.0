@@ -12,6 +12,9 @@ export class BaseParticle {
 
         this.weight = 3;
 
+        this.passing_through = false;
+        this.pass_through_types = [];
+
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
             Protects plants/leaves from have heavy particles fall through */
@@ -43,6 +46,9 @@ export class BaseParticle {
          * Sets moveable flag to false for both after move so particles cannot move
          * twice in one update
          */
+
+        this.attempt_pass_through(this.x, this.y - 1, environment);
+
         const particle_below = environment.get(this.x, this.y - 1);
         if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
             environment.swap(this.x, this.y, this.x, this.y - 1);
@@ -54,7 +60,7 @@ export class BaseParticle {
          * Prevents single-cell hills from forming through artificial erosion
          */
         if (
-            this.moveable_y &&
+            this.moveable_y && !this.passing_through &&
             environment.get(this.x - 1, this.y + 1).weight < this.weight &&
             environment.get(this.x, this.y + 1).weight < this.weight &&
             environment.get(this.x + 1, this.y + 1).weight < this.weight
@@ -83,6 +89,32 @@ export class BaseParticle {
                 if (offset != 0) {
                     environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
+            }
+        }
+    }
+
+    attempt_pass_through(check_x, check_y, environment) {
+
+        if (this.pass_through_types.length == 0) {
+            return;
+        }
+
+        // Particle can move in specified direction
+        if (this.moveable && (this.moveable_x || this.x == check_x) && (this.moveable_y || this.y == check_y)) {
+            // Check if this particle can pass through check_particle
+            let check_particle = environment.get(check_x, check_y);
+            let can_pass_through = false;
+            for (const valid_type of this.pass_through_types) {
+                if (check_particle instanceof valid_type) {
+                    can_pass_through = true;
+                    break;
+                }
+            }
+
+            // Particle can pass through particle or particle is already passing and is now in air (FIX - CANNOT USE AIR)
+            if (can_pass_through || (this.passing_through && check_particle.weight == 0)) {
+
+                environment.pass_through(this, check_x, check_y);
             }
         }
     }

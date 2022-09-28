@@ -1,4 +1,5 @@
 import { InorganicParticle } from "./inorganic";
+import { SoilParticle } from "./soil";
 
 export class StoneParticle extends InorganicParticle {
     constructor(x, y) {
@@ -7,6 +8,8 @@ export class StoneParticle extends InorganicParticle {
         this.color_variance = 0.07;
         this.moveable = true;
         this.weight = 2;
+
+        this.pass_through_types = [SoilParticle];
     }
 
     update(environment) {

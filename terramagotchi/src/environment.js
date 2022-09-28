@@ -11,6 +11,7 @@ export class Environment {
     constructor(width, height) {
         this.__tick = 0;
         this.__particle_grid = new Array(width * height); // We store the particle grid as a 1D array for optimization.
+        this.__pass_through_layer = [];
 
         this.width = width;
         this.height = height;
@@ -61,6 +62,13 @@ export class Environment {
     }
 
     update() {
+        for (let i = this.__pass_through_layer.length - 1; i > -1; i--) {
+            let particle = this.__pass_through_layer[i];
+            if (!particle.destroyed) {
+                particle.update(this);
+            }
+        }
+        
         for (let particle of [...this.__particle_grid]) {
             if (!particle.destroyed) {
                 particle.update(this);
@@ -71,6 +79,9 @@ export class Environment {
 
     refresh() {
         for (let particle of this.__particle_grid) {
+            particle.refresh();
+        }
+        for (let particle of this.__pass_through_layer) {
             particle.refresh();
         }
     }
@@ -112,6 +123,42 @@ export class Environment {
 
         particle1.rerender = true;
         particle2.rerender = true;
+    }
+
+    pass_through(passing_particle,x2,y2) {
+        let x1 = passing_particle.x;
+        let y1 = passing_particle.y;
+
+        // Passing_particle is not on pass_through_layer
+        if (!passing_particle.passing_through) {
+            // Set passing_through
+            passing_particle.passing_through = true;
+            // Move passing_particle to pass_through_layer
+            this.__pass_through_layer.push(passing_particle)
+            // Remove from regular particle layer
+            this.set(new AirParticle(x1,y1));
+            // Unset destroyed
+            passing_particle.destroyed = false;
+        }
+
+        // Move to new position
+        passing_particle.x = x2;
+        passing_particle.y = y2;
+
+        if (x1 != x2) passing_particle.moveable_x = false;
+        if (y1 != y2) passing_particle.moveable_y = false;
+
+        this.get(x1,y1).rerender = true;
+        passing_particle.rerender = true;
+
+        // Passing_particle is in air
+        if (this.get(x2, y2) instanceof AirParticle) {
+            // Move to regular particle layer
+            this.set(passing_particle);
+            this.passing_through = false;
+            // Remove from __pass_through_layer
+            this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+        }
     }
 
     get tick() {
