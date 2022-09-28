@@ -1,24 +1,29 @@
 import { PlantNodeParticle } from ".";
 import { AirParticle } from "../particles";
 import { PlantParticleFamily } from "./plant";
+import { Environment } from "../environment";
+import { DNANode } from "./plant_dna_node";
 
 export class StemParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
+        /**
+         * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
+         * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
+         * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
+         */
         super(x, y, plant_dna);
-        this.activation_level = this.dna.node_activation_level
 
+        this.activation_level = this.dna.node_activation_level
         this.base_color = this.dna.stem_color
 
         this.is_active = true
-
         this.__current_length = 0
+        this.__current_angle = 0
         this.__dx = 0
         this.__dy = 0
-        this.__current_angle = 0
-        this.__current
-
+        
         // __growth_direction of type Array(2) = [offset_x, offset_y]
-        this.__growth_direction = this.generate_growth_direction()
+        this.__growth_direction = [0, 1]
     }
 
     update(environment) {
@@ -48,8 +53,16 @@ export class StemParticle extends PlantParticleFamily {
          * Handles update function if the current particles dna node_type is "stem"
          * @param {Environment} environment     The current game environment
          */
-        let growth_direction = calculate_growth_direction
-        let curve = this.create_curve()
+        this.__growth_direction = this.calculate_growth_direction()
+
+        if (this.__current_length == this.dna.stem_length) {
+            this.grow_next_DNA_child(environment)
+            return;
+        }
+        
+        this.__curve = this.__curve || this.create_curve()
+
+
     }
 
     flower_update(environment) {
@@ -57,7 +70,40 @@ export class StemParticle extends PlantParticleFamily {
     }
 
     create_curve() {
+        let start_x = this.x - this.__dx
+        let start_y = this.y - this.__dy
+        let end_x = (start_x + this.stem_length * Math.cos(this.__current_angle)) | 0
+        let end_y = (start_y + this.stem_length * Math.sin(this.__current_angle)) | 0
+    }
 
+    grow_next_DNA_child(environment) {
+        /**
+         * Handles sprouting children branches based on the current plant DNA nodes children
+         * @param {Environment} environment     The current game environment
+         */
+
+        // keeping track of children to grow
+        this.__unvisited_children = this.__unvisited_children || [...this.dna.children]
+        if (this.__unvisited_children.length == 0) {
+            this.is_active = false
+            return;
+        }
+        let next_child_dna = this.__unvisited_children.shift()
+        let child_growth_direction = this.convert_angle_to_offset(this.__current_angle + next_child_dna.stem_angle)
+        
+        // Maybe add weights
+        let [offset_x, offset_y] = child_growth_direction
+        let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+        if (target_particle instanceof AirParticle || target_particle instanceof PlantParticleFamily && !target_particle.is_active) {
+            let new_stem_particle = new StemParticle(this.x + offset_x, this.y + offset_y, next_child_dna)
+            new_stem_particle.__current_length = 1
+            new_stem_particle.__current_angle = this.__current_angle + next_child_dna.stem_angle
+            new_stem_particle.__dx = offset_x
+            new_stem_particle.__dy = offset_y
+            environment.set(new_stem_particle)
+        } else {
+            this.__unvisited_children.push(next_child_dna)
+        }
     }
 
     grow(environment) {
@@ -75,8 +121,8 @@ export class StemParticle extends PlantParticleFamily {
         environment.set(new_particle)
     }
 
-    calculate_growth_direction() {
-        let theta = this.dna.__current_angle
+    calculate_growth_direction(angle_offset=0) {
+        let theta = this.dna.__current_angle + angle_offset
         theta = ((theta % 360) + 360) % 360
         let valid_directions = []
         if (270 <= theta && theta < 360) {

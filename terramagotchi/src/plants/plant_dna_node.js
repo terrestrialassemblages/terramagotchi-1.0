@@ -16,8 +16,17 @@ export class DNANode {
 
         this.stem_angle = 90;
         this.stem_length = 10;
-        this.stem_curve = "linear";
         this.stem_color = "green";
+        
+        this.stem_curve = "linear";
+
+        // Constant for spherical curve
+        this.curve_radius = Math.max(10, (this.stem_length / 2) | 0 + 1);
+        this.curve_direction = -1
+
+        // Constants for bezier curve
+        this.curve_offset_A = [2, 2];
+        this.curve_offset_B = [-2, 4];
 
         this.stem_thickness = 420; // built like a bakery cos I be makin dough
 
