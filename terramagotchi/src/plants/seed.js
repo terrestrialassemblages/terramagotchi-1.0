@@ -1,9 +1,9 @@
 import { SoilParticle, CompostParticle, AirParticle } from "../particles";
-import { Plant } from "./plant";
-import { RootParticle } from "./root";
-import { PlantNodeParticle } from "./plant_node";
+import { PlantParticleFamily } from "./plant";
+// import { RootParticle } from "./root";
+import { StemParticle } from "./stem";
 
-export class SeedParticle extends Plant {
+export class SeedParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#FF80FF";
@@ -16,28 +16,28 @@ export class SeedParticle extends Plant {
 
     update(environment) {
         this.compute_gravity(environment)
-
-        if (!this.germinated) {
-            this.absorb_nutrients(environment, [SoilParticle, CompostParticle])
-            this.absorb_water(environment, [SoilParticle, CompostParticle])
-            this.check_germination_conditions(environment)
-        } else {
-            this.try_germinate(environment)
-        }
+        this.absorb_nutrients(environment, [SoilParticle, CompostParticle])
+        this.absorb_water(environment, [SoilParticle, CompostParticle])
+        
+        if (!this.germinated)
+            if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level)
+                this.germinated = true
+        
+        // Separated out so plant gros
+        if (this.germinated)
+            this.grow(environment)
     }
 
-    check_germination_conditions(environment) {
-        if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level)
-            this.germinated = true
-    }
-
-    try_germinate(environment) {
+    grow(environment) {
         if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
-            let new_root = new RootParticle(this.x, this.y - 1, this.dna)
-            new_root.is_node = true;
-            let new_plant_node = new PlantNodeParticle(this.x, this.y, this.dna)
-            environment.set(new_root)
-            environment.set(new_plant_node)
+            let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
+            new_stem_cell.__current_length = 1
+            new_stem_cell.__current_angle = 0
+            
+            environment.set(new_stem_cell)
+
+            // environment.set(new_root)
+            // let new_root = new RootParticle(this.x, this.y - 1, this.dna)
         }
     }
 }

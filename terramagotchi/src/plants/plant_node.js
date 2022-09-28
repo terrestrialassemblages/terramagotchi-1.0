@@ -1,8 +1,8 @@
 import { AirParticle } from "../particles";
-import { Plant } from "./plant";
+import { PlantParticleFamily } from "./plant";
 import { StemParticle } from "./stem";
 
-export class PlantNodeParticle extends Plant {
+export class PlantNodeParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
@@ -46,8 +46,8 @@ export class PlantNodeParticle extends Plant {
         if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level) {
             this.desired_actions.sort(function() { return 0.5 - Math.random();})
             let [action_x, action_y, theta] = this.desired_actions[0]
-
-            if (environment.get(this.x + action_x, this.y + action_y) instanceof AirParticle) {
+            let target_particle = environment.get(this.x + action_x, this.y + action_y)
+            if (target_particle instanceof AirParticle || (target_particle instanceof PlantParticleFamily && target_particle.is_active == false)) {
                 
                 this.perform_first_action(environment)
 
