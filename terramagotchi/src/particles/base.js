@@ -129,7 +129,7 @@ export class BaseParticle {
                 while (!neighbour.empty) {
                     for (let offset of neighbour_offsets) {
                         let new_neighbour = environment.get(neighbour.x + offset[0], neighbour.y + offset[1]);
-                        if (new_neighbour != undefined && !checking_neighbours.includes(new_neighbour)) {
+                        if (new_neighbour.weight != 4 && !checking_neighbours.includes(new_neighbour)) {
                             checking_neighbours.push(new_neighbour);
                         }
                     }
