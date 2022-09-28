@@ -6,11 +6,17 @@ export class DeadPlantParticle extends Plant {
         this.base_color = "#92745B";
         this.moveable = true;
         this.weight = 2;
+        this.lifetime = 500;
     }
 
     update(environment) {
-        this.plantstuff()
+        this.lifetime--;
+        if (this.lifetime <= 0) {
+            let new_compost_particle = new CompostParticle(this.x, this.y)
+            new_compost_particle.nutrient_level = this.nutrient_level;
+            new_compost_particle.water_level = this.water_level;
+            environment.set(new_compost_particle)
+        }
     }
 
-    plantstuff() {}
 }

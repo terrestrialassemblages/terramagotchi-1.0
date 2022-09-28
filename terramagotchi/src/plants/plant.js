@@ -38,8 +38,8 @@ export class Plant extends OrganicParticle {
                 stem_shortening_factor: 2,
                 leaf_width:  3,
                 leaf_height: 2,
-                root_length_max: 30,
-                root_node_spawn_distance: 10,
+                root_length_max: 40,
+                root_node_spawn_distance: 6,
 
                 stem_color:      "#00FF00",
                 flower_color:    "#FF0000",
