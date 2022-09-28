@@ -125,9 +125,9 @@ export class Environment {
         particle2.rerender = true;
     }
 
-    pass_through(passing_particle,x2,y2) {
-        let x1 = passing_particle.x;
-        let y1 = passing_particle.y;
+    pass_through(passing_particle,new_x,new_y) {
+        let old_x = passing_particle.x;
+        let old_y = passing_particle.y;
 
         // Passing_particle is not on pass_through_layer
         if (!passing_particle.passing_through) {
@@ -136,28 +136,29 @@ export class Environment {
             // Move passing_particle to pass_through_layer
             this.__pass_through_layer.push(passing_particle)
             // Remove from regular particle layer
-            this.set(new AirParticle(x1,y1));
+            this.set(new AirParticle(old_x,old_y));
             // Unset destroyed
             passing_particle.destroyed = false;
         }
 
         // Move to new position
-        passing_particle.x = x2;
-        passing_particle.y = y2;
+        passing_particle.x = new_x;
+        passing_particle.y = new_y;
 
-        if (x1 != x2) passing_particle.moveable_x = false;
-        if (y1 != y2) passing_particle.moveable_y = false;
+        if (old_x != new_x) passing_particle.moveable_x = false;
+        if (old_y != new_y) passing_particle.moveable_y = false;
 
-        this.get(x1,y1).rerender = true;
+        this.get(old_x,old_y).rerender = true;
         passing_particle.rerender = true;
 
-        // Passing_particle is in air
-        if (this.get(x2, y2) instanceof AirParticle) {
+        // Passing_particle is in empty particle
+        if (this.get(new_x, new_y).empty) {
             // Move to regular particle layer
             this.set(passing_particle);
-            this.passing_through = false;
+            passing_particle.passing_through = false;
             // Remove from __pass_through_layer
             this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+            console.log(this.__pass_through_layer)
         }
     }
 

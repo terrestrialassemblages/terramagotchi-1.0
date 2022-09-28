@@ -12,7 +12,11 @@ export class BaseParticle {
 
         this.weight = 3;
 
+        // Particle is AirParticle (Can't use instanceOf AirParticle on BaseParticle class)
+        this.empty = false;
+        // Particle is currently passing through other particles in the grid
         this.passing_through = false;
+        // The list of particle class types that a particle can pass through
         this.pass_through_types = [];
 
         /* Moveable: Describes whether a particle can be displaced due to any process
@@ -111,10 +115,27 @@ export class BaseParticle {
                 }
             }
 
-            // Particle can pass through particle or particle is already passing and is now in air (FIX - CANNOT USE AIR)
-            if (can_pass_through || (this.passing_through && check_particle.weight == 0)) {
+            // Particle can pass through check_particle or particle is already passing and is now in empty particle
+            if (can_pass_through || (this.passing_through && check_particle.empty)) {
 
                 environment.pass_through(this, check_x, check_y);
+            }
+            // Passing particle needs relocation to closest empty particle
+            else if (this.passing_through) {
+                let neighbour = environment.get(this.x, this.y);
+                let checking_neighbours = [neighbour];
+                let neighbour_offsets = [[0,1],[1,0],[0,-1],[-1,0]];
+                let i = 0;
+                while (!neighbour.empty) {
+                    for (let offset of neighbour_offsets) {
+                        let new_neighbour = environment.get(neighbour.x + offset[0], neighbour.y + offset[1]);
+                        if (new_neighbour != undefined && !checking_neighbours.includes(new_neighbour)) {
+                            checking_neighbours.push(new_neighbour);
+                        }
+                    }
+                    neighbour = checking_neighbours[++i];
+                }
+                environment.pass_through(this, neighbour.x, neighbour.y);
             }
         }
     }
