@@ -4,7 +4,6 @@ import {
     LeafParticle,
     FlowerParticle,
     RootParticle,
-    PlantNodeParticle,
     StemParticle,
 } from ".";
 
@@ -24,7 +23,7 @@ export class PlantParticleFamily extends OrganicParticle {
         this.activation_level = 0
 
         // List of plant-type particles to decide which particle type
-        this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, PlantNodeParticle, StemParticle]
+        this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle]
         
         this.dna = plant_dna
         if (this.dna == null) {

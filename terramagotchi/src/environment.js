@@ -15,7 +15,6 @@ import {
     DeadLeafParticle,
     FlowerParticle,
     RootParticle,
-    PlantNodeParticle,
     StemParticle,
 } from "./plants";
 

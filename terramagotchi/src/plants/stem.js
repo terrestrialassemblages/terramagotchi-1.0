@@ -18,6 +18,8 @@ export class StemParticle extends PlantParticleFamily {
         this.base_color = this.dna.stem_color
 
         this.is_active = true
+        this.growth_angle = this.dna.get_absolute_angle()
+        
         this.__current_length = 1
         this.__current_angle = this.dna.get_absolute_angle()
         this.__dx = 0
@@ -31,8 +33,10 @@ export class StemParticle extends PlantParticleFamily {
         this.absorb_nutrients(environment, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__living_plant_particle_types)
 
-        if (!this.is_active)
+        if (!this.is_active) {
+            this.bark_update(environment)
             return;
+        }
 
         switch (this.dna.node_type) {
             case "stem":
@@ -74,6 +78,29 @@ export class StemParticle extends PlantParticleFamily {
     }
 
     flower_update(environment) {
+        
+    }
+
+    bark_update(environment) {
+        /**
+         * Handles growing of bark
+         * @param {Environment} environment     The current game environment
+         */
+        let current_stem_thickness = this.dna.stem_end_thickness +
+                                        ((this.__current_length / this.dna.stem_length) * (this.dna.stem_thickness - this.dna.stem_end_thickness) | 0)
+        
+        if (current_stem_thickness <= 1)
+            return;
+
+        current_stem_thickness -= 1
+        
+        let left_bark_thickess = (current_stem_thickness / 2) | 0
+        let right_bark_thickess = ((current_stem_thickness / 2) + 0.5) | 0
+        if (this.dna.bark_start_direction == -1)
+            [left_bark_thickess, right_bark_thickess] = [right_bark_thickess, left_bark_thickess]
+        
+        let left_bark_angle = this.growth_angle + 90
+        let right_bark_angle = this.growth_angle - 90
         
     }
 
@@ -130,14 +157,12 @@ export class StemParticle extends PlantParticleFamily {
         let theta = this.__current_angle + angle_offset
         let [vector_x, vector_y] = this.create_vector_functions()
 
-        let growth_angle
         if (this.__dx == 0 && this.__dy == 0)
-            growth_angle = theta
+            this.growth_angle = theta
         else
-            growth_angle = Math.atan2(vector_y(this.__dy), vector_x(this.__dx))*180/Math.PI
-        // console.log(growth_angle)
-        // console.log(vector_y(this.__dy), vector_x(this.__dx))
-        return this.convert_angle_to_offset(growth_angle)
+            this.growth_angle = Math.atan2(vector_y(this.__dy), vector_x(this.__dx))*180/Math.PI
+
+        return this.convert_angle_to_offset(this.growth_angle)
     }
 
     create_vector_functions() {
@@ -151,8 +176,7 @@ export class StemParticle extends PlantParticleFamily {
 
                 let delta_x = this.x - centre_x
                 let delta_y = this.y - centre_y
-                // console.log(delta_x, delta_y)
-                console.log(this.end_x, this.end_y, this.x, this.y, delta_x, delta_y, centre_x, centre_y)
+                
                 return [((x) => -this.dna.curve_direction*delta_y), ((y) => this.dna.curve_direction*delta_x)]
             case "linear":
             default:

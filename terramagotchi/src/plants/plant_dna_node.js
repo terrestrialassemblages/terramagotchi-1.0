@@ -15,6 +15,10 @@ export class DNANode {
         
         this.stem_curve = "linear";
 
+        this.stem_thickness = 3;
+        this.stem_end_thickness =  this.stem_thickness;
+        this.bark_start_direction = -1
+
         // Constant for spherical curve
         this.curve_radius = Math.max(10, (this.stem_length / 2) | 0 + 1);
         this.curve_direction = -1
@@ -29,9 +33,6 @@ export class DNANode {
         // Constants for bezier curve
         this.curve_offset_A = [2, 2];
         this.curve_offset_B = [-2, 4];
-
-        this.stem_thickness = 420; // built like a bakery cos I be makin dough
-        this.stem_end_thickness =  this.stem_thickness;
 
         this.children = new Array();
         this.children_weight_growth_direction = true
