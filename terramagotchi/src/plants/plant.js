@@ -28,7 +28,7 @@ export class PlantParticleFamily extends OrganicParticle {
         
         this.dna = plant_dna
         if (this.dna == null) {
-            let example_tree_encoding = ["stem", 0, 90, 20, "linear", "#FF0000", 1, [["stem", 0, 60, 10, "linear", "#FFFFFF", 1, []], ["stem", 0, -45, 20, "linear", "#FF00FF", 1, []]]]
+            let example_tree_encoding = ["stem", 0, 90, 40, "spherical", "#FF0000", 1, [["stem", 0, 60, 10, "linear", "#FFFFFF", 1, []], ["stem", 0, -45, 20, "linear", "#FF00FF", 1, []]]]
             this.dna = new DNANode(null, example_tree_encoding)
         }
 

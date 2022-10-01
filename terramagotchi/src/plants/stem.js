@@ -1,8 +1,9 @@
-import { PlantNodeParticle } from ".";
 import { AirParticle } from "../particles";
 import { PlantParticleFamily } from "./plant";
 import { Environment } from "../environment";
 import { DNANode } from "./plant_dna_node";
+
+const RANDOM_WEIGHT_GROWWTH_DIRECTION = true
 
 export class StemParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
@@ -17,8 +18,8 @@ export class StemParticle extends PlantParticleFamily {
         this.base_color = this.dna.stem_color
 
         this.is_active = true
-        this.__current_length = 0
-        this.__current_angle = 0
+        this.__current_length = 1
+        this.__current_angle = this.dna.get_absolute_angle()
         this.__dx = 0
         this.__dy = 0
         
@@ -53,14 +54,21 @@ export class StemParticle extends PlantParticleFamily {
          * Handles update function if the current particles dna node_type is "stem"
          * @param {Environment} environment     The current game environment
          */
+
+        this.start_x = this.x - this.__dx
+        this.start_y = this.y - this.__dy
+        this.end_x = (this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)) | 0
+        this.end_y = (this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)) | 0
+
         this.__growth_direction = this.calculate_growth_direction()
 
         if (this.__current_length == this.dna.stem_length) {
             this.grow_next_DNA_child(environment)
             return;
         }
+
+        this.grow(environment)
         
-        this.__curve = this.__curve || this.create_curve()
 
 
     }
@@ -69,11 +77,21 @@ export class StemParticle extends PlantParticleFamily {
         
     }
 
-    create_curve() {
-        let start_x = this.x - this.__dx
-        let start_y = this.y - this.__dy
-        let end_x = (start_x + this.stem_length * Math.cos(this.__current_angle)) | 0
-        let end_y = (start_y + this.stem_length * Math.sin(this.__current_angle)) | 0
+    grow(environment) {
+        let [offset_x, offset_y] = this.__growth_direction
+        if (RANDOM_WEIGHT_GROWWTH_DIRECTION) {
+            let random_rotation = this.weighted_random([-2, -1, 0, 1, 2], [5, 20, 20, 20, 5])
+            if (random_rotation != 0)
+                [offset_x, offset_y] = this.get_rotated_offset(offset_x, offset_y, random_rotation)
+        }
+        if (!(environment.get(this.x+offset_x, this.y+offset_y) instanceof AirParticle))
+            return;
+        let new_particle = new StemParticle(this.x + offset_x, this.y + offset_y, this.dna)
+        new_particle.__dx = this.__dx + offset_x
+        new_particle.__dy = this.__dy + offset_y
+        new_particle.__current_length = this.__current_length + 1
+        environment.set(new_particle)
+        this.is_active = false
     }
 
     grow_next_DNA_child(environment) {
@@ -96,8 +114,6 @@ export class StemParticle extends PlantParticleFamily {
         let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
         if (target_particle instanceof AirParticle || target_particle instanceof PlantParticleFamily && !target_particle.is_active) {
             let new_stem_particle = new StemParticle(this.x + offset_x, this.y + offset_y, next_child_dna)
-            new_stem_particle.__current_length = 1
-            new_stem_particle.__current_angle = this.__current_angle + next_child_dna.stem_angle
             new_stem_particle.__dx = offset_x
             new_stem_particle.__dy = offset_y
             environment.set(new_stem_particle)
@@ -106,45 +122,49 @@ export class StemParticle extends PlantParticleFamily {
         }
     }
 
-    grow(environment) {
-        let [offset_x, offset_y] = this.growth_direction
-        let new_plant_dna = {...this.dna}
-        let new_particle
-        if (this.dna.__current_length < this.dna.stem_length) {
-            new_plant_dna.__current_length += 1
-            new_plant_dna.__current_dx += offset_x
-            new_plant_dna.__current_dy += offset_y
-            new_particle = new StemParticle(this.x + offset_x, this.y + offset_y, new_plant_dna)
-        } else {
-            new_particle = new PlantNodeParticle(this.x + offset_x, this.y + offset_y, new_plant_dna)
-        }
-        environment.set(new_particle)
+    calculate_growth_direction(angle_offset=0) {
+        /**
+         * Returns which neighbour cell the stem will grow into
+         * @param {Number}  angle_offset    (Optional) anlge offset from the current stem particle
+         */
+        let theta = this.__current_angle + angle_offset
+        let [vector_x, vector_y] = this.create_vector_functions()
+
+        let growth_angle
+        if (this.__dx == 0 && this.__dy == 0)
+            growth_angle = theta
+        else
+            growth_angle = Math.atan2(vector_y(this.__dy), vector_x(this.__dx))*180/Math.PI
+        // console.log(growth_angle)
+        // console.log(vector_y(this.__dy), vector_x(this.__dx))
+        return this.convert_angle_to_offset(growth_angle)
     }
 
-    calculate_growth_direction(angle_offset=0) {
-        let theta = this.dna.__current_angle + angle_offset
-        theta = ((theta % 360) + 360) % 360
-        let valid_directions = []
-        if (270 <= theta && theta < 360) {
-            valid_directions = [[1, 0], [0, -1]]
-        } else if (0 <= theta && theta < 90) {
-            valid_directions = [[1, 0], [0, 1]]
-        } else if (90 <= theta && theta < 180) {
-            valid_directions = [[-1, 0], [0, 1]]
-        } else {
-            valid_directions = [[-1, 0], [0, -1]]
+    create_vector_functions() {
+        switch (this.dna.stem_curve) {
+            case "spherical":
+                let [centre_x, centre_y] = [this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2,
+                                    this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)/2]
+                let rotated_angle = this.__current_angle - 90
+                centre_x += -this.dna.curve_direction * this.dna.curve_radius * Math.cos(rotated_angle*Math.PI/180)
+                centre_y += -this.dna.curve_direction * this.dna.curve_radius * Math.sin(rotated_angle*Math.PI/180)
+
+                let delta_x = this.x - centre_x
+                let delta_y = this.y - centre_y
+                // console.log(delta_x, delta_y)
+                console.log(this.end_x, this.end_y, this.x, this.y, delta_x, delta_y, centre_x, centre_y)
+                return [((x) => -this.dna.curve_direction*delta_y), ((y) => this.dna.curve_direction*delta_x)]
+            case "linear":
+            default:
+                return [((x) => this.end_x - (this.start_x + x)), ((y) => this.end_y - (this.start_y + y))]
         }
-        let [direction_1, direction_2] = valid_directions
-        let direction_1_error = this.calculate_direction_error(direction_1)
-        let direction_2_error = this.calculate_direction_error(direction_2)
-        return (direction_1_error < direction_2_error) ? direction_1 : direction_2
     }
 
     calculate_direction_error(direction) {
         let [offset_x, offset_y] = direction
         let new_theta = Math.atan2(this.dna.__current_dy + offset_y, this.dna.__current_dx + offset_x) * 180 / Math.PI
         new_theta = ((new_theta % 360) + 360) % 360
-        return Math.abs(new_theta - this.dna.__current_angle)
+        return Math.abs(new_theta - this.__current_angle)
     }
 
 
@@ -157,7 +177,25 @@ export class StemParticle extends PlantParticleFamily {
 
 
 
+    weighted_random(items, weights) {
+        /**
+         * Returns a random element from an array with a weighted probability of choice.
+         * @param {Array<Object>} items     Array of items to choose from
+         * @param {Array<Number>} weights   (Array) Sequence of weights
+         */
+        var i;
 
+        for (i = 0; i < weights.length; i++)
+            weights[i] += weights[i - 1] || 0;
+        
+        var random = Math.random() * weights[weights.length - 1];
+        
+        for (i = 0; i < weights.length; i++)
+            if (weights[i] > random)
+                break;
+        
+        return items[i];
+    }
 
     get_rotated_offset(offset_x, offset_y, rotation=0) {
         /**

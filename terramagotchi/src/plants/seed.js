@@ -32,7 +32,6 @@ export class SeedParticle extends PlantParticleFamily {
         if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.__current_length = 1
-            new_stem_cell.__current_angle = 0
             
             environment.set(new_stem_cell)
 

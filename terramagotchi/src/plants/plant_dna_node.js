@@ -6,11 +6,6 @@ export class DNANode {
          */
         this.parent = parent;
 
-        if (dna_encoding != null && this.check_encoding(dna_encoding)) {
-            this.construct_dna_from_encoding(dna_encoding);
-            return;
-        }
-
         this.node_type = "stem";
         this.node_activation_level = 10;
 
@@ -24,13 +19,22 @@ export class DNANode {
         this.curve_radius = Math.max(10, (this.stem_length / 2) | 0 + 1);
         this.curve_direction = -1
 
+        if (dna_encoding != null && this.check_encoding(dna_encoding)) {
+            this.construct_dna_from_encoding(dna_encoding);
+
+            this.stem_end_thickness =  this.stem_thickness;
+            return;
+        }
+
         // Constants for bezier curve
         this.curve_offset_A = [2, 2];
         this.curve_offset_B = [-2, 4];
 
         this.stem_thickness = 420; // built like a bakery cos I be makin dough
+        this.stem_end_thickness =  this.stem_thickness;
 
         this.children = new Array();
+        this.children_weight_growth_direction = true
     }
 
     get_root() {
@@ -41,6 +45,20 @@ export class DNANode {
         while (this.parent != null && this.parent instanceof DNANode) {
             current_head = current_head.parent;
         }
+    }
+
+    get_absolute_angle() {
+        /**
+         * Retrieves the current DNA branchs absolute current angle
+         * Calculated as the sum of the current nodes angle and all ancestor node angles
+         */
+        let current_node = this
+        let current_angle_sum = 0
+        while (current_node instanceof DNANode) {
+            current_angle_sum += current_node.stem_angle
+            current_node = current_node.parent
+        }
+        return current_angle_sum
     }
 
     add_child(new_node) {
