@@ -21,6 +21,8 @@ export const sketch = (s) => {
     const application = new Application(240, 240);
     let cell_size = 3; // Defines cell size in pixels.
 
+    let main, overlay;
+
     // The initial setup function.
     s.setup = () => {
         const canvas = s.createCanvas(
@@ -28,10 +30,17 @@ export const sketch = (s) => {
             application.height * cell_size
         );
         canvas.canvas.style = ""; // Remove inline styling so that css works.
-        s.noStroke();
+
+        main = s.createGraphics(s.width, s.height);
+        main.noStroke();
+
+        overlay = s.createGraphics(s.width, s.height);
+        overlay.clear();
+        overlay.background(0, 0, 0, 50);
+
         s.colorMode(s.HSB);
         // s.frameRate(20);
-        s.background("#87CEEB");
+        s.background("#000000");
     };
 
     // The update function. Fires every frame
@@ -43,8 +52,8 @@ export const sketch = (s) => {
         for (let particle of application.environment.particle_grid) {
             if (particle.rerender) {
                 particle.rerender = false;
-                s.fill(particle.get_color(s));
-                s.rect(
+                main.fill(particle.get_color(s));
+                main.rect(
                     cell_size * particle.x,
                     cell_size * (application.height - 1 - particle.y),
                     cell_size,
@@ -52,6 +61,9 @@ export const sketch = (s) => {
                 );
             }
         }
+        s.image(main, 0, 0);
+
+        s.image(overlay, 0, 0);
     };
 
     // Debug code for drawing
