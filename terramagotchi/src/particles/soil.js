@@ -67,9 +67,9 @@ class GrassParticle extends SoilParticle {
         this.water_level = 0;
         this.nutrient_level = 0;
 
-        // Chance for this Grass particle to grow more grass above it
-        this.grow_chance = 0.2;
-        this.grow_grass = Math.random() < this.grow_chance;
+        // Chance for this Grass particle to grow extra grass above it
+        this.stacked_grass_chance = 0.2;
+        this.grow_stacked_grass = Math.random() < this.stacked_grass_chance;
 
         // Poisson distribution chance to die
         this.grass_death_chance = 0.001;
@@ -81,7 +81,7 @@ class GrassParticle extends SoilParticle {
         this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
         this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
-        if (this.grow_grass) this.grass_growth(environment);
+        if (this.grow_stacked_grass) this.grass_growth(environment);
         this.grass_death(environment);
     }
 
