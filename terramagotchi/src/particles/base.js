@@ -124,7 +124,7 @@ export class BaseParticle {
             else if (this.passing_through) {
                 let neighbour = environment.get(this.x, this.y);
                 let checking_neighbours = [neighbour];
-                let neighbour_offsets = [[0,1],[1,0],[0,-1],[-1,0]];
+                let neighbour_offsets = [[1,0],[-1,0],[0,-1],[0,1]];
                 let i = 0;
                 while (!neighbour.empty) {
                     for (let offset of neighbour_offsets) {
