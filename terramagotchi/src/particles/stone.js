@@ -8,8 +8,6 @@ export class StoneParticle extends InorganicParticle {
         this.color_variance = 0.07;
         this.moveable = true;
         this.weight = 2;
-
-        this.pass_through_types = [SoilParticle];
     }
 
     update(environment) {

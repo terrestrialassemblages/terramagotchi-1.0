@@ -148,9 +148,6 @@ export class Environment {
         if (old_x != new_x) passing_particle.moveable_x = false;
         if (old_y != new_y) passing_particle.moveable_y = false;
 
-        this.get(old_x,old_y).rerender = true;
-        passing_particle.rerender = true;
-
         // Passing_particle is in empty particle
         if (this.get(new_x, new_y).empty) {
             // Move to regular particle layer
