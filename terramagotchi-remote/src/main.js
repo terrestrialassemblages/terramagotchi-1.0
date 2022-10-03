@@ -2,6 +2,15 @@ import { initializeApp } from "firebase/app";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getAuth, signInAnonymously, RecaptchaVerifier, onAuthStateChanged } from "firebase/auth";
 
+
+// Fitting to screen size
+const on_resize = () => {
+    document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+};
+
+on_resize();
+window.addEventListener("resize", on_resize());
+
 const firebaseConfig = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
     authDomain: "terramagotchi.firebaseapp.com",

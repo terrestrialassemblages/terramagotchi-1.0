@@ -2,14 +2,30 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
   <title>Terramagotchi (Remote)</title>
 </head>
 <body>
-    <button id="water-button">Add water</button>
-    <button id="soil-button">Add soil</button>
+    <div class="button-container">
+        <button id="water-button">Add water</button>
+        <button id="soil-button">Add soil</button>
+    </div>
     <div id="recaptcha-container"></div>
 </body>
 <style>
+    html, body {
+        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+    }
+    .modal {
+        width: 50vw;
+        height: 50vh;
+        height: calc(var(--vh, 1vh) * 50);
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-evenly;
+    }
     button {
         background-color: #555555;
         border: none;
@@ -18,7 +34,6 @@
         text-align: center;
         -webkit-transition-duration: 0.2s;
         transition-duration: 0.2s;
-        margin: 16px 0 !important;
         text-decoration: none;
         font-size: 16px;
         cursor: pointer;
