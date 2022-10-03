@@ -1,6 +1,6 @@
 import p5 from "p5";
 import { Application } from "./application";
-import { onSnapshot } from "firebase/firestore";
+import cryptoRandomString from "crypto-random-string";
 
 // Testing code: Imports for testing particles by manually adding
 import {
@@ -13,6 +13,10 @@ import {
 } from "./particles";
 import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
+const INSTANCE_ID = cryptoRandomString({ length: 6, type: "alphanumeric" });
+
+const INSTANCE_ID = cryptoRandomString({ length: 6, type: "alphanumeric" });
+
 // cringe safety feature
 p5.disableFriendlyErrors = true
 
@@ -20,8 +24,9 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(180, 320)
-    let cell_size = 3 // Defines cell size in pixels.
+    const application = new Application(240, 240, INSTANCE_ID);
+    let cell_size = 3; // Defines cell size in pixels.
+    console.log("Running on instance: " + INSTANCE_ID);
 
     let night_overlay_graphic, main_graphic, organisms_graphic;
     let sky_day_color, sky_night_color;
