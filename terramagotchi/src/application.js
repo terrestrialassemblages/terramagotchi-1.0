@@ -45,7 +45,7 @@ export class Application {
     start_db_listener() {
         // When the database is updated, add a new 2x2 of a particle at a random location
         onSnapshot(this.db_collection, (snapshot) => {
-            const [x, y] = [170, 170];
+            const [x, y] = [Math.floor(Math.random() * (230 - 10) + 10), Math.floor(Math.random() * (220 - 130) + 130)];
 
             // Check which document was modified
             snapshot.docChanges().forEach((change) => {
