@@ -195,7 +195,7 @@ export const sketch = (s) => {
 
 // Generate QR Code for the remote app
 const qr_code_canvas = document.getElementById("qr-code");
-generate_QR(qr_code_canvas, document.location.host + "/remote?id=" + INSTANCE_ID);
+generate_QR(qr_code_canvas, document.location.host + "/remote/?id=" + INSTANCE_ID);
 
 
 // If . is pressed, toggle QR code visibility
