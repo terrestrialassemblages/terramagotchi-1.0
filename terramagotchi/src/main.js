@@ -1,6 +1,7 @@
 import p5 from "p5";
 import { Application } from "./application";
 import cryptoRandomString from "crypto-random-string";
+import { toCanvas as generate_QR } from "qrcode";
 
 // Testing code: Imports for testing particles by manually adding
 import {
@@ -14,8 +15,7 @@ import {
 import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
 const INSTANCE_ID = cryptoRandomString({ length: 6, type: "alphanumeric" });
-
-const INSTANCE_ID = cryptoRandomString({ length: 6, type: "alphanumeric" });
+let show_qr = false;
 
 // cringe safety feature
 p5.disableFriendlyErrors = true
@@ -192,4 +192,23 @@ export const sketch = (s) => {
     }
 }
 
-const sketchInstance = new p5(sketch)
+const qr_code_canvas = document.getElementById("qr-code");
+generate_QR(qr_code_canvas, "https://terramagotchi.web.app/remote?id=" + INSTANCE_ID);
+
+
+// If . is pressed, toggle QR code visibility
+document.addEventListener("keyup", (e) => {
+    if (e.key === ".") {
+        if (show_qr) {
+            document.getElementById("defaultCanvas0").style.display = "block";
+            qr_code_canvas.style.display = "none";
+            show_qr = false;
+        } else {
+            document.getElementById("defaultCanvas0").style.display = "none";
+            qr_code_canvas.style.display = "block";
+            show_qr = true;
+        }
+    }
+});
+
+const sketchInstance = new p5(sketch);
