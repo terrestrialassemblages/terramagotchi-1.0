@@ -1,11 +1,18 @@
-import { AirParticle, BoundaryParticle, WaterParticle } from "./particles";
+import {
+    AirParticle,
+    BoundaryParticle,
+    CompostParticle,
+    DeadPlantParticle,
+    OrganicParticle,
+    WaterParticle,
+} from "./particles";
 import { LiquidParticle } from "./particles/liquid";
 
 export class Organism {
     alive = true;
     nutrient_capacity = 300;
     water_capacity = 300;
-    nutrient_level = 50;
+    nutrient_level = 150;
     water_level = 50;
 
     x = 120;
@@ -16,25 +23,28 @@ export class Organism {
     head_color = "#550000";
     body_color = "#DD5500";
 
-    constructor() {
-        this.seek();
+    constructor(environment) {
+        this.seek(DeadPlantParticle, environment);
     }
 
     update(environment) {
-        this.compute_gravity(environment);
+        const fell = this.compute_gravity(environment);
+        if (fell) return;
 
-        // Check if the organism must die.
-        this.alive = this.nutrient_level > 0 && this.water_level > 0; // NOTE: DOES THIS NEED TO BE A CLASS VAR??
-
-        if (this.alive) {
-            // NOTE: CONSIDER USING A TICK COUNTER INSTEAD OF RANDOM
-            if (Math.random() < 0.1) this.move(environment);
-
-            if (
+        if (this.nutrient_level > 0 && this.water_level > 0) {
+            if (this.nutrient_level == this.nutrient_capacity) {
+                this.defecate(environment);
+            } else if (
                 this.x == this.target_location[0] &&
                 this.y == this.target_location[1]
-            )
-                this.seek(environment);
+            ) {
+                this.consume(environment);
+                this.seek(DeadPlantParticle, environment);
+            } else {
+                if (Math.random() < 0.3) this.move(environment);
+            }
+        } else {
+            this.alive = false;
         }
     }
 
@@ -50,17 +60,22 @@ export class Organism {
                 this.location_history.shift();
 
             this.y--;
+            return true;
         }
+        return false;
     }
 
+    temp_locations_list = [
+        [200, 136],
+        [175, 133],
+        [125, 105],
+    ];
     seek(look_for, environment) {
         /*
             Seek for the next target location.
         */
-        this.target_location = [
-            (this.x + Math.random() * 100 - 50) >> 0,
-            (this.y + Math.random() * 100 - 50) >> 0,
-        ];
+        this.target_location = this.temp_locations_list.pop();
+        this.temp_locations_list.unshift(this.target_location);
     }
 
     move(environment) {
@@ -102,6 +117,8 @@ export class Organism {
                 [1, 0],
                 [0, -1],
                 [-1, 0],
+                [1, -1],
+                [-1, -1],
             ]) {
                 // Find neighbours who are next to at least 1 particle which the organism can walk on.
                 const secondary_neighbour_particle = environment.get(
@@ -109,7 +126,7 @@ export class Organism {
                     this.y + neighbour_y + secondary_neighbour_y
                 );
                 if (
-                    secondary_neighbour_particle.weight > 1 &&
+                    secondary_neighbour_particle.weight >= 1 &&
                     !(secondary_neighbour_particle instanceof BoundaryParticle)
                 ) {
                     valid_neighbours.push([
@@ -132,6 +149,16 @@ export class Organism {
             let distance =
                 Math.abs(this.target_location[0] - neighbour[0]) +
                 Math.abs(this.target_location[1] - neighbour[1]);
+
+            // if (
+            //     this.location_history.find(
+            //         ([previous_x, previous_y]) =>
+            //             previous_x == neighbour[0] && previous_y == neighbour[1]
+            //     )
+            // ) {
+            //     distance += 4;
+            // }
+
             if (
                 distance < best_distance ||
                 (distance == best_distance &&
