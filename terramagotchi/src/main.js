@@ -195,19 +195,21 @@ export const sketch = (s) => {
 
 // Generate QR Code for the remote app
 const qr_code_canvas = document.getElementById("qr-code");
-generate_QR(qr_code_canvas, document.location.host + "/remote/?id=" + INSTANCE_ID);
+const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
+generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
+document.getElementById("remote-url").innerText = remote_url;
 
 
 // If . is pressed, toggle QR code visibility
 document.addEventListener("keyup", (e) => {
     if (e.key === ".") {
         if (show_qr) {
-            document.getElementById("defaultCanvas0").style.display = "block";
-            qr_code_canvas.style.display = "none";
+            document.querySelector("main").style.display = "flex";
+            document.getElementById("qr-container").style.display = "none";
             show_qr = false;
         } else {
-            document.getElementById("defaultCanvas0").style.display = "none";
-            qr_code_canvas.style.display = "block";
+            document.querySelector("main").style.display = "none";
+            document.getElementById("qr-container").style.display = "flex";
             show_qr = true;
         }
     }
