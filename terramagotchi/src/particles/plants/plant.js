@@ -22,20 +22,22 @@ export class PlantParticleFamily extends OrganicParticle {
 
         this.water_capacity = 50
         this.nutrient_capacity = 50
-        
-        this.activation_level = 0
 
         // List of plant-type particles to decide which particle type
         this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle, BarkParticle]
-
         // List of neighbours for absorb functions
         this.__neighbours = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]]
+
         
         this.dna = plant_dna
         if (this.dna == null) {
-            let default_tree_dna = generate_tree_dna("PALM")
+            let default_tree_dna = generate_tree_dna()
             this.dna = new DNANode(null, default_tree_dna)
         }
+        
+        this.is_active = true
+        this.activation_level = this.dna.node_activation_level || 0
+        this.base_color = this.dna.color
     }
 
 

@@ -10,8 +10,6 @@ export class BarkParticle extends PlantParticleFamily {
          * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
          */
         super(x, y, plant_dna);
-        this.base_color = this.dna.color
-        this.activation_level = 0
     }
 
     update(environment) {
@@ -30,6 +28,8 @@ export class BarkParticle extends PlantParticleFamily {
             new_bark_particle.__thickness = this.__thickness
             new_bark_particle.growth_angle = this.growth_angle
             environment.set(new_bark_particle)
+            this.water_level -= this.activation_level
+            this.nutrient_level -= this.activation_level
         }
     }
 }

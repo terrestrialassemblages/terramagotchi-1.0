@@ -6,11 +6,18 @@ export class DNANode {
          */
         this.parent = parent;
 
+        /** ====================================
+         * Variables defining the particle type
+            ==================================== */
         this.node_type = dna_encoding.node_type || "stem"
         this.node_activation_level = dna_encoding.node_activation_level || 0
 
-        this.stem_angle =   dna_encoding.stem_angle || 90;
-        this.stem_length =  dna_encoding.stem_length || 10;
+        /** =================================
+         * Variables defining stem behaviour
+            ================================= */
+
+        this.stem_angle =   dna_encoding.stem_angle || 0;
+        this.stem_length =  dna_encoding.stem_length || 0;
         this.color =   dna_encoding.color || "green";
         
         this.stem_curve = dna_encoding.stem_curve || "linear";
@@ -20,7 +27,7 @@ export class DNANode {
         this.bark_start_direction = dna_encoding.bark_start_direction || -1
 
         // Constant for spherical curve
-        this.curve_radius =     dna_encoding.curve_radius || Math.max(10, (this.stem_length / 2) | 0 + 1);
+        this.curve_radius =     dna_encoding.curve_radius || 10;
         this.curve_direction =  dna_encoding.curve_direction || -1
 
         // Constants for bezier curve
@@ -30,9 +37,18 @@ export class DNANode {
         this.children = new Array();
         this.children_weight_growth_direction = dna_encoding.children_weight_growth_direction || true
 
+        /** =================================
+         * Variables defining leaf behaviour
+            ================================= */
+        
+        this.leaf_shape = dna_encoding.leaf_shape || "flat-top"
+        this.leaf_direction = dna_encoding.leaf_direction || 1
+        this.leaf_size = dna_encoding.leaf_size || 2
+        // Will currently use stem_angle to determine the angle of leaf growth as well
+
         if (dna_encoding.children != null)
             this.construct_dna_from_encoding(dna_encoding.children)
-        this.print_dna
+        // this.print_dna()
     }
 
     get_root() {

@@ -1,6 +1,6 @@
 import { SoilParticle, CompostParticle, AirParticle } from "..";
 import { PlantParticleFamily } from "./plant";
-// import { RootParticle } from "./root";
+import { RootParticle } from "./root";
 import { StemParticle } from "./stem";
 
 export class SeedParticle extends PlantParticleFamily {
@@ -32,11 +32,10 @@ export class SeedParticle extends PlantParticleFamily {
         if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.__current_length = 1
-            
             environment.set(new_stem_cell)
 
-            // environment.set(new_root)
-            // let new_root = new RootParticle(this.x, this.y - 1, this.dna)
+            let new_root = new RootParticle(this.x, this.y-1, this.dna)
+            environment.set(new_root)
         }
     }
 }

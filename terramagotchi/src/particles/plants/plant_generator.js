@@ -1,5 +1,6 @@
 
 const PALM_TREE = "PALM"
+const SUNFLOWER = "SUNFLOWER"
 
 function randint(start, end=null) {
     if (!(end))
@@ -7,10 +8,80 @@ function randint(start, end=null) {
     return start + Math.random() * (end - start + 1) | 0
 }
 
-export default function generate_tree_dna(TREE_TYPE="PALM") {
+export default function generate_tree_dna(TREE_TYPE="SUNFLOWER") {
+let tree_direction, tree_scale, tree_angle_offset
 switch (TREE_TYPE) {
+    case SUNFLOWER:
+        tree_direction = [-1, 1][randint(1)]
+        tree_angle_offset = -14
+        return {
+            node_activation_level: 0,
+            color: "#4a8703", // color inspo: https://colorswall.com/palette/34441
+            stem_angle: 90 + tree_direction*tree_angle_offset,
+            stem_length: 5,
+            stem_curve: "spherical",
+            stem_thickness: 1,
+            stem_end_thickness: 1,
+            curve_radius: 4,
+            curve_direction: tree_direction,
+            children: [{
+                node_type: "leaf",
+                node_activation_level: 0,
+                stem_angle: -tree_direction*tree_angle_offset-tree_direction*90,
+                color: "#FF0000",
+                leaf_shape: "flat-top",
+                leaf_size: 2,
+                leaf_direction: tree_direction,
+                children: []
+            },
+            {
+                node_activation_level: 0,
+                color: "#4a8703",
+                stem_angle: -tree_direction*tree_angle_offset+tree_direction*45,
+                stem_length: 1,
+                stem_curve: "linear",
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                curve_radius: 0,
+                curve_direction: -tree_direction,
+                children: [{
+                    node_type: "leaf",
+                    node_activation_level: 0,
+                    stem_angle: -tree_direction*45+tree_direction*90,
+                    color: "#FF0000",
+                    leaf_shape: "flat-top",
+                    leaf_size: 2,
+                    leaf_direction: -tree_direction,
+                    children: []
+                },
+                {
+                    node_activation_level: 0,
+                    color: "#4a8703",
+                    stem_angle: -tree_direction*45,
+                    stem_length: 2,
+                    stem_curve: "linear",
+                    stem_thickness: 1,
+                    stem_end_thickness: 1,
+                    curve_radius: 0,
+                    curve_direction: -tree_direction,
+                    children: [{
+                        node_type: "flower",
+                        color: "#FFFF00",
+                        node_activation_level: 0,
+                        stem_angle: 0,
+                        stem_length: 1,
+                        stem_curve: "linear",
+                        stem_thickness: 1,
+                        stem_end_thickness: 1,
+                        curve_radius: 0,
+                        curve_direction: -tree_direction,
+                    }]
+                }]
+            }]
+        }
+
     case PALM_TREE:
-        let tree_direction = [-1, 1][randint(1)]
+        tree_direction = [-1, 1][randint(1)]
         return {
             node_activation_level: 0,
             // color: "#FF0000",
