@@ -53,7 +53,7 @@ export class Organism {
         }
     }
 
-    seek(environment) {
+    seek(look_for, environment) {
         /*
             Seek for the next target location.
         */
@@ -144,7 +144,44 @@ export class Organism {
         return best_neighbour;
     }
 
-    consume(environment) {}
+    consume(environment) {
+        const particle = environment.get(this.x, this.y);
 
-    defecate(environment) {}
+        if (particle instanceof DeadPlantParticle) {
+            let transfer_amount = Math.min(
+                particle.nutrient_level,
+                this.nutrient_capacity - this.nutrient_level
+            );
+            this.nutrient_level += transfer_amount;
+            particle.nutrient_level -= transfer_amount;
+
+            if (particle.nutrient_level == 0) {
+                let new_air_particle = new AirParticle(particle.x, particle.y);
+                environment.set(new_air_particle);
+            }
+        }
+    }
+
+    defecate(environment) {
+        const particle_below = environment.get(...this.location_history[0]);
+
+        if (particle_below instanceof AirParticle) {
+            const new_compost_particle = new CompostParticle(
+                ...this.location_history[0]
+            );
+
+            new_compost_particle.nutrient_content = this.nutrient_level - 50;
+            this.nutrient_level = 50;
+
+            if (particle_below instanceof OrganicParticle) {
+                new_compost_particle.nutrient_content +=
+                    particle_below.nutrient_level;
+            }
+
+            environment.set(new_compost_particle);
+            this.seek(DeadPlantParticle, environment);
+        } else {
+            this.seek(AirParticle, environment);
+        }
+    }
 }
