@@ -7,13 +7,14 @@ export class CompostParticle extends OrganicParticle {
         this.base_color = "#00FF00";
         this.moveable = true;
         this.weight = 2;
-        
-        this.water_level = 0
-        this.water_capacity = 0
-        this.nutrient_level = 0
-        this.nutrient_capacity = 0
 
-        this.nutrient_content = 100
+        this.water_level = 0;
+        this.water_capacity = 0;
+        this.nutrient_level = 0;
+        this.nutrient_capacity = 0;
+
+        this.nutrient_content = 1000;
+        this.water_content = 100;
     }
 
     update(environment) {
@@ -25,26 +26,47 @@ export class CompostParticle extends OrganicParticle {
 
     disperse_nutrients(environment) {
 
-        // Someone plz replace with proper Poisson Distribution stuff
-        if (Math.random() > 0.001) {
-            return;
-        }
-
         // Choose a random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.random()*4 >> 0];
-        let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
+        let [offset_x, offset_y] = [
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+        ][Math.floor(Math.random() * 4)];
+        let random_neighbour = environment.get(
+            this.x + offset_x,
+            this.y + offset_y
+        );
 
-        // Attempt to disperse nutrient to random organic neighbour
-        if (random_neighbour instanceof OrganicParticle && random_neighbour.nutrient_level < random_neighbour.nutrient_capacity) {
-            // Transfer as much nutrient as possible to neighbour
-            let transfer_amount = Math.min(this.nutrient_content, random_neighbour.nutrient_capacity - random_neighbour.nutrient_level)
-            random_neighbour.nutrient_level += transfer_amount;
-            this.nutrient_content -= transfer_amount;
+        // Attempt to disperse nutrients or water
+        if (random_neighbour instanceof OrganicParticle) {
+            // Attempt nutrient dispersion
+            if (random_neighbour.nutrient_level < random_neighbour.nutrient_capacity) {
+                // Transfer as much nutrient as possible to neighbour
+                let transfer_amount = Math.min(
+                    this.nutrient_content,
+                    random_neighbour.nutrient_capacity -
+                        random_neighbour.nutrient_level
+                );
+                random_neighbour.nutrient_level += transfer_amount;
+                this.nutrient_content -= transfer_amount;
+            }
 
-            // Nutrient has transfered as much as it can
-            if (this.nutrient_content == 0) {
-                let new_air_particle = new AirParticle(this.x, this.y);
-                environment.set(new_air_particle);
+            // Attempt water dispersion
+            if (random_neighbour.water_level < random_neighbour.water_capacity) {
+                // Transfer as much water as possible to neighbour
+                let transfer_amount = Math.min(
+                    this.water_content,
+                    random_neighbour.water_capacity -
+                        random_neighbour.water_level
+                );
+                random_neighbour.water_level += transfer_amount;
+                this.water_content -= transfer_amount;
+            }
+
+            // Has transfered all nutrients and water contents
+            if (this.nutrient_content == 0 && this.water_content == 0) {
+                environment.set(new AirParticle(this.x, this.y));
             }
         }
     }

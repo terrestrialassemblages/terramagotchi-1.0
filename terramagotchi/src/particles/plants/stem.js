@@ -29,8 +29,8 @@ export class StemParticle extends PlantParticleFamily {
     }
 
     update(environment) {
-        this.absorb_nutrients(environment, this.__living_plant_particle_types)
-        this.absorb_water(environment, this.__living_plant_particle_types)
+        this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
+        this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
 
         if (this.is_active) {
             switch (this.dna.node_type) {

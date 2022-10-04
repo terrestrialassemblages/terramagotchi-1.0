@@ -16,8 +16,8 @@ export class SeedParticle extends PlantParticleFamily {
 
     update(environment) {
         this.compute_gravity(environment)
-        this.absorb_nutrients(environment, [SoilParticle, CompostParticle])
-        this.absorb_water(environment, [SoilParticle, CompostParticle])
+        this.absorb_nutrients(environment, this.__neighbours, [SoilParticle, CompostParticle])
+        this.absorb_water(environment, this.__neighbours, [SoilParticle, CompostParticle])
         
         if (!this.germinated)
             if (this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level)

@@ -27,6 +27,9 @@ export class PlantParticleFamily extends OrganicParticle {
 
         // List of plant-type particles to decide which particle type
         this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle, BarkParticle]
+
+        // List of neighbours for absorb functions
+        this.__neighbours = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]]
         
         this.dna = plant_dna
         if (this.dna == null) {

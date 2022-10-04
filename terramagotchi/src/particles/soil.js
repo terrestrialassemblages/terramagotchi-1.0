@@ -16,8 +16,8 @@ export class SoilParticle extends OrganicParticle {
         this.compute_gravity(environment)
         this.compute_erosion(environment)
 
-        this.absorb_water(environment, [SoilParticle]);
+        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
-        this.absorb_nutrients(environment, [CompostParticle, SoilParticle]);
+        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [CompostParticle, SoilParticle]);
     }
 }
