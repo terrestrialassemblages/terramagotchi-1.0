@@ -10,9 +10,11 @@ export class Organism {
 
     x = 120;
     y = 120;
+    location_history = [[120, 120]];
     target_location = [120, 120];
 
-    color = "#FFF1BE";
+    head_color = "#550000";
+    body_color = "#DD5500";
 
     constructor() {
         this.seek();
@@ -69,7 +71,9 @@ export class Organism {
         const valid_neighbours = this.__get_valid_neighbours(environment);
 
         if (valid_neighbours.length > 0) {
-            environment.get(this.x, this.y).rerender = true;
+            this.location_history.push([this.x, this.y]);
+            if (this.location_history.length > this.nutrient_level / 5)
+                this.location_history.shift();
             const [new_x, new_y] =
                 this.__choose_best_neighbour(valid_neighbours);
             this.x = new_x;
