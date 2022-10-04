@@ -10,7 +10,7 @@ import {
     SteamParticle,
     CompostParticle,
 } from "./particles";
-import { SeedParticle } from "./plants";
+import { SeedParticle } from "./particles/plants";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;

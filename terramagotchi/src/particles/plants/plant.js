@@ -1,4 +1,4 @@
-import { OrganicParticle } from "../particles/organic";
+import { OrganicParticle } from "../organic";
 import generate_tree_dna from "./plant_generator"
 
 import {

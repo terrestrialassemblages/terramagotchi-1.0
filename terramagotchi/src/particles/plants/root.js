@@ -1,5 +1,5 @@
 import { PlantParticleFamily } from "./plant";
-import { SoilParticle } from "../particles/soil";
+import { SoilParticle } from "../soil";
 
 
 export class RootParticle extends PlantParticleFamily {

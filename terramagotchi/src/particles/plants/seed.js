@@ -1,4 +1,4 @@
-import { SoilParticle, CompostParticle, AirParticle } from "../particles";
+import { SoilParticle, CompostParticle, AirParticle } from "..";
 import { PlantParticleFamily } from "./plant";
 // import { RootParticle } from "./root";
 import { StemParticle } from "./stem";

@@ -1,6 +1,6 @@
-import { AirParticle } from "../particles";
+import { AirParticle } from "..";
 import { PlantParticleFamily } from "./plant";
-import { Environment } from "../environment";
+import { Environment } from "../../environment";
 import { DNANode } from "./plant_dna_node";
 import { BarkParticle } from "./bark";
 

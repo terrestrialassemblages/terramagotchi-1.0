@@ -1,6 +1,6 @@
-import { AirParticle } from "../particles";
+import { AirParticle } from "..";
 import { PlantParticleFamily } from "./plant";
-import { Environment } from "../environment";
+import { Environment } from "../../environment";
 
 export class BarkParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
