@@ -37,9 +37,16 @@ export class Organism {
     }
 
     compute_gravity(environment) {
-        // Falls through particles with weight <= 1, i.e. Air, Steam and Water.
-        if (environment.get(this.x, this.y - 1).weight <= 1) {
-            environment.get(this.x, this.y).rerender = true;
+        // Falls through particles with weight < 1, i.e. Air, Steam, Water.
+        if (
+            environment.get(this.x, this.y - 1).weight <= 1 &&
+            environment.get(this.x - 1, this.y - 1).weight <= 1 && // This and the following check if there is support to the side
+            environment.get(this.x + 1, this.y - 1).weight <= 1
+        ) {
+            this.location_history.push([this.x, this.y]);
+            if (this.location_history.length > this.nutrient_level / 5)
+                this.location_history.shift();
+
             this.y--;
         }
     }
