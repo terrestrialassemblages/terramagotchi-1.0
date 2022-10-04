@@ -1,41 +1,38 @@
 export class DNANode {
-    constructor(parent = null, dna_encoding = null) {
+    constructor(parent = null, dna_encoding = {}) {
         /**
          * @param {DNANode} parent      Optional parent node for this current node.
-         * @param {Array} dna_encoding  Optional encoding to construct a DNA Tree for
+         * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
          */
         this.parent = parent;
 
-        this.node_type = "stem";
-        this.node_activation_level = 10;
+        this.node_type = dna_encoding.node_type || "stem"
+        this.node_activation_level = dna_encoding.node_activation_level || 0
 
-        this.stem_angle = 90;
-        this.stem_length = 10;
-        this.stem_color = "green";
+        this.stem_angle =   dna_encoding.stem_angle || 90;
+        this.stem_length =  dna_encoding.stem_length || 10;
+        this.color =   dna_encoding.color || "green";
         
-        this.stem_curve = "linear";
+        this.stem_curve = dna_encoding.stem_curve || "linear";
 
-        this.stem_thickness = 3;
-        this.stem_end_thickness =  this.stem_thickness;
-        this.bark_start_direction = -1
+        this.stem_thickness =       dna_encoding.stem_thickness ||  3;
+        this.stem_end_thickness =   dna_encoding.stem_end_thickness || 1;
+        this.bark_start_direction = dna_encoding.bark_start_direction || -1
 
         // Constant for spherical curve
-        this.curve_radius = Math.max(10, (this.stem_length / 2) | 0 + 1);
-        this.curve_direction = -1
-
-        if (dna_encoding != null && this.check_encoding(dna_encoding)) {
-            this.construct_dna_from_encoding(dna_encoding);
-
-            this.stem_end_thickness =  this.stem_thickness;
-            return;
-        }
+        this.curve_radius =     dna_encoding.curve_radius || Math.max(10, (this.stem_length / 2) | 0 + 1);
+        this.curve_direction =  dna_encoding.curve_direction || -1
 
         // Constants for bezier curve
-        this.curve_offset_A = [2, 2];
-        this.curve_offset_B = [-2, 4];
+        this.curve_offset_A = dna_encoding.curve_offset_A || [2, 2];
+        this.curve_offset_B = dna_encoding.curve_offset_B || [-2, 4];
 
         this.children = new Array();
-        this.children_weight_growth_direction = true
+        this.children_weight_growth_direction = dna_encoding.children_weight_growth_direction || true
+
+        if (dna_encoding.children != null)
+            this.construct_dna_from_encoding(dna_encoding.children)
+        this.print_dna
     }
 
     get_root() {
@@ -73,54 +70,13 @@ export class DNANode {
         }
     }
 
-    check_encoding(encoding) {
-        /**
-         * Checks whether an encoding of a plant DNA sequence is valid
-         * @param {Array} encoding      An array of data for a node, of form [node_type, node_activation_level, stem_angle, stem_length, stem_curve, stem_color, stem_thickness, children]
-         */
-        if (!(encoding instanceof Array && encoding.length == 8)) return false;
-        if (
-            !(
-                (typeof encoding[0] === "string" ||
-                    encoding[0] instanceof String) &&
-                (typeof encoding[1] === "number" ||
-                    encoding[1] instanceof Number) &&
-                (typeof encoding[2] === "number" ||
-                    encoding[2] instanceof Number) &&
-                (typeof encoding[3] === "number" ||
-                    encoding[3] instanceof Number) &&
-                (typeof encoding[4] === "string" ||
-                    encoding[4] instanceof String) &&
-                (typeof encoding[5] === "string" ||
-                    encoding[5] instanceof String) &&
-                (typeof encoding[6] === "number" ||
-                    encoding[6] instanceof Number) &&
-                encoding[7] instanceof Array
-            )
-        )
-            return false;
-        return encoding[7].every((child_encoding) =>
-            this.check_encoding(child_encoding)
-        );
-    }
-
-    construct_dna_from_encoding(encoding) {
+    construct_dna_from_encoding(children) {
         /**
          * Constructs
-         * @param {Array} encoding      An array of data for a node, of form [node_type, node_activation_level, stem_angle, stem_length, stem_curve, stem_color, stem_thickness, children]
+         * @param {Array} children  Array of DNA encodings, each element representing a new child node
          */
 
-        // Assign encoding DNA
-        this.node_type = encoding[0];
-        this.node_activation_level = encoding[1];
-        this.stem_angle = encoding[2];
-        this.stem_length = encoding[3];
-        this.stem_curve = encoding[4];
-        this.stem_color = encoding[5];
-        this.stem_thickness = encoding[6];
-        this.children = new Array();
-
-        for (let child_node_encoding of encoding[7]) {
+        for (let child_node_encoding of children) {
             let new_child = new DNANode(this, child_node_encoding);
             this.add_child(new_child);
         }
@@ -136,11 +92,11 @@ export class DNANode {
             "├───" +
             [
                 this.node_type,
-                this.stem_angle,
-                this.stem_length,
-                this.stem_curve,
-                this.stem_color,
-                this.stem_thickness,
+                // this.stem_angle,
+                // this.stem_length,
+                // this.stem_curve,
+                // this.color,
+                // this.stem_thickness,
             ].toString() +
             "\n";
 
