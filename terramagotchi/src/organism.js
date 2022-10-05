@@ -10,10 +10,10 @@ import { LiquidParticle } from "./particles/liquid";
 
 export class Organism {
     alive = true;
-    nutrient_capacity = 300;
-    water_capacity = 300;
-    nutrient_level = 150;
-    water_level = 50;
+    nutrient_capacity = 1000;
+    water_capacity = 1000;
+    nutrient_level = 100;
+    water_level = 100;
 
     x = 120;
     y = 120;
@@ -107,7 +107,13 @@ export class Organism {
     }
 
     __is_location_accessible(x, y, environment) {
-        if (environment.get(x, y) instanceof BoundaryParticle) {
+        if (
+            x < 0 ||
+            x > environment.width ||
+            y < 0 ||
+            y > environment.height ||
+            environment.get(x, y) instanceof BoundaryParticle
+        ) {
             return false;
         }
 
@@ -215,8 +221,8 @@ export class Organism {
         if (particle_below instanceof AirParticle) {
             const new_compost_particle = new CompostParticle(this.x, this.y);
 
-            new_compost_particle.nutrient_content = this.nutrient_level - 50;
-            this.nutrient_level = 50;
+            new_compost_particle.nutrient_content = this.nutrient_level - 100;
+            this.nutrient_level = 100;
 
             environment.set(new_compost_particle);
             this.seek(DeadPlantParticle, environment);
