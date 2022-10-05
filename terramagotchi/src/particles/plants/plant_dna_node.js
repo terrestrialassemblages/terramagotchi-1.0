@@ -6,6 +6,13 @@ export class DNANode {
          */
         this.parent = parent;
 
+        /** =====================================
+         * Variables defining the seed behaviour
+            ===================================== */
+
+        this.seed_activation_level =    dna_encoding.seed_activation_level || 5
+        this.seed_color =               dna_encoding.seed_color || "#FF80FF"
+
         /** ====================================
          * Variables defining the particle type
             ==================================== */
@@ -51,9 +58,11 @@ export class DNANode {
         /** =================================
          * Variables defining leaf behaviour
             ================================= */
+
         this.secondary_color = dna_encoding.secondary_color || this.color
         this.secondary_color_length = dna_encoding.secondary_color_length || 999
 
+        // Checks dna_encoding for information on children, creates children nodes if they exist
         if (dna_encoding.children != null)
             this.construct_dna_from_encoding(dna_encoding.children)
         // this.print_dna()
