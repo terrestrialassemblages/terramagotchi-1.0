@@ -14,7 +14,6 @@ export class RootParticle extends PlantParticleFamily {
         this.direction = 1; // direction the root is growing. 0 = left, 1 = down, 2 = right, 3 = bottom left, 4 = bottom right, by default, it grows in the direction it was initially spawned in
         this.activation_level = 0
 
-        this.__current_length = 1
         this.root_length_max = 50
         this.direction = 1
         this.root_node_spawn_distance = 12

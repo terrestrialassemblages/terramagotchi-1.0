@@ -31,7 +31,6 @@ export class SeedParticle extends PlantParticleFamily {
     grow(environment) {
         if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
-            new_stem_cell.__current_length = 1
             environment.set(new_stem_cell)
 
             let new_root = new RootParticle(this.x, this.y-1, this.dna)

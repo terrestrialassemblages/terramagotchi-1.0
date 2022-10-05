@@ -6,7 +6,7 @@ import { BarkParticle } from "./bark";
 import { LeafParticle } from "./leaf";
 import { FlowerParticle } from "./flower";
 
-const RANDOM_WEIGHT_GROWWTH_DIRECTION = false
+const RANDOM_WEIGHT_GROWWTH_DIRECTION = true
 
 export class StemParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {

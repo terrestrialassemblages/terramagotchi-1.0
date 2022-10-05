@@ -38,6 +38,8 @@ export class PlantParticleFamily extends OrganicParticle {
         this.is_active = true
         this.activation_level = this.dna.node_activation_level || 0
         this.base_color = this.dna.color
+        this.color_variance = 0.1
+        this.__current_length = 1
     }
 
 
@@ -75,40 +77,6 @@ export class PlantParticleFamily extends OrganicParticle {
         let theta = this.convert_offset_to_base_angle(offset_x, offset_y)
         theta += 45*rotation
         return this.convert_angle_to_offset(theta)
-
-        // Deprecated code below cos I realised there was an obvious O(1) implementation
-
-
-        // // Truncates rotation and modulos to be in range [0, 8)
-        // rotation = (((rotation | 0) % 8) + 8) % 8
-
-        // // Recursive base case
-        // if (rotation <= 0)
-        //     return [offset_x, offset_y]
-        
-        // // Recursive function to find rotated offset value. Worst case runtime=8 recursive calls
-        // // switch ([offset_x, offset_y]) {
-        // //     case [1, 0]:
-        // //         return this.get_rotated_offset(1, 1, rotation-1)
-        // //     case [1, 1]:
-        // //         return this.get_rotated_offset(0, 1, rotation-1)
-        // //     case [0, 1]:
-        // //         return this.get_rotated_offset(-1, 1, rotation-1)
-        // //     case [-1, 1]:
-        // //         return this.get_rotated_offset(-1, 0, rotation-1)
-        // //     case [-1, 0]:
-        // //         return this.get_rotated_offset(-1, -1, rotation-1)
-        // //     case [-1, -1]:
-        // //         return this.get_rotated_offset(0, -1, rotation-1)
-        // //     case [0, -1]:
-        // //         return this.get_rotated_offset(1, -1, rotation-1)
-        // //     case [1, -1]:
-        // //         return this.get_rotated_offset(1, 0, rotation-1)
-        // // }
-
-
-        // // Default case for unexpected offset_x/offset_y values will be upwards ([0, 1])
-        // return [0, 1]
     }
 
     convert_offset_to_base_angle(offset_x, offset_y) {
@@ -120,27 +88,25 @@ export class PlantParticleFamily extends OrganicParticle {
          */
 
          let angle_delta = 45 // Essentially, the degrees difference between each offset
-        switch ([offset_x, offset_y]) {
-            case [1, 0]:
-                return 0
-            case [1, 1]:
-                return angle_delta*1
-            case [0, 1]:
-                return angle_delta*2
-            case [-1, 1]:
-                return angle_delta*3
-            case [-1, 0]:
-                return angle_delta*4
-            case [-1, -1]:
-                return angle_delta*5
-            case [0, -1]:
-                return angle_delta*6
-            case [1, -1]:
-                return angle_delta*7
-        }
+        if (offset_x==1 && offset_y==0)
+            return 0
+        if (offset_x==1 && offset_y==1)
+            return angle_delta*1
+        if (offset_x==0 && offset_y==1)
+            return angle_delta*2
+        if (offset_x==-1 && offset_y==1)
+            return angle_delta*3
+        if (offset_x==-1 && offset_y==0)
+            return angle_delta*4
+        if (offset_x==-1 && offset_y==-1)
+            return angle_delta*5
+        if (offset_x==0 && offset_y==-1)
+            return angle_delta*6
+        if (offset_x==1 && offset_y==-1)
+            return angle_delta*7
 
         // Default case for unexpected offset_x/offset_y values will be upwards ([0, 1])
-        return [0, 1]
+        return 90
     }
 
     convert_angle_to_offset(angle, radians=false) {

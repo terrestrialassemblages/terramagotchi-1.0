@@ -16,9 +16,10 @@ export class DNANode {
          * Variables defining stem behaviour
             ================================= */
 
-        this.stem_angle =   dna_encoding.stem_angle || 0;
-        this.stem_length =  dna_encoding.stem_length || 0;
         this.color =   dna_encoding.color || "green";
+        this.stem_length =  dna_encoding.stem_length || 0;
+        this.stem_angle =   dna_encoding.stem_angle || 0;
+        this.use_angle_absolute = dna_encoding.use_angle_absolute || false
         
         this.stem_curve = dna_encoding.stem_curve || "linear";
 
@@ -44,7 +45,14 @@ export class DNANode {
         this.leaf_shape = dna_encoding.leaf_shape || "flat-top"
         this.leaf_direction = dna_encoding.leaf_direction || 1
         this.leaf_size = dna_encoding.leaf_size || 2
+        this.growth_destructive = dna_encoding.growth_destructive || false
         // Will currently use stem_angle to determine the angle of leaf growth as well
+
+        /** =================================
+         * Variables defining leaf behaviour
+            ================================= */
+        this.secondary_color = dna_encoding.secondary_color || this.color
+        this.secondary_color_length = dna_encoding.secondary_color_length || 999
 
         if (dna_encoding.children != null)
             this.construct_dna_from_encoding(dna_encoding.children)
@@ -68,10 +76,14 @@ export class DNANode {
          */
         let current_node = this
         let current_angle_sum = 0
-        while (current_node instanceof DNANode) {
+        do {
             current_angle_sum += current_node.stem_angle
+            if (current_node != null && current_node.use_angle_absolute)
+                break
+            
             current_node = current_node.parent
-        }
+        } while (current_node instanceof DNANode)
+
         return current_angle_sum
     }
 
