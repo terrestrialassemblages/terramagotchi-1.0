@@ -17,7 +17,7 @@ export class Organism {
 
     x = 120;
     y = 120;
-    location_history = [[120, 120]];
+    location_history = [[120, 121]];
     target_location = [120, 120];
 
     head_color = "#550000";
@@ -28,12 +28,15 @@ export class Organism {
     }
 
     update(environment) {
+        if (this.location_history.length - 1 > this.nutrient_level / 50)
+            this.location_history.length = this.nutrient_level / 50
         const fell = this.compute_gravity(environment);
         if (fell) return;
 
         if (this.nutrient_level > 0 && this.water_level > 0) {
             if (this.nutrient_level == this.nutrient_capacity) {
                 this.defecate(environment);
+                // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
             } else if (
                 this.x == this.target_location[0] &&
                 this.y == this.target_location[1]
@@ -55,9 +58,7 @@ export class Organism {
             environment.get(this.x - 1, this.y - 1).weight <= 1 && // This and the following check if there is support to the side
             environment.get(this.x + 1, this.y - 1).weight <= 1
         ) {
-            this.location_history.push([this.x, this.y]);
-            if (this.location_history.length > this.nutrient_level / 5)
-                this.location_history.shift();
+            this.location_history.unshift([this.x, this.y]);
 
             this.y--;
             return true;
@@ -65,17 +66,28 @@ export class Organism {
         return false;
     }
 
-    temp_locations_list = [
-        [200, 136],
-        [175, 133],
-        [125, 105],
-    ];
-    seek(look_for, environment) {
+    seek(looking_for, environment) {
         /*
             Seek for the next target location.
         */
-        this.target_location = this.temp_locations_list.pop();
-        this.temp_locations_list.unshift(this.target_location);
+        const MAX_DEPTH = 100;
+        const facing_x =
+            this.x - this.location_history[0][0];
+        const facing_y =
+            this.y - this.location_history[0][1];
+
+        for (let depth = 0; depth <= MAX_DEPTH; depth++) {
+            for (let pan = -depth * 2; pan <= depth * 2; pan++) {
+                const check_location = [
+                    this.x + facing_x * depth + facing_y * pan,
+                    this.y + facing_y * depth + facing_x * pan,
+                ];
+                if (environment.get(...check_location) instanceof looking_for && this.__is_location_accessible(...check_location, environment)) {
+                    this.target_location = check_location;
+                    return;
+                }
+            }
+        }
     }
 
     move(environment) {
@@ -86,13 +98,40 @@ export class Organism {
         const valid_neighbours = this.__get_valid_neighbours(environment);
 
         if (valid_neighbours.length > 0) {
-            this.location_history.push([this.x, this.y]);
-            if (this.location_history.length > this.nutrient_level / 5)
-                this.location_history.shift();
+            this.location_history.unshift([this.x, this.y]);
             const [new_x, new_y] =
                 this.__choose_best_neighbour(valid_neighbours);
             this.x = new_x;
             this.y = new_y;
+        }
+    }
+
+    __is_location_accessible(x, y, environment) {
+        if (environment.get(x, y) instanceof BoundaryParticle) {
+            return false;
+        }
+
+        for (let [neighbour_x, neighbour_y] of [
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+            // These two neighbours are the bottom diagonal neighbours, allowing for the organism
+            // to walk up a hill on only air.
+            [1, -1],
+            [-1, -1],
+        ]) {
+            // Find neighbours who are next to at least 1 particle which the organism can walk on.
+            const neighbour_particle = environment.get(
+                x + neighbour_x,
+                y + neighbour_y
+            );
+            if (
+                neighbour_particle.weight > 1 &&
+                !(neighbour_particle instanceof BoundaryParticle)
+            ) {
+                return true;
+            }
         }
     }
 
@@ -105,36 +144,16 @@ export class Organism {
             [-1, 0],
         ]) {
             if (
-                environment.get(
+                this.__is_location_accessible(
                     this.x + neighbour_x,
-                    this.y + neighbour_y
-                ) instanceof BoundaryParticle
+                    this.y + neighbour_y,
+                    environment
+                )
             ) {
-                continue;
-            }
-            for (let [secondary_neighbour_x, secondary_neighbour_y] of [
-                [0, 1],
-                [1, 0],
-                [0, -1],
-                [-1, 0],
-                [1, -1],
-                [-1, -1],
-            ]) {
-                // Find neighbours who are next to at least 1 particle which the organism can walk on.
-                const secondary_neighbour_particle = environment.get(
-                    this.x + neighbour_x + secondary_neighbour_x,
-                    this.y + neighbour_y + secondary_neighbour_y
-                );
-                if (
-                    secondary_neighbour_particle.weight >= 1 &&
-                    !(secondary_neighbour_particle instanceof BoundaryParticle)
-                ) {
-                    valid_neighbours.push([
-                        this.x + neighbour_x,
-                        this.y + neighbour_y,
-                    ]);
-                    break;
-                }
+                valid_neighbours.push([
+                    this.x + neighbour_x,
+                    this.y + neighbour_y,
+                ]);
             }
         }
         return valid_neighbours;
@@ -150,14 +169,15 @@ export class Organism {
                 Math.abs(this.target_location[0] - neighbour[0]) +
                 Math.abs(this.target_location[1] - neighbour[1]);
 
-            // if (
-            //     this.location_history.find(
-            //         ([previous_x, previous_y]) =>
-            //             previous_x == neighbour[0] && previous_y == neighbour[1]
-            //     )
-            // ) {
-            //     distance += 4;
-            // }
+            if (
+                this.location_history.find(
+                    ([previous_x, previous_y]) =>
+                        previous_x == neighbour[0] && previous_y == neighbour[1]
+                )
+            ) {
+                // Discourage the organism from walking on itself.
+                distance += 4;
+            }
 
             if (
                 distance < best_distance ||
@@ -190,20 +210,13 @@ export class Organism {
     }
 
     defecate(environment) {
-        const particle_below = environment.get(...this.location_history[0]);
+        const particle_below = environment.get(this.x, this.y);
 
         if (particle_below instanceof AirParticle) {
-            const new_compost_particle = new CompostParticle(
-                ...this.location_history[0]
-            );
+            const new_compost_particle = new CompostParticle(this.x, this.y);
 
             new_compost_particle.nutrient_content = this.nutrient_level - 50;
             this.nutrient_level = 50;
-
-            if (particle_below instanceof OrganicParticle) {
-                new_compost_particle.nutrient_content +=
-                    particle_below.nutrient_level;
-            }
 
             environment.set(new_compost_particle);
             this.seek(DeadPlantParticle, environment);
