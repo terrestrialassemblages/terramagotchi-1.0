@@ -10,6 +10,15 @@ import {
 } from ".";
 
 import { DNANode } from "./plant_dna_node";
+import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO } from "../../environment";
+
+const MAX_HEALTH = 100  // Effectively how many frames a plant survives while "unhealthy" until dying
+                        // Might make rate double if unhealthy in water AND nutrients
+const MAX_ENERGY = 10  // Maximum amount of energy a plant particle will contain
+
+const MIN_HEALTHY_WATER = 3     // Minimum amount of water to be considered "healthy"; will not create energy to go below
+const MIN_HEALTHY_NUTRIENTS = 3 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+const CREATE_ENERGY_PROBABILITY = 1
 
 export class PlantParticleFamily extends OrganicParticle {
     constructor(x, y, plant_dna=null) {
@@ -20,14 +29,19 @@ export class PlantParticleFamily extends OrganicParticle {
 
         this.color_variance = 0.05
 
-        this.water_capacity = 50
-        this.nutrient_capacity = 50
+        this.water_capacity = 30
+        this.nutrient_capacity = 30
 
-        // List of plant-type particles to decide which particle type
+        // List of plant-type particles to decide which particle types plants absorb from
         this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle, BarkParticle]
+
         // List of neighbours for absorb functions
         this.__neighbours = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]]
+        this.__current_length = 1
 
+        this.health = MAX_HEALTH
+        this.energy = 0
+        this.energy_capacity = MAX_ENERGY
         
         this.dna = plant_dna
         if (this.dna == null) {
@@ -39,11 +53,25 @@ export class PlantParticleFamily extends OrganicParticle {
         this.activation_level = this.dna.node_activation_level || 0
         this.base_color = this.dna.color
         this.color_variance = 0.1
-        this.__current_length = 1
+    }
+    
+    // Below are some common functions for plant-type particles
+
+    generate_energy() {
+        if (!this.is_active)
+            return;
+        if (
+            this.water_level >= MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
+            this.nutrient_level >= MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
+            this.energy <= this.energy_capacity &&
+            Math.random() < CREATE_ENERGY_PROBABILITY
+        ) {
+            this.water_level -= WATER_ENERGY_RATIO
+            this.nutrient_level -= NUTRIENT_ENERGY_RATIO
+            this.energy += 1
+        }
     }
 
-
-    // Below are some common functions for plant-type particles
     weighted_random(items, weights) {
         /**
          * Returns a random element from an array with a weighted probability of choice.

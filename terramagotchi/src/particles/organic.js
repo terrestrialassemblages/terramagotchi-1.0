@@ -118,14 +118,14 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        // let transfer_amount = 1;
+        let transfer_amount = 1;
         // Method 2
         //let transfer_amount = Math.floor(Math.random() * 2);
         // Method 3
-        let transfer_amount = Math.floor(
-            (random_neighbour.nutrient_level - this.nutrient_level) /
-                (1.5 + Math.random())
-        );
+        // let transfer_amount = Math.floor(
+        //     (random_neighbour.nutrient_level - this.nutrient_level) /
+        //         (1.5 + Math.random())
+        // );
 
         // Attempt to absorb nutrient from random neighbour
         if (

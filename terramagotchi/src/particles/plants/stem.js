@@ -28,6 +28,7 @@ export class StemParticle extends PlantParticleFamily {
     update(environment) {
         this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
+        this.generate_energy()
 
         if (this.is_active) {
             switch (this.dna.node_type) {
@@ -65,6 +66,7 @@ export class StemParticle extends PlantParticleFamily {
             this.grow_next_DNA_child(environment)
             return;
         }
+
         this.grow(environment)
     }
 
@@ -74,6 +76,9 @@ export class StemParticle extends PlantParticleFamily {
          * @param {Environment} environment     The current game environment
          */
         
+         if (this.energy < this.activation_level)
+            return;
+
         let current_stem_thickness = this.dna.stem_thickness -
             (((this.__current_length / this.dna.stem_length)) * (this.dna.stem_thickness - this.dna.stem_end_thickness) | 0) - 1
 
@@ -86,7 +91,6 @@ export class StemParticle extends PlantParticleFamily {
         if (this.dna.bark_start_direction == -1)
             [this.left_bark_thickness, this.right_bark_thickness] = [this.right_bark_thickness, this.left_bark_thickness]
 
-        
         if (this.left_bark_thickness) {
             let left_neighbours_to_grow_bark = new Array()
             left_neighbours_to_grow_bark.push(this.convert_angle_to_offset(left_bark_angle))
@@ -94,8 +98,6 @@ export class StemParticle extends PlantParticleFamily {
             // left_neighbours_to_grow_bark.push(this.convert_angle_to_offset(left_bark_angle - 45))
 
             for (let neighbour of left_neighbours_to_grow_bark) {
-                if (this.water_level < this.activation_level || this.nutrient_level < this.activation_level)
-                    break;
                 let [offset_x, offset_y] = neighbour
                 let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
@@ -106,8 +108,7 @@ export class StemParticle extends PlantParticleFamily {
                     new_bark_particle.__thickness = this.left_bark_thickness
 
                     environment.set(new_bark_particle)
-                    this.water_level -= this.activation_level
-                    this.nutrient_level -= this.activation_level
+                    this.energy -= this.activation_level
                 }
             }
         }
@@ -119,8 +120,6 @@ export class StemParticle extends PlantParticleFamily {
             right_neighbours_to_grow_bark.push(this.convert_angle_to_offset(right_bark_angle - 45))
             
             for (let neighbour of right_neighbours_to_grow_bark) {
-                if (this.water_level < this.activation_level || this.nutrient_level < this.activation_level)
-                    break;
                 let [offset_x, offset_y] = neighbour
                 let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
@@ -132,8 +131,7 @@ export class StemParticle extends PlantParticleFamily {
                     new_bark_particle.__thickness = this.right_bark_thickness
 
                     environment.set(new_bark_particle)
-                    this.water_level -= this.activation_level
-                    this.nutrient_level -= this.activation_level
+                    this.energy -= this.activation_level
                 }
             }
         }
@@ -152,6 +150,8 @@ export class StemParticle extends PlantParticleFamily {
     }
 
     grow(environment) {
+        if (this.energy < this.activation_level)
+            return;
         let [offset_x, offset_y] = this.__growth_direction
         if (RANDOM_WEIGHT_GROWWTH_DIRECTION) {
             let random_rotation = this.weighted_random([-2, -1, 0, 1, 2], [0, 5, 100, 5, 0]);
@@ -167,8 +167,7 @@ export class StemParticle extends PlantParticleFamily {
         new_particle.__current_length = this.__current_length + 1
         
         environment.set(new_particle)
-        this.water_level -= this.activation_level
-        this.nutrient_level -= this.activation_level
+        this.energy -= this.activation_level
         this.is_active = false
     }
 
@@ -184,6 +183,10 @@ export class StemParticle extends PlantParticleFamily {
             this.is_active = false
             return;
         }
+        
+        if (this.energy < this.activation_level)
+            return;
+
         let next_child_dna = this.__unvisited_children.shift()
         let child_growth_direction = this.convert_angle_to_offset(this.__current_angle + next_child_dna.stem_angle)
         
@@ -197,8 +200,7 @@ export class StemParticle extends PlantParticleFamily {
             new_stem_particle.__current_length = 1
 
             environment.set(new_stem_particle)
-            this.water_level -= this.activation_level
-            this.nutrient_level -= this.activation_level
+            this.energy -= this.activation_level
         } else {
             this.__unvisited_children.push(next_child_dna)
         }

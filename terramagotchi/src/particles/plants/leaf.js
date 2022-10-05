@@ -9,7 +9,9 @@ export class LeafParticle extends PlantParticleFamily {
     update(environment) {
         this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
-        if (this.is_active && this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level)
+        this.generate_energy()
+        
+        if (this.is_active && this.energy >= this.activation_level)
             this.grow_children(environment)
     }
 
@@ -45,8 +47,7 @@ export class LeafParticle extends PlantParticleFamily {
 
                 environment.set(new_leaf)
                 
-                this.water_level -= this.activation_level
-                this.nutrient_level -= this.activation_level
+                this.energy -= this.activation_level
                 break //necessary
             }
         }

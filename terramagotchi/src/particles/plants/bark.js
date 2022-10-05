@@ -15,7 +15,9 @@ export class BarkParticle extends PlantParticleFamily {
     update(environment) {
         this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
-        if (this.__current_length < this.__thickness && this.water_level >= this.activation_level && this.nutrient_level >= this.activation_level)
+        this.generate_energy()
+
+        if (this.__current_length < this.__thickness && this.energy >= this.activation_level)
             this.grow(environment)
     }
 
@@ -28,8 +30,7 @@ export class BarkParticle extends PlantParticleFamily {
             new_bark_particle.__thickness = this.__thickness
             new_bark_particle.growth_angle = this.growth_angle
             environment.set(new_bark_particle)
-            this.water_level -= this.activation_level
-            this.nutrient_level -= this.activation_level
+            this.energy -= this.activation_level
         }
     }
 }
