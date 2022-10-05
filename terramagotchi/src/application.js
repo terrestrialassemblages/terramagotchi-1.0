@@ -7,17 +7,8 @@ import {
     WaterParticle,
 } from "./particles";
 
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
-    authDomain: "terramagotchi.firebaseapp.com",
-    projectId: "terramagotchi",
-    storageBucket: "terramagotchi.appspot.com",
-    messagingSenderId: "983152859921",
-    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
-};
-
 export class Application {
-    constructor(width = 400, height = 400, instance_id) {
+    constructor(width = 400, height = 400, instance_id, firebase_config) {
         this.width = width;
         this.height = height;
         this.instance_id = instance_id;
@@ -25,7 +16,7 @@ export class Application {
         this.environment.generate();
 
         // Initialise firebase and firestore
-        this.db = getFirestore(initializeApp(FIREBASE_CONFIG));
+        this.db = getFirestore(initializeApp(firebase_config));
         this.db_collection = this.initialize_db();
     }
 
