@@ -8,8 +8,8 @@ export class SoilParticle extends OrganicParticle {
         this.moveable = true;
         this.weight = 2;
 
-        this.water_level = 30;
-        this.nutrient_level = 30;
+        this.water_level = this.water_capacity;
+        this.nutrient_level = this.nutrient_capacity;
     }
 
     update(environment) {
