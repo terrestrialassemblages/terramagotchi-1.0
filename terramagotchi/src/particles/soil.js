@@ -5,8 +5,6 @@ export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
         super(x, y);
         this.base_color = "#92745B";
-        this.moveable = true;
-        this.weight = 2;
 
         this.water_level = this.water_capacity;
         this.nutrient_level = this.nutrient_capacity;
