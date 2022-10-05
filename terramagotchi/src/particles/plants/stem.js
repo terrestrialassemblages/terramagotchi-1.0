@@ -77,14 +77,11 @@ export class StemParticle extends PlantParticleFamily {
         let current_stem_thickness = this.dna.stem_thickness -
             (((this.__current_length / this.dna.stem_length)) * (this.dna.stem_thickness - this.dna.stem_end_thickness) | 0) - 1
 
-        // let left_bark_angle = this.growth_angle + 90
-        // let right_bark_angle = this.growth_angle - 90
         let left_bark_angle = this.__current_angle + 90
         let right_bark_angle = this.__current_angle - 90
 
         this.left_bark_thickness = (current_stem_thickness / 2) | 0
         this.right_bark_thickness = ((current_stem_thickness / 2) + 0.6) | 0 // "0.6" could be any float in range [0.5, 1.0), 0.6 just felt safe
-        // console.log(this.dna.stem_end_thickness)
 
         if (this.dna.bark_start_direction == -1)
             [this.left_bark_thickness, this.right_bark_thickness] = [this.right_bark_thickness, this.left_bark_thickness]
@@ -102,7 +99,6 @@ export class StemParticle extends PlantParticleFamily {
                 let [offset_x, offset_y] = neighbour
                 let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
-                // if (target_particle instanceof AirParticle || (target_particle instanceof BarkParticle && (target_particle.__current_length > 1 || target_particle.__thickness < this.left_bark_thickness))) {
                 if (target_particle instanceof AirParticle) {
                     let new_bark_particle = new BarkParticle(this.x+offset_x, this.y+offset_y, this.dna)
                     new_bark_particle.growth_angle = left_bark_angle

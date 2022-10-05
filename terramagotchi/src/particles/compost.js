@@ -8,9 +8,7 @@ export class CompostParticle extends OrganicParticle {
         this.moveable = true;
         this.weight = 2;
 
-        this.water_level = 0;
         this.water_capacity = 0;
-        this.nutrient_level = 0;
         this.nutrient_capacity = 0;
 
         this.nutrient_content = 1000;

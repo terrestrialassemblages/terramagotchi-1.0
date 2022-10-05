@@ -9,7 +9,7 @@ function randint(start, end=null) {
     return start + Math.random() * (end - start + 1) | 0
 }
 
-export default function generate_tree_dna(TREE_TYPE=PALM_TREE) {
+export default function generate_tree_dna(TREE_TYPE=SUNFLOWER) {
 let tree_direction, tree_scale, tree_angle_offset, tree_height
 switch (TREE_TYPE) {
     case LAVENDER:
