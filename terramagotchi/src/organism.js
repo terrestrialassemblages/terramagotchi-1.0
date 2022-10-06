@@ -3,10 +3,7 @@ import {
     BoundaryParticle,
     CompostParticle,
     DeadPlantParticle,
-    OrganicParticle,
-    WaterParticle,
 } from "./particles";
-import { LiquidParticle } from "./particles/liquid";
 
 export class Organism {
     alive = true;
@@ -17,10 +14,12 @@ export class Organism {
 
     x = 120;
     y = 120;
-    location_history = [[120, 121]];
+    facing = [0, -1]; // Spawns facing downwards.
+    location_history = [];
     target_location = null;
     target_location_reseek_timer = 1;
     current_objective = "CONSUME"; // Possible objectives are CONSUME, DEFECATE and WANDER
+    wander_direction;
 
     head_color = "#550000";
     body_color = "#DD5500";
@@ -30,7 +29,7 @@ export class Organism {
     }
 
     update(environment) {
-        if (this.location_history.length - 1 > this.nutrient_level / 100)
+        if (this.location_history.length > this.nutrient_level / 100)
             this.location_history.length = this.nutrient_level / 100;
         const fell = this.compute_gravity(environment);
         if (fell) return;
@@ -80,7 +79,7 @@ export class Organism {
                             this.seek(DeadPlantParticle, environment);
                         }
                     } else {
-                        this.move(environment)
+                        this.move(environment);
                     }
                     break;
                 case "DEFECATE":
@@ -91,7 +90,7 @@ export class Organism {
                     ) {
                         this.defecate(environment);
                     } else {
-                        this.move(environment)
+                        this.move(environment);
                     }
                     break;
                 case "WANDER":
@@ -112,7 +111,7 @@ export class Organism {
             environment.get(this.x + 1, this.y - 1).weight <= 1
         ) {
             this.location_history.unshift([this.x, this.y]);
-
+            this.facing = [0, -1];
             this.y--;
             return true;
         }
@@ -124,8 +123,7 @@ export class Organism {
             Seek for the next target location.
         */
         const MAX_DEPTH = 100;
-        const facing_x = this.x - this.location_history[0][0];
-        const facing_y = this.y - this.location_history[0][1];
+        const [facing_x, facing_y] = this.facing;
 
         for (let depth = 0; depth <= MAX_DEPTH; depth++) {
             for (let pan = -depth * 2; pan <= depth * 2; pan++) {
@@ -161,6 +159,7 @@ export class Organism {
             this.location_history.unshift([this.x, this.y]);
             const [new_x, new_y] =
                 this.__choose_best_neighbour(valid_neighbours);
+            this.facing = [new_x - this.x, new_y - this.y];
             this.x = new_x;
             this.y = new_y;
         }
