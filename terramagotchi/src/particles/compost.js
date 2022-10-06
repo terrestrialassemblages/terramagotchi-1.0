@@ -6,7 +6,9 @@ export class CompostParticle extends OrganicParticle {
         super(x, y);
         this.base_color = "#00FF00";
 
+        this.water_level = 0;
         this.water_capacity = 0;
+        this.nutrient_level = 0;
         this.nutrient_capacity = 0;
 
         this.nutrient_content = 1000;

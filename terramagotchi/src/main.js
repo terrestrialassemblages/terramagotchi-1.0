@@ -10,7 +10,6 @@ import {
     SteamParticle,
     CompostParticle,
 } from "./particles";
-import { SeedParticle } from "./particles/plants";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -31,7 +30,7 @@ export const sketch = (s) => {
         canvas.canvas.style = ""; // Remove inline styling so that css works.
         s.noStroke();
         s.colorMode(s.HSB);
-        s.frameRate(90);
+        // s.frameRate(20);
         s.background("#87CEEB");
     };
 
@@ -63,8 +62,6 @@ export const sketch = (s) => {
         3: WaterParticle,
         4: SteamParticle,
         5: CompostParticle,
-        6: SeedParticle,
-        7: SeedParticle,
     };
 
     s.keyPressed = () => {

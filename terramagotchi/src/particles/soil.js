@@ -6,8 +6,8 @@ export class SoilParticle extends OrganicParticle {
         super(x, y);
         this.base_color = "#92745B";
 
-        this.water_level = this.water_capacity;
-        this.nutrient_level = this.nutrient_capacity;
+        this.water_level = 30;
+        this.nutrient_level = 30;
     }
 
     update(environment) {

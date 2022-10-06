@@ -5,19 +5,7 @@ import {
     CompostParticle,
     WaterParticle,
     AirParticle,
-    OrganicParticle,
 } from "./particles";
-
-import {
-    PlantParticle,
-    SeedParticle,
-    DeadPlantParticle,
-    LeafParticle,
-    DeadLeafParticle,
-    FlowerParticle,
-    RootParticle,
-    StemParticle,
-} from "./particles/plants";
 
 export class Environment {
     constructor(width, height) {
@@ -68,7 +56,7 @@ export class Environment {
                 }
             }
         }
-        this.set(new SeedParticle(180, 140))
+
         this.refresh()
     }
 
@@ -95,11 +83,6 @@ export class Environment {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroyed = true;
-
-        if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
-            particle.water_level += destroyed_particle.water_level
-            particle.nutrient_level += destroyed_particle.nutrient_level
-        }
         
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
         particle.rerender = true;

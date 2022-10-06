@@ -9,22 +9,20 @@ export class OrganicParticle extends BaseParticle {
 
         this.__nutrient_level = 0;
         this.nutrient_capacity = 100;
+        this.__nutrient_render_step = 7;
 
         this.__water_level = 0;
         this.water_capacity = 100;
-
-        this.__rerender_step = 10 + Math.floor(Math.random() * 10);
+        this.__water_render_step = 10 + Math.floor(Math.random() * 10);
 
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
-
-        this.__transfer_difference_minimum = 3
     }
 
     set water_level(level) {
         if (
-            Math.floor(this.__water_level / this.__rerender_step) !=
-            Math.floor(level / this.__rerender_step)
+            Math.floor(this.__water_level / this.__water_render_step) !=
+            Math.floor(level / this.__water_render_step)
         ) {
             this.rerender = true;
         }
@@ -33,7 +31,7 @@ export class OrganicParticle extends BaseParticle {
     }
 
     set nutrient_level(level) {
-        // if (Math.floor(this.__nutrient_level / this.__render_step) != Math.floor(level / this.__render_step)) {
+        // if (Math.floor(this.__nutrient_level / this.__nutrient_render_step) != Math.floor(level / this.__nutrient_render_step)) {
         //     this.rerender = true;
         // }
 
@@ -121,7 +119,7 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        // let transfer_amount = 1;
+        //let transfer_amount = 5;
         // Method 2
         //let transfer_amount = Math.floor(Math.random() * 2);
         // Method 3
