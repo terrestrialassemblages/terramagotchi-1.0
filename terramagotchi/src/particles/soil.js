@@ -1,6 +1,7 @@
 import { OrganicParticle } from "./organic";
 import { AirParticle } from "./air";
 import { CompostParticle } from "./compost";
+import { WaterParticle } from "./water";
 
 export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
@@ -14,7 +15,7 @@ export class SoilParticle extends OrganicParticle {
         this.nutrient_level = 30;
 
         // Poisson distribution chance to grow grass
-        this.grass_grow_chance = 0.0005;
+        this.grass_grow_chance = 0.001;
     }
 
     update(environment) {
@@ -72,7 +73,7 @@ class GrassParticle extends SoilParticle {
         this.grow_stacked_grass = Math.random() < this.stacked_grass_chance;
 
         // Poisson distribution chance to die
-        this.grass_death_chance = 0.001;
+        this.grass_death_chance = 0.005;
     }
 
     update(environment) {
@@ -89,8 +90,10 @@ class GrassParticle extends SoilParticle {
 
         let particel_above = environment.get(this.x,this.y+1);
 
-        // Particle above is not Air or Grass, and Poisson Distribution chance
-        if (!(particel_above instanceof AirParticle || particel_above instanceof GrassParticle) && 
+        // Particle above is not Air, Water or Grass, and Poisson Distribution chance
+        if (!(particel_above instanceof AirParticle || 
+            particel_above instanceof GrassParticle || 
+            particel_above instanceof WaterParticle) && 
             Math.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
             let new_compost = new CompostParticle(this.x,this.y);
