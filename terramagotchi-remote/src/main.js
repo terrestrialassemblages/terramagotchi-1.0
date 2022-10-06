@@ -2,15 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getAuth, signInAnonymously, RecaptchaVerifier, onAuthStateChanged } from "firebase/auth";
 
-
-// Fitting to screen size
-const on_resize = () => {
-    document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
-};
-
-on_resize();
-window.addEventListener("resize", on_resize());
-
 const firebaseConfig = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
     authDomain: "terramagotchi.firebaseapp.com",
@@ -38,7 +29,7 @@ window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
     }
 }, auth);
 
-recaptchaVerifier.render().then((widgetId) => {
+window.recaptchaVerifier.render().then((widgetId) => {
     window.recaptchaWidgetId = widgetId;
 });
 
@@ -48,32 +39,29 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         uid = user.uid;
     } else {
-        uid = null
+        uid = null;
     }
 });
 
 // Gets the instance_id from /?id={uuid}
-const instance = (new URL(document.location)).searchParams.get("id");
+const id_param = (new URL(document.location)).searchParams.get("id");
+const instance = id_param ? id_param : "main"; // Constant instance id for debug
 
-const particle_button_click = (type, button) => {
+const particle_button_click = (type) => {
     if (uid !== null) {
-        userInteract({ document: type, instance_id: instance }).then((result) => {
-            console.log(result.data.message)
-            button.setAttribute("disabled", true);
+        userInteract({ document: type, instance_id: instance}).then((result) => {
+            console.log(result.data.message);
         });
-        setTimeout(() => {
-            button.removeAttribute("disabled");
-        }, 2000);
     } else {
-        recaptchaVerifier.verify();
+        window.recaptchaVerifier.verify();
     }
 }
 
 const water_button = document.getElementById("water-button");
-water_button.addEventListener('click', () => particle_button_click("water", water_button));
+water_button.addEventListener('click', () => particle_button_click("water"));
 
 const soil_button = document.getElementById("soil-button");
-soil_button.addEventListener('click', () => particle_button_click("soil", soil_button));
+soil_button.addEventListener('click', () => particle_button_click("soil"));
 
 
 
