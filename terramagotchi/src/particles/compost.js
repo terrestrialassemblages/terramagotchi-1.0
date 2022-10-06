@@ -4,7 +4,10 @@ import { AirParticle } from "./air";
 export class CompostParticle extends OrganicParticle {
     constructor(x, y) {
         super(x, y);
-        this.base_color = "#00FF00";
+
+        this.base_color = "#664E00";
+        this.moveable = true;
+        this.weight = 2;
 
         this.water_level = 0;
         this.water_capacity = 0;
