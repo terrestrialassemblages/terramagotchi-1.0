@@ -60,7 +60,7 @@ export class SoilParticle extends OrganicParticle {
     }
 }
 
-class GrassParticle extends SoilParticle {
+export class GrassParticle extends SoilParticle {
     constructor(x, y) {
         super(x, y);
         this.base_color = "#44B300";
