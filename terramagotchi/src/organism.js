@@ -5,6 +5,8 @@ import {
     DeadPlantParticle,
 } from "./particles";
 
+const ORGANISM_UPDATE_INTERVAL = 5;
+
 export class Organism {
     alive = true;
     nutrient_capacity = 1000;
@@ -19,85 +21,93 @@ export class Organism {
     target_location = null;
     reseek_timer = 1;
     current_objective = "CONSUME"; // Possible objectives are CONSUME, DEFECATE and WANDER
+    update_timer = ORGANISM_UPDATE_INTERVAL;
 
     head_color = "#550000";
-    body_color = "#DD5500";
+    body_color = "#bc4b52";
 
     constructor(environment) {
+        // Ensure
+        this.update_timer = (Math.random() * ORGANISM_UPDATE_INTERVAL) >> 0;
         this.seek(DeadPlantParticle, environment);
     }
 
     update(environment) {
+        this.update_timer--;
+
         if (this.location_history.length > this.nutrient_level / 100)
             this.location_history.length = this.nutrient_level / 100;
         const fell = this.compute_gravity(environment);
         if (fell) return;
 
-        if (this.nutrient_level > 0 && this.water_level > 0) {
-            // if (this.nutrient_level == this.nutrient_capacity) {
-            //     this.target_location === null
-            //         ? this.move(environment)
-            //         : this.defecate(environment);
-            //     // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
-            // } else if (
-            //     this.target_location !== null &&
-            //     this.x == this.target_location[0] &&
-            //     this.y == this.target_location[1]
-            // ) {
-            //     this.consume(environment);
+        if (this.update_timer <= 0) {
+            this.update_timer = ORGANISM_UPDATE_INTERVAL;
+            if (this.nutrient_level > 0 && this.water_level > 0) {
+                // if (this.nutrient_level == this.nutrient_capacity) {
+                //     this.target_location === null
+                //         ? this.move(environment)
+                //         : this.defecate(environment);
+                //     // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
+                // } else if (
+                //     this.target_location !== null &&
+                //     this.x == this.target_location[0] &&
+                //     this.y == this.target_location[1]
+                // ) {
+                //     this.consume(environment);
 
-            //     if (this.nutrient_level == this.nutrient_capacity) {
-            //         this.current_objective = "DEFECATE";
-            //     } else {
-            //         this.seek(DeadPlantParticle, environment);
-            //     }
-            // } else {
-            //     this.move(environment);
-            // }
+                //     if (this.nutrient_level == this.nutrient_capacity) {
+                //         this.current_objective = "DEFECATE";
+                //     } else {
+                //         this.seek(DeadPlantParticle, environment);
+                //     }
+                // } else {
+                //     this.move(environment);
+                // }
 
-            this.reseek_timer--;
-            if (this.reseek_timer <= 0) {
-                console.log("RESEEK");
-                this.current_objective = "CONSUME";
-                this.seek(DeadPlantParticle, environment);
-            }
+                this.reseek_timer--;
+                if (this.reseek_timer <= 0) {
+                    console.log("RESEEK");
+                    this.current_objective = "CONSUME";
+                    this.seek(DeadPlantParticle, environment);
+                }
 
-            switch (this.current_objective) {
-                case "CONSUME":
-                    console.log("consume");
-                    if (
-                        this.x == this.target_location[0] &&
-                        this.y == this.target_location[1]
-                    ) {
-                        this.consume(environment);
+                switch (this.current_objective) {
+                    case "CONSUME":
+                        console.log("consume");
+                        if (
+                            this.x == this.target_location[0] &&
+                            this.y == this.target_location[1]
+                        ) {
+                            this.consume(environment);
 
-                        if (this.nutrient_level == this.nutrient_capacity) {
-                            this.current_objective = "DEFECATE";
+                            if (this.nutrient_level == this.nutrient_capacity) {
+                                this.current_objective = "DEFECATE";
+                            } else {
+                                this.seek(DeadPlantParticle, environment);
+                            }
                         } else {
-                            this.seek(DeadPlantParticle, environment);
+                            this.move(environment);
                         }
-                    } else {
+                        break;
+                    case "DEFECATE":
+                        console.log("defecate");
+                        if (
+                            this.x == this.target_location[0] &&
+                            this.y == this.target_location[1]
+                        ) {
+                            this.defecate(environment);
+                        } else {
+                            this.move(environment);
+                        }
+                        break;
+                    case "WANDER":
                         this.move(environment);
-                    }
-                    break;
-                case "DEFECATE":
-                    console.log("defecate");
-                    if (
-                        this.x == this.target_location[0] &&
-                        this.y == this.target_location[1]
-                    ) {
-                        this.defecate(environment);
-                    } else {
-                        this.move(environment);
-                    }
-                    break;
-                case "WANDER":
-                    this.move(environment);
-                    console.log("wander");
-                    break;
+                        console.log("wander");
+                        break;
+                }
+            } else {
+                this.alive = false;
             }
-        } else {
-            this.alive = false;
         }
     }
 
