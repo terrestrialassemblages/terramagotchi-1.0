@@ -18,7 +18,9 @@ export class Organism {
     x = 120;
     y = 120;
     location_history = [[120, 121]];
-    target_location = [120, 120];
+    target_location = null;
+    target_location_reseek_timer = 1;
+    current_objective = "CONSUME"; // Possible objectives are CONSUME, DEFECATE and WANDER
 
     head_color = "#550000";
     body_color = "#DD5500";
@@ -28,23 +30,74 @@ export class Organism {
     }
 
     update(environment) {
-        if (this.location_history.length - 1 > this.nutrient_level / 50)
-            this.location_history.length = this.nutrient_level / 50
+        if (this.location_history.length - 1 > this.nutrient_level / 100)
+            this.location_history.length = this.nutrient_level / 100;
         const fell = this.compute_gravity(environment);
         if (fell) return;
 
         if (this.nutrient_level > 0 && this.water_level > 0) {
-            if (this.nutrient_level == this.nutrient_capacity) {
-                this.defecate(environment);
-                // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
-            } else if (
-                this.x == this.target_location[0] &&
-                this.y == this.target_location[1]
-            ) {
-                this.consume(environment);
+            // if (this.nutrient_level == this.nutrient_capacity) {
+            //     this.target_location === null
+            //         ? this.move(environment)
+            //         : this.defecate(environment);
+            //     // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
+            // } else if (
+            //     this.target_location !== null &&
+            //     this.x == this.target_location[0] &&
+            //     this.y == this.target_location[1]
+            // ) {
+            //     this.consume(environment);
+
+            //     if (this.nutrient_level == this.nutrient_capacity) {
+            //         this.current_objective = "DEFECATE";
+            //     } else {
+            //         this.seek(DeadPlantParticle, environment);
+            //     }
+            // } else {
+            //     this.move(environment);
+            // }
+
+            this.target_location_reseek_timer--;
+            if (this.target_location_reseek_timer <= 0) {
+                console.log("RESEEK");
+                this.target_location_reseek_timer = 600;
+                this.current_objective = "CONSUME";
                 this.seek(DeadPlantParticle, environment);
-            } else {
-                if (Math.random() < 0.3) this.move(environment);
+            }
+
+            switch (this.current_objective) {
+                case "CONSUME":
+                    console.log("consume");
+                    if (
+                        this.x == this.target_location[0] &&
+                        this.y == this.target_location[1]
+                    ) {
+                        this.consume(environment);
+
+                        if (this.nutrient_level == this.nutrient_capacity) {
+                            this.current_objective = "DEFECATE";
+                        } else {
+                            this.seek(DeadPlantParticle, environment);
+                        }
+                    } else {
+                        this.move(environment)
+                    }
+                    break;
+                case "DEFECATE":
+                    console.log("defecate");
+                    if (
+                        this.x == this.target_location[0] &&
+                        this.y == this.target_location[1]
+                    ) {
+                        this.defecate(environment);
+                    } else {
+                        this.move(environment)
+                    }
+                    break;
+                case "WANDER":
+                    this.move(environment);
+                    console.log("wander");
+                    break;
             }
         } else {
             this.alive = false;
@@ -71,10 +124,8 @@ export class Organism {
             Seek for the next target location.
         */
         const MAX_DEPTH = 100;
-        const facing_x =
-            this.x - this.location_history[0][0];
-        const facing_y =
-            this.y - this.location_history[0][1];
+        const facing_x = this.x - this.location_history[0][0];
+        const facing_y = this.y - this.location_history[0][1];
 
         for (let depth = 0; depth <= MAX_DEPTH; depth++) {
             for (let pan = -depth * 2; pan <= depth * 2; pan++) {
@@ -82,12 +133,21 @@ export class Organism {
                     this.x + facing_x * depth + facing_y * pan,
                     this.y + facing_y * depth + facing_x * pan,
                 ];
-                if (environment.get(...check_location) instanceof looking_for && this.__is_location_accessible(...check_location, environment)) {
+                if (
+                    environment.get(...check_location) instanceof looking_for &&
+                    this.__is_location_accessible(
+                        ...check_location,
+                        environment
+                    )
+                ) {
                     this.target_location = check_location;
                     return;
                 }
             }
         }
+
+        this.current_objective = "WANDER";
+        this.target_location = null;
     }
 
     move(environment) {
@@ -166,14 +226,23 @@ export class Organism {
     }
 
     __choose_best_neighbour(valid_neighbours) {
-        let best_neighbour = valid_neighbours[0];
-        let best_distance =
-            Math.abs(this.target_location[0] - best_neighbour[0]) +
-            Math.abs(this.target_location[1] - best_neighbour[1]); // Manhattan distance
+        const current_distance =
+            this.target_location === null
+                ? 0
+                : Math.abs(this.target_location[0] - this.x) +
+                  Math.abs(this.target_location[1] - this.y);
+        let best_neighbour;
+        let best_distance = Infinity;
         for (let neighbour of valid_neighbours) {
             let distance =
-                Math.abs(this.target_location[0] - neighbour[0]) +
-                Math.abs(this.target_location[1] - neighbour[1]);
+                this.target_location === null
+                    ? 0
+                    : Math.abs(this.target_location[0] - neighbour[0]) +
+                      Math.abs(this.target_location[1] - neighbour[1]);
+
+            // Add some randomness to bug movement
+            distance +=
+                (Math.random() * (current_distance - distance + 2)) >> 0;
 
             if (
                 this.location_history.find(
@@ -182,7 +251,7 @@ export class Organism {
                 )
             ) {
                 // Discourage the organism from walking on itself.
-                distance += 4;
+                distance += 10;
             }
 
             if (
@@ -225,6 +294,7 @@ export class Organism {
             this.nutrient_level = 100;
 
             environment.set(new_compost_particle);
+            this.current_objective = "CONSUME";
             this.seek(DeadPlantParticle, environment);
         } else {
             this.seek(AirParticle, environment);
