@@ -77,7 +77,6 @@ export const sketch = (s) => {
             application.height - 1 - Math.floor(s.mouseY / cell_size),
         ];
         application.environment.set(new keys[current_material](x, y));
-        console.log(s.frameRate())
     };
 };
 
