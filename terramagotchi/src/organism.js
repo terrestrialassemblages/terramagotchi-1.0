@@ -17,9 +17,8 @@ export class Organism {
     facing = [0, -1]; // Spawns facing downwards.
     location_history = [];
     target_location = null;
-    target_location_reseek_timer = 1;
+    reseek_timer = 1;
     current_objective = "CONSUME"; // Possible objectives are CONSUME, DEFECATE and WANDER
-    wander_direction;
 
     head_color = "#550000";
     body_color = "#DD5500";
@@ -56,10 +55,9 @@ export class Organism {
             //     this.move(environment);
             // }
 
-            this.target_location_reseek_timer--;
-            if (this.target_location_reseek_timer <= 0) {
+            this.reseek_timer--;
+            if (this.reseek_timer <= 0) {
                 console.log("RESEEK");
-                this.target_location_reseek_timer = 600;
                 this.current_objective = "CONSUME";
                 this.seek(DeadPlantParticle, environment);
             }
@@ -139,12 +137,14 @@ export class Organism {
                     )
                 ) {
                     this.target_location = check_location;
+                    this.reseek_timer = 600;
                     return;
                 }
             }
         }
 
         this.current_objective = "WANDER";
+        this.reseek_timer = 300;
         this.target_location = null;
     }
 
@@ -230,7 +230,7 @@ export class Organism {
                 ? 0
                 : Math.abs(this.target_location[0] - this.x) +
                   Math.abs(this.target_location[1] - this.y);
-        let best_neighbour;
+        let best_neighbours = [];
         let best_distance = Infinity;
         for (let neighbour of valid_neighbours) {
             let distance =
@@ -243,6 +243,16 @@ export class Organism {
             distance +=
                 (Math.random() * (current_distance - distance + 2)) >> 0;
 
+            if (this.current_objective == "WANDER" && Math.random() < 0.8) {
+                const neighbour_direction_x = neighbour[0] - this.x;
+                const neighbour_direction_y = neighbour[1] - this.y;
+                if (
+                    neighbour_direction_x == this.facing[0] &&
+                    neighbour_direction_y == this.facing[1]
+                )
+                    distance -= 2;
+            }
+
             if (
                 this.location_history.find(
                     ([previous_x, previous_y]) =>
@@ -253,16 +263,15 @@ export class Organism {
                 distance += 10;
             }
 
-            if (
-                distance < best_distance ||
-                (distance == best_distance &&
-                    Math.random() < 1 / valid_neighbours.length)
-            ) {
-                best_neighbour = neighbour;
+            if (distance < best_distance) {
+                best_neighbours = [neighbour];
+                best_distance = distance;
+            } else if (distance == best_distance) {
+                best_neighbours.push(neighbour);
                 best_distance = distance;
             }
         }
-        return best_neighbour;
+        return best_neighbours[(Math.random() * best_neighbours.length) >> 0];
     }
 
     consume(environment) {
