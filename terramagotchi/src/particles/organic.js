@@ -75,9 +75,9 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        let transfer_amount = 1;
+        // let transfer_amount = 1;
         // Method 2
-        // let transfer_amount = Math.floor(Math.random() * 10);
+        let transfer_amount = Math.floor(Math.random() * 10);
         // Method 3
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + Math.random()));
 
