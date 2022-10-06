@@ -7,6 +7,7 @@ import {
     RootParticle,
     StemParticle,
     BarkParticle,
+    DeadPlantParticle,
 } from ".";
 
 import { DNANode } from "./plant_dna_node";
@@ -42,6 +43,7 @@ export class PlantParticleFamily extends OrganicParticle {
         this.health = MAX_HEALTH
         this.energy = 0
         this.energy_capacity = MAX_ENERGY
+        this.dead = false
         
         this.dna = plant_dna
         if (this.dna == null) {
@@ -70,6 +72,34 @@ export class PlantParticleFamily extends OrganicParticle {
             this.nutrient_level -= NUTRIENT_ENERGY_RATIO
             this.energy += 1
         }
+    }
+
+    health_update(environment) {
+        if (this.dead)
+            return this.die()
+        let damage_to_take
+        if (this.water_level < MIN_HEALTHY_WATER)
+            damage_to_take++
+        if (this.nutrient_level < MIN_HEALTHY_NUTRIENTS)
+            damage_to_take++
+        this.health -= damage_to_take
+
+        if (damage_to_take == 0)
+            this.health = Math.min(this.health + 2, MAX_HEALTH)
+        
+        if (this.health <= 0)
+            this.die(environment)
+    }
+
+    die(environment) {
+        this.dead = true
+        for (let [offset_x, offset_y] of this.__neighbours) {
+            let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
+            if (target_particle instanceof PlantParticleFamily)
+                target_particle.dead = true
+        }
+        let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        environment.set(new_dead_plant)
     }
 
     weighted_random(items, weights) {

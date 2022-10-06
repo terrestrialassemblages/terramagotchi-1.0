@@ -1,7 +1,7 @@
-import { Plant } from "./plant";
-import { CompostParticle } from "../particles";
+import { PlantParticleFamily } from "./plant";
+import { CompostParticle } from "..";
 
-export class DeadPlantParticle extends Plant {
+export class DeadPlantParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.moveable = true;
