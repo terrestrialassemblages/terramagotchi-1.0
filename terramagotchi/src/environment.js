@@ -1,4 +1,6 @@
 import { FastRandom } from "./fast-random";
+import { createNoise2D } from 'simplex-noise';
+
 import {
     BoundaryParticle,
     StoneParticle,
@@ -41,37 +43,52 @@ export class Environment {
     }
 
     generate() {
+
+        // How far the river can randomly move
+        let max_river_offset = 25;
+        let river_offset = (Math.random() * max_river_offset * 2) - max_river_offset;
+        // Half of how wide the river is
+        let river_radius = 40;
+        // How deep the river is
+        let river_depth = 20;
+
+        // Randomly chooses offset for bumps
+        let random_bump = Math.random() * 1000;
+
+        const noise2D = createNoise2D();
+
         /**
          * Populates the application environment with particles
          */
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
-                if (
-                    x == 0 ||
-                    y == 0 ||
-                    x == this.width - 1 ||
-                    y == this.height - 1
-                ) {
+                // Horizontal distance from particle to the centre of the river
+                let river_distance = Math.abs(90 - x + river_offset);
+
+                // Set Boundary Particles
+                if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1 ) {
                     this.set(new BoundaryParticle(x, y));
-                } else if (
-                    y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
-                    25
-                ) {
+                } 
+                // Set bottom Stone Particles
+                else if (y < 30 - Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 250))) {
                     this.set(new StoneParticle(x, y));
-                } else if (
-                    y +
-                        Math.floor(
-                            50 * Math.sin(((x + 100) * Math.PI) / 200) +
-                                4 * Math.sin((x + 20) / 12)
-                        ) <
-                    85
+                }
+                // Set Soil Particles
+                else if (y < 160 - river_depth - river_depth * 
+                    (Math.sin((Math.min(river_radius, river_distance) + river_radius / 2) * Math.PI / river_radius)) 
+                    + 16 * noise2D((x + random_bump) / 96, 0)
+                    + 4 * noise2D((x + random_bump) / 32, 1000)
+                    + 2 * noise2D((x + random_bump) / 16, 2000)
+                    + noise2D((x + random_bump) / 8, 3000)
                 ) {
                     this.set(new SoilParticle(x, y));
-                } else if (y < 100) {
+                } 
+                // Set Water Particles
+                else if (y < 155 && river_distance < river_radius) {
                     this.set(new WaterParticle(x, y));
-                } else if (y > 140 && FastRandom.random() < 0.01) {
-                    this.set(new AirParticle(x, y));
-                } else {
+                } 
+                // Set Air Particles
+                else {
                     this.set(new AirParticle(x, y));
                 }
             }
