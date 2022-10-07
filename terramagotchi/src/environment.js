@@ -52,9 +52,6 @@ export class Environment {
         // How deep the river is
         let river_depth = 20;
 
-        // Randomly chooses offset for bumps
-        let random_bump = Math.random() * 1000;
-
         const noise2D = createNoise2D();
 
         /**
@@ -76,10 +73,10 @@ export class Environment {
                 // Set Soil Particles
                 else if (y < 160 - river_depth - river_depth * 
                     (Math.sin((Math.min(river_radius, river_distance) + river_radius / 2) * Math.PI / river_radius)) 
-                    + 16 * noise2D((x + random_bump) / 96, 0)
-                    + 4 * noise2D((x + random_bump) / 32, 1000)
-                    + 2 * noise2D((x + random_bump) / 16, 2000)
-                    + noise2D((x + random_bump) / 8, 3000)
+                    + 16 * noise2D((x) / 96, 0)
+                    + 4 * noise2D((x) / 32, 1000)
+                    + 2 * noise2D((x) / 16, 2000)
+                    + noise2D((x) / 8, 3000)
                 ) {
                     this.set(new SoilParticle(x, y));
                 } 
