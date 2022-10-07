@@ -19,7 +19,7 @@ export class Organism {
     facing = [0, -1]; // Spawns facing downwards.
     location_history = [];
     target_location = null;
-    reseek_timer = 1;
+    reseek_timer = 0;
     current_objective = "CONSUME"; // Possible objectives are CONSUME, DEFECATE and WANDER
     update_timer = ORGANISM_UPDATE_INTERVAL;
 
@@ -43,37 +43,14 @@ export class Organism {
         if (this.update_timer <= 0) {
             this.update_timer = ORGANISM_UPDATE_INTERVAL;
             if (this.nutrient_level > 0 && this.water_level > 0) {
-                // if (this.nutrient_level == this.nutrient_capacity) {
-                //     this.target_location === null
-                //         ? this.move(environment)
-                //         : this.defecate(environment);
-                //     // BUG: This can cause the organism to end up stuck trying to poop but unable to move as move() is never called if we end up here.
-                // } else if (
-                //     this.target_location !== null &&
-                //     this.x == this.target_location[0] &&
-                //     this.y == this.target_location[1]
-                // ) {
-                //     this.consume(environment);
-
-                //     if (this.nutrient_level == this.nutrient_capacity) {
-                //         this.current_objective = "DEFECATE";
-                //     } else {
-                //         this.seek(DeadPlantParticle, environment);
-                //     }
-                // } else {
-                //     this.move(environment);
-                // }
-
-                this.reseek_timer--;
                 if (this.reseek_timer <= 0) {
-                    console.log("RESEEK");
                     this.current_objective = "CONSUME";
                     this.seek(DeadPlantParticle, environment);
                 }
+                this.reseek_timer--;
 
                 switch (this.current_objective) {
                     case "CONSUME":
-                        console.log("consume");
                         if (
                             this.x == this.target_location[0] &&
                             this.y == this.target_location[1]
@@ -86,11 +63,15 @@ export class Organism {
                                 this.seek(DeadPlantParticle, environment);
                             }
                         } else {
-                            this.move(environment);
+                            if (environment.get(...this.target_location) instanceof DeadPlantParticle) {
+                                this.move(environment);
+                            } else {
+                                this.seek(DeadPlantParticle, environment);
+                                this.move(environment);
+                            }
                         }
                         break;
                     case "DEFECATE":
-                        console.log("defecate");
                         if (
                             this.x == this.target_location[0] &&
                             this.y == this.target_location[1]
@@ -102,7 +83,6 @@ export class Organism {
                         break;
                     case "WANDER":
                         this.move(environment);
-                        console.log("wander");
                         break;
                 }
             } else {
@@ -131,22 +111,27 @@ export class Organism {
             Seek for the next target location.
         */
         const MAX_DEPTH = 100;
-        const [facing_x, facing_y] = this.facing;
-
-        for (let depth = 0; depth <= MAX_DEPTH; depth++) {
-            for (let pan = -depth * 2; pan <= depth * 2; pan++) {
-                const check_location = [
-                    this.x + facing_x * depth + facing_y * pan,
-                    this.y + facing_y * depth + facing_x * pan,
-                ];
+        // Search in circles (really diamonds) based on the manhattan distance from itself.
+        for (let depth = 1; depth <= MAX_DEPTH; depth++) {
+            let y = 0;
+            for (let x = depth; x >= -depth; x--) {
+                y = Math.abs(x) - depth;
                 if (
-                    environment.get(...check_location) instanceof looking_for &&
-                    this.__is_location_accessible(
-                        ...check_location,
-                        environment
-                    )
+                    environment.get(this.x + x, this.y + y) instanceof looking_for &&
+                    this.__is_location_accessible(this.x + x, this.y + y, environment)
                 ) {
-                    this.target_location = check_location;
+                    this.target_location = [this.x + x, this.y + y];
+                    this.reseek_timer = 600;
+                    return;
+                }
+            }
+            for (let x = -(depth - 1); x <= depth - 1; x++) {
+                y = depth - Math.abs(x);
+                if (
+                    environment.get(this.x + x, this.y + y) instanceof looking_for &&
+                    this.__is_location_accessible(this.x + x, this.y + y, environment)
+                ) {
+                    this.target_location = [this.x + x, this.y + y];
                     this.reseek_timer = 600;
                     return;
                 }
@@ -154,7 +139,7 @@ export class Organism {
         }
 
         this.current_objective = "WANDER";
-        this.reseek_timer = 300;
+        this.reseek_timer = 60;
         this.target_location = null;
     }
 
