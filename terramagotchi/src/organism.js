@@ -3,9 +3,16 @@ import {
     BoundaryParticle,
     CompostParticle,
     DeadPlantParticle,
+    SoilParticle,
 } from "./particles";
 
 const ORGANISM_UPDATE_INTERVAL = 5;
+const CAN_TRAVERSE = [
+    AirParticle,
+    SoilParticle,
+    DeadPlantParticle,
+    CompostParticle,
+];
 
 export class Organism {
     alive = true;
@@ -34,6 +41,7 @@ export class Organism {
 
     update(environment) {
         this.update_timer--;
+        this.reseek_timer--;
 
         if (this.location_history.length > this.nutrient_level / 100)
             this.location_history.length = this.nutrient_level / 100;
@@ -47,7 +55,6 @@ export class Organism {
                     this.current_objective = "CONSUME";
                     this.seek(DeadPlantParticle, environment);
                 }
-                this.reseek_timer--;
 
                 switch (this.current_objective) {
                     case "CONSUME":
@@ -63,12 +70,15 @@ export class Organism {
                                 this.seek(DeadPlantParticle, environment);
                             }
                         } else {
-                            if (environment.get(...this.target_location) instanceof DeadPlantParticle) {
-                                this.move(environment);
-                            } else {
+                            if (
+                                !(
+                                    environment.get(
+                                        ...this.target_location
+                                    ) instanceof DeadPlantParticle
+                                )
+                            )
                                 this.seek(DeadPlantParticle, environment);
-                                this.move(environment);
-                            }
+                            this.move(environment);
                         }
                         break;
                     case "DEFECATE":
@@ -78,6 +88,14 @@ export class Organism {
                         ) {
                             this.defecate(environment);
                         } else {
+                            if (
+                                !(
+                                    environment.get(
+                                        ...this.target_location
+                                    ) instanceof AirParticle
+                                )
+                            )
+                                this.seek(AirParticle, environment);
                             this.move(environment);
                         }
                         break;
@@ -117,8 +135,13 @@ export class Organism {
             for (let x = depth; x >= -depth; x--) {
                 y = Math.abs(x) - depth;
                 if (
-                    environment.get(this.x + x, this.y + y) instanceof looking_for &&
-                    this.__is_location_accessible(this.x + x, this.y + y, environment)
+                    environment.get(this.x + x, this.y + y) instanceof
+                        looking_for &&
+                    this.__is_location_accessible(
+                        this.x + x,
+                        this.y + y,
+                        environment
+                    )
                 ) {
                     this.target_location = [this.x + x, this.y + y];
                     this.reseek_timer = 600;
@@ -128,8 +151,13 @@ export class Organism {
             for (let x = -(depth - 1); x <= depth - 1; x++) {
                 y = depth - Math.abs(x);
                 if (
-                    environment.get(this.x + x, this.y + y) instanceof looking_for &&
-                    this.__is_location_accessible(this.x + x, this.y + y, environment)
+                    environment.get(this.x + x, this.y + y) instanceof
+                        looking_for &&
+                    this.__is_location_accessible(
+                        this.x + x,
+                        this.y + y,
+                        environment
+                    )
                 ) {
                     this.target_location = [this.x + x, this.y + y];
                     this.reseek_timer = 600;
@@ -160,13 +188,18 @@ export class Organism {
         }
     }
 
+    __can_traverse(x, y, environment) {
+        for (let type of CAN_TRAVERSE)
+            if (environment.get(x, y) instanceof type) return true;
+    }
+
     __is_location_accessible(x, y, environment) {
         if (
-            x < 0 ||
-            x > environment.width ||
-            y < 0 ||
-            y > environment.height ||
-            environment.get(x, y) instanceof BoundaryParticle
+            x < 1 ||
+            x > environment.width - 1 ||
+            y < 1 ||
+            y > environment.height - 1 ||
+            !this.__can_traverse(x, y, environment)
         ) {
             return false;
         }
@@ -182,13 +215,12 @@ export class Organism {
             [-1, -1],
         ]) {
             // Find neighbours who are next to at least 1 particle which the organism can walk on.
-            const neighbour_particle = environment.get(
-                x + neighbour_x,
-                y + neighbour_y
-            );
             if (
-                neighbour_particle.weight > 1 &&
-                !(neighbour_particle instanceof BoundaryParticle)
+                this.__can_traverse(
+                    x + neighbour_x,
+                    y + neighbour_y,
+                    environment
+                )
             ) {
                 return true;
             }
