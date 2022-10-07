@@ -20,7 +20,7 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(240, 240);
+    const application = new Application(180, 320);
     let cell_size = 3; // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic;
