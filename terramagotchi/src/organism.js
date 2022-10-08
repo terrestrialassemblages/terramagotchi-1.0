@@ -343,14 +343,21 @@ export class Organism {
         const particle = environment.get(this.x, this.y);
 
         if (particle instanceof DeadPlantParticle) {
-            let transfer_amount = Math.min(
+            let transfer_nutrients_amount = Math.min(
                 particle.nutrient_level,
                 this.nutrient_capacity - this.nutrient_level
             );
-            this.nutrient_level += transfer_amount;
-            particle.nutrient_level -= transfer_amount;
+            this.nutrient_level += transfer_nutrients_amount;
+            particle.nutrient_level -= transfer_nutrients_amount;
 
-            if (particle.nutrient_level == 0) {
+            let transfer_water_amount = Math.min(
+                particle.water_level,
+                this.water_capacity - this.water_level
+            );
+            this.water_level += transfer_water_amount;
+            particle.water_level -= transfer_water_amount;
+
+            if (particle.nutrient_level == 0 && particle.water_level == 0) {
                 let new_air_particle = new AirParticle(particle.x, particle.y);
                 environment.set(new_air_particle);
             }
