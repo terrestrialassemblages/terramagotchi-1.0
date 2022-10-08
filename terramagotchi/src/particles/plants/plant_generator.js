@@ -18,6 +18,11 @@ switch (TREE_TYPE) {
         tree_height = randint(4, 7)
 
         let first_node = {
+            root_node_spawn_distance: 4,
+            root_length_max: 10,
+            root_max_curve_length: 100,
+
+
             seed_activation_level: 1,
             node_activation_level: 1,
             color: "#3F7B25",

@@ -13,14 +13,14 @@ export class RootParticle extends PlantParticleFamily {
         this.direction = 1; // direction the root is growing. 0 = left, 1 = down, 2 = right, 3 = bottom left, 4 = bottom right, by default, it grows in the direction it was initially spawned in
         this.activation_level = 0
 
-        this.root_length_max = 5
+        this.root_node_spawn_distance = this.dna.root_node_spawn_distance || 7
+        this.root_length_max = this.dna.root_length_max || 10
+        this.root_max_curve_length = this.dna.root_max_curve_length || 1
+        
         this.direction = 1
-        this.root_node_spawn_distance = 5
-
-        this.max_curve_length = 1
         this.current_curve_length = 0
     }
-
+    
     update(environment) {
         this.absorb_water(environment, this.__neighbours, [RootParticle, SoilParticle]);
         this.absorb_nutrients(environment, this.__neighbours, [RootParticle, SoilParticle]);
@@ -57,7 +57,7 @@ export class RootParticle extends PlantParticleFamily {
         let [offset_x, offset_y] = [[-1, 0], [0, -1], [1, 0], [-1, -1], [1, -1]][this.direction]; // is the possible directions it can grow, and the one its set to grow in
 
         let curve_direction = Math.floor(Math.random() * 3) // 0 = follow current path, 1 = curve clockwise, 2 = curve anti-clockwise
-        if (this.current_curve_length < this.max_curve_length && this.current_curve_length > (this.max_curve_length * -1) && curve_direction != 0) {
+        if (this.current_curve_length < this.root_max_curve_length && this.current_curve_length > (this.root_max_curve_length * -1) && curve_direction != 0) {
             if (curve_direction == 1) {
                 [offset_x, offset_y] = [[-1, 1], [-1, -1], [1, -1], [-1, 0], [0, -1]][this.direction]
                 this.current_curve_length++; // it adds 1 if its clockwise and subtracts 1 if its anti
@@ -79,7 +79,7 @@ export class RootParticle extends PlantParticleFamily {
             new_root.current_curve_length = this.current_curve_length;
             new_root.root_length_max = this.root_length_max;
             new_root.root_node_spawn_distance = this.root_node_spawn_distance;
-            new_root.max_curve_length = this.max_curve_length;
+            new_root.root_max_curve_length = this.root_max_curve_length;
 
 
             environment.set(new_root);

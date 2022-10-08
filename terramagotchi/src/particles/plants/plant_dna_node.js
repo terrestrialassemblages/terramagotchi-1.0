@@ -5,6 +5,7 @@ export class DNANode {
          * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
          */
         this.parent = parent;
+        this.id = (Date.now()/1000) | 0
         this.RANDOM_WEIGHT_GROWWTH_DIRECTION = (dna_encoding.RANDOM_WEIGHT_GROWWTH_DIRECTION==null) ? true : false
 
         /** =====================================
@@ -13,6 +14,14 @@ export class DNANode {
 
         this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 5
         this.seed_color =               dna_encoding.seed_color || "#FF80FF"
+
+        /** =====================================
+         * Variables defining the seed behaviour
+            ===================================== */
+
+        this.root_node_spawn_distance = dna_encoding.root_node_spawn_distance || 7
+        this.root_length_max = dna_encoding.root_length_max || 10
+        this.root_max_curve_length = dna_encoding.root_max_curve_length || 1
 
         /** ====================================
          * Variables defining the particle type
@@ -75,9 +84,10 @@ export class DNANode {
          * Gets root node of DNA sequence (greatest ancestor of all nodes)
          */
         let current_head = this;
-        while (this.parent != null && this.parent instanceof DNANode) {
+        while (current_head.parent != null && current_head.parent instanceof DNANode) {
             current_head = current_head.parent;
         }
+        return current_head
     }
 
     get_absolute_angle() {

@@ -107,7 +107,13 @@ export class PlantParticleFamily extends OrganicParticle {
             return
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof PlantParticleFamily && !target_particle.dead && this.dna.get_root() == target_particle.dna.get_root())
+            if (
+                target_particle instanceof PlantParticleFamily &&
+                !(target_particle instanceof DeadPlantParticle) &&
+                !(target_particle instanceof RootParticle) &&
+                !target_particle.dead &&
+                this.dna.get_root() == target_particle.dna.get_root()
+            )
                 target_particle.die(environment)
         }
         let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
