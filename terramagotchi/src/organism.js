@@ -16,7 +16,18 @@ const CAN_TRAVERSE = [
 const MAX_SEEK_DEPTH = 100;
 const MIN_NUTRIENTS = 100;
 const MIN_WATER = 100;
-const FALL_ASLEEP_WANDERING_CHANCE = 0.5;
+// This will cause it to sleep for (30 + update_timer) frames
+const FALL_ASLEEP_WANDERING_CHANCE = 0.5; // [0, 1]
+// Integer value. This adjusts how likely it is to walk over itself.
+const DISCOURAGE_WALKING_OVER_SELF_FACTOR = 10
+// Integer value. At about 4 it will generally result in just a random walk.
+// Does not affect wandering, use CHANGE_WANDER_DIRECTION_CHANCE.
+const RANDOM_MOVEMENT_FACTOR = 2; 
+const CHANGE_WANDER_DIRECTION_CHANCE = 0.2; // [0, 1]
+
+const RESEEK_TIME_AFTER_CONSUME = 30;
+const RESEEK_TIMER_AFTER_FOUND_NEW_TARGET = 600;
+const RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET = 60;
 
 export class Organism {
     nutrient_capacity = 1000;
@@ -71,7 +82,7 @@ export class Organism {
                         } else {
                             // Sleep for 30 frames (+ update_timer).
                             this.current_objective = "SLEEP";
-                            this.reseek_timer = 30;
+                            this.reseek_timer = RESEEK_TIME_AFTER_CONSUME;
                         }
                     } else {
                         if (
@@ -166,7 +177,7 @@ export class Organism {
                     )
                 ) {
                     this.target_location = [this.x + x, this.y + y];
-                    this.reseek_timer = 600;
+                    this.reseek_timer = RESEEK_TIMER_AFTER_FOUND_NEW_TARGET;
                     return;
                 }
             }
@@ -182,7 +193,7 @@ export class Organism {
                     )
                 ) {
                     this.target_location = [this.x + x, this.y + y];
-                    this.reseek_timer = 600;
+                    this.reseek_timer = RESEEK_TIMER_AFTER_FOUND_NEW_TARGET;
                     return;
                 }
             }
@@ -193,7 +204,7 @@ export class Organism {
         } else {
             this.current_objective = "WANDER";
         }
-        this.reseek_timer = 60;
+        this.reseek_timer = RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET;
         this.target_location = null;
     }
 
@@ -295,9 +306,9 @@ export class Organism {
 
             // Add some randomness to bug movement
             distance +=
-                (Math.random() * (current_distance - distance + 2)) >> 0;
+                (Math.random() * (current_distance - distance + RANDOM_MOVEMENT_FACTOR)) >> 0;
 
-            if (this.current_objective == "WANDER" && Math.random() < 0.8) {
+            if (this.current_objective == "WANDER" && Math.random() < (1 - CHANGE_WANDER_DIRECTION_CHANCE)) {
                 const neighbour_direction_x = neighbour[0] - this.x;
                 const neighbour_direction_y = neighbour[1] - this.y;
                 if (
@@ -314,7 +325,7 @@ export class Organism {
                 )
             ) {
                 // Discourage the organism from walking on itself.
-                distance += 10;
+                distance += DISCOURAGE_WALKING_OVER_SELF_FACTOR;
             }
 
             if (distance < best_distance) {
