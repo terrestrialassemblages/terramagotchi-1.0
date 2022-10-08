@@ -6,13 +6,14 @@ import {
     SoilParticle,
 } from "./particles";
 
-const ORGANISM_UPDATE_INTERVAL = 5;
+const ORGANISM_UPDATE_INTERVAL = 1;
 const CAN_TRAVERSE = [
     AirParticle,
     SoilParticle,
     DeadPlantParticle,
     CompostParticle,
 ];
+const MAX_SEEK_DEPTH = 10;
 
 export class Organism {
     alive = true;
@@ -34,19 +35,18 @@ export class Organism {
     body_color = "#bc4b52";
 
     constructor(environment) {
-        // Ensure
         this.update_timer = (Math.random() * ORGANISM_UPDATE_INTERVAL) >> 0;
         this.seek(DeadPlantParticle, environment);
     }
 
     update(environment) {
-        this.update_timer--;
-        this.reseek_timer--;
-
         if (this.location_history.length > this.nutrient_level / 100)
             this.location_history.length = this.nutrient_level / 100;
         const fell = this.compute_gravity(environment);
         if (fell) return;
+
+        this.update_timer--;
+        this.reseek_timer--;
 
         if (this.update_timer <= 0) {
             this.update_timer = ORGANISM_UPDATE_INTERVAL;
@@ -128,9 +128,8 @@ export class Organism {
         /*
             Seek for the next target location.
         */
-        const MAX_DEPTH = 100;
         // Search in circles (really diamonds) based on the manhattan distance from itself.
-        for (let depth = 1; depth <= MAX_DEPTH; depth++) {
+        for (let depth = 1; depth <= MAX_SEEK_DEPTH; depth++) {
             let y = 0;
             for (let x = depth; x >= -depth; x--) {
                 y = Math.abs(x) - depth;
@@ -220,6 +219,10 @@ export class Organism {
                     x + neighbour_x,
                     y + neighbour_y,
                     environment
+                ) &&
+                !(
+                    environment.get(x + neighbour_x, y + neighbour_y) instanceof
+                    AirParticle
                 )
             ) {
                 return true;
@@ -229,7 +232,7 @@ export class Organism {
 
     __get_valid_neighbours(environment) {
         let valid_neighbours = [];
-        for (let [neighbour_x, neighbour_y] of [
+        for (let [move_x, move_y] of [
             [0, 1],
             [1, 0],
             [0, -1],
@@ -237,15 +240,12 @@ export class Organism {
         ]) {
             if (
                 this.__is_location_accessible(
-                    this.x + neighbour_x,
-                    this.y + neighbour_y,
+                    this.x + move_x,
+                    this.y + move_y,
                     environment
                 )
             ) {
-                valid_neighbours.push([
-                    this.x + neighbour_x,
-                    this.y + neighbour_y,
-                ]);
+                valid_neighbours.push([this.x + move_x, this.y + move_y]);
             }
         }
         return valid_neighbours;
