@@ -1,11 +1,16 @@
-import { PlantParticleFamily } from "./plant";
 import { AirParticle } from "..";
+import {
+    DeadPlantParticle,
+    PlantParticleFamily
+} from ".";
 
 export class LeafParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
         this.__leaf_children = null
+        this.max_health = 1000
+        this.health = this.max_health
     }
 
     update(environment) {
@@ -60,7 +65,13 @@ export class LeafParticle extends PlantParticleFamily {
         }
     }
 
-    di2e(environment) {
+    health_update(environment) {
+        this.health -= 1
+        if (this.health <= 0)
+            this.die(environment)
+    }
+
+    die(environment) {
         this.dead = true
         if (this.death_tick == -1)
             this.death_tick = environment.tick
@@ -68,12 +79,14 @@ export class LeafParticle extends PlantParticleFamily {
             return
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof PlantParticleFamily && !target_particle.dead)
+            if (target_particle instanceof LeafParticle && !target_particle.dead && this.dna.get_root() == target_particle.dna.get_root())
                 target_particle.die(environment)
         }
-        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        if (this.__current_length == 1) {
+            this.is_active = true
+            return;
+        }
         let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
         environment.set(new_dead_plant)
-        console.log('sad')
     }
 }

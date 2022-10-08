@@ -22,8 +22,8 @@ export class PlantParticleFamily extends OrganicParticle {
                                         
     static MAX_ENERGY = 10  // Maximum amount of energy a plant particle will contain
     
-    static MIN_HEALTHY_WATER = 3444     // Minimum amount of water to be considered "healthy"; will not create energy to go below
-    static MIN_HEALTHY_NUTRIENTS = 3444 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_WATER = 3     // Minimum amount of water to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_NUTRIENTS = 3 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
     static CREATE_ENERGY_PROBABILITY = 1
 
     constructor(x, y, plant_dna=null) {
@@ -54,6 +54,7 @@ export class PlantParticleFamily extends OrganicParticle {
         this.is_active = true
         this.activation_level = this.dna.node_activation_level || 0
 
+        this.max_health != null ? this.dna.max_health : PlantParticleFamily.DEFAULT_MAX_HEALTH
         this.health = this.dna.max_health != null ? this.dna.max_health : PlantParticleFamily.DEFAULT_MAX_HEALTH
         this.energy = 0
         this.energy_capacity = PlantParticleFamily.MAX_ENERGY
@@ -92,7 +93,7 @@ export class PlantParticleFamily extends OrganicParticle {
         this.health -= damage_to_take
 
         if (damage_to_take == 0)
-            this.health = Math.min(this.health + 2, PlantParticleFamily.DEFAULT_MAX_HEALTH)
+            this.health = Math.min(this.health + 2, this.max_health)
         
         if (this.health <= 0)
             this.die(environment)
@@ -106,13 +107,11 @@ export class PlantParticleFamily extends OrganicParticle {
             return
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof PlantParticleFamily && !target_particle.dead)
+            if (target_particle instanceof PlantParticleFamily && !target_particle.dead && this.dna.get_root() == target_particle.dna.get_root())
                 target_particle.die(environment)
         }
-        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
         let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
         environment.set(new_dead_plant)
-        console.log('sad')
     }
 
     weighted_random(items, weights) {

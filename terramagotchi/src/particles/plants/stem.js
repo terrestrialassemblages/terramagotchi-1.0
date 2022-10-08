@@ -28,7 +28,7 @@ export class StemParticle extends PlantParticleFamily {
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
         this.generate_energy()
         this.health_update(environment)
-
+        this.health += 2
         if (this.is_active) {
             switch (this.dna.node_type) {
                 case "stem":

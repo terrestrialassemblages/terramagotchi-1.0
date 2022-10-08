@@ -5,7 +5,7 @@ export class DNANode {
          * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
          */
         this.parent = parent;
-        this.RANDOM_WEIGHT_GROWWTH_DIRECTION = dna_encoding.RANDOM_WEIGHT_GROWWTH_DIRECTION || true
+        this.RANDOM_WEIGHT_GROWWTH_DIRECTION = (dna_encoding.RANDOM_WEIGHT_GROWWTH_DIRECTION==null) ? true : false
 
         /** =====================================
          * Variables defining the seed behaviour
