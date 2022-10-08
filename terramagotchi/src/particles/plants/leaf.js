@@ -4,6 +4,8 @@ import { AirParticle } from "..";
 export class LeafParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
+
+        this.__leaf_children = null
     }
 
     update(environment) {
@@ -16,27 +18,31 @@ export class LeafParticle extends PlantParticleFamily {
             this.grow_children(environment)
     }
 
-    grow_children(environment) {
-        if (this.__current_length >= this.dna.leaf_size) {
-            this.is_active = false
-            return;
-        }
-        let valid_neighbours
+    select_leaf_children() {
         switch (this.dna.leaf_shape) {
             case "lavender":
                 
             case "sunflower":
                 if (this.__current_length == 1)
-                    valid_neighbours = [[1, 1], [1, -1], [-1, 1], [-1, -1], [0, 1], [1, 0], [0, -1], [-1, 0]]
+                    this.__leaf_children = [[1, 1], [1, -1], [-1, 1], [-1, -1], [0, 1], [1, 0], [0, -1], [-1, 0]]
                 else
-                    valid_neighbours = [this.convert_angle_to_offset(this.__current_angle)]
+                    this.__leaf_children = [this.convert_angle_to_offset(this.__current_angle)]
                 break
             case "flat-top":
             default:
-                valid_neighbours = [[0, -1], [this.dna.leaf_direction, 0]]
+                this.__leaf_children = [[0, -1], [this.dna.leaf_direction, 0]]
         }
+    }
 
-        for (let neighbour of valid_neighbours) {
+    grow_children(environment) {
+        if (this.__current_length >= this.dna.leaf_size) {
+            this.is_active = false
+            return;
+        }
+        if (this.__leaf_children == null)
+            this.select_leaf_children()
+
+        for (let neighbour of this.__leaf_children) {
             let [offset_x, offset_y] = neighbour
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
             if (target_particle instanceof AirParticle || (this.dna.growth_destructive && target_particle instanceof PlantParticleFamily && !target_particle.is_active)) {
@@ -52,5 +58,22 @@ export class LeafParticle extends PlantParticleFamily {
                 break //necessary
             }
         }
+    }
+
+    di2e(environment) {
+        this.dead = true
+        if (this.death_tick == -1)
+            this.death_tick = environment.tick
+        if (this.death_tick == environment.tick)
+            return
+        for (let [offset_x, offset_y] of this.__neighbours) {
+            let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
+            if (target_particle instanceof PlantParticleFamily && !target_particle.dead)
+                target_particle.die(environment)
+        }
+        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        environment.set(new_dead_plant)
+        console.log('sad')
     }
 }

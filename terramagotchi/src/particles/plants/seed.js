@@ -50,7 +50,7 @@ export class SeedParticle extends PlantParticleFamily {
             environment.set(new_stem_cell)
 
             let new_root = new RootParticle(this.x, this.y-1, this.dna)
-            // environment.set(new_root)
+            environment.set(new_root)
         }
     }
 }

@@ -5,8 +5,7 @@ import { SoilParticle } from "../soil";
 export class RootParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
-        // this.base_color = "#6B3226"; // source: https://www.color-name.com/root-brown.color
-        this.base_color = "#FFFFFF"
+        this.base_color = "#6B3226"; // source: https://www.color-name.com/root-brown.color
         this.moveable = false;
         this.weight = 3;
         this.is_node = false; // if true, then this particle is a root node, a root node is a root particle that spawns multiple roots in other directions
@@ -14,9 +13,12 @@ export class RootParticle extends PlantParticleFamily {
         this.direction = 1; // direction the root is growing. 0 = left, 1 = down, 2 = right, 3 = bottom left, 4 = bottom right, by default, it grows in the direction it was initially spawned in
         this.activation_level = 0
 
-        this.root_length_max = 50
+        this.root_length_max = 5
         this.direction = 1
-        this.root_node_spawn_distance = 12
+        this.root_node_spawn_distance = 5
+
+        this.max_curve_length = 1
+        this.current_curve_length = 0
     }
 
     update(environment) {
@@ -35,6 +37,7 @@ export class RootParticle extends PlantParticleFamily {
             let direction_hold = this.direction;
             if ((this.__current_length % this.root_node_spawn_distance) == 0) { // this is there to space out root nodes, making them spawn only a certain units away from the previous one
                 this.is_node = true;
+                this.current_curve_length = 0;
             }
             if (this.is_node) { // if its a node, it randomly spawns a random amount of roots in a random directions
                 for (let i = 0; i <= Math.floor(Math.random() * 5); i++) {
@@ -47,19 +50,37 @@ export class RootParticle extends PlantParticleFamily {
         }
     }
 
-    grow_child_root(environment) { 
+    grow_child_root(environment) {
         let new_root = null;
         let soil_particle_check = null;
         this.is_active = false; // check to make it stop growing further
         let [offset_x, offset_y] = [[-1, 0], [0, -1], [1, 0], [-1, -1], [1, -1]][this.direction]; // is the possible directions it can grow, and the one its set to grow in
+
+        let curve_direction = Math.floor(Math.random() * 3) // 0 = follow current path, 1 = curve clockwise, 2 = curve anti-clockwise
+        if (this.current_curve_length < this.max_curve_length && this.current_curve_length > (this.max_curve_length * -1) && curve_direction != 0) {
+            if (curve_direction == 1) {
+                [offset_x, offset_y] = [[-1, 1], [-1, -1], [1, -1], [-1, 0], [0, -1]][this.direction]
+                this.current_curve_length++; // it adds 1 if its clockwise and subtracts 1 if its anti
+            }
+            else {
+                [offset_x, offset_y] = [[-1, -1], [1, -1], [1, 1], [0, -1], [1, 0]][this.direction]
+                this.current_curve_length--;
+            }
+        }
+
         soil_particle_check = environment.get(this.x + offset_x, this.y + offset_y);
         if (soil_particle_check instanceof SoilParticle) { // checks if the intended direction has a soil particle then grows there
-            new_root = new RootParticle(this.x + offset_x, this.y + offset_y, { ...this });
+            new_root = new RootParticle(this.x + offset_x, this.y + offset_y, { ...this.plant_dna });
         }
 
         if (new_root != null) { // if a root node has grown, new root particle takes over the soil's nutrient and water level, and parent root particle decrements its water and nutrients
             new_root.direction = this.direction;
             new_root.__current_length = this.__current_length + 1;
+            new_root.current_curve_length = this.current_curve_length;
+            new_root.root_length_max = this.root_length_max;
+            new_root.root_node_spawn_distance = this.root_node_spawn_distance;
+            new_root.max_curve_length = this.max_curve_length;
+
 
             environment.set(new_root);
             this.water_level -= this.activation_level
