@@ -5,17 +5,19 @@ export class DNANode {
          * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
          */
         this.parent = parent;
+        this.RANDOM_WEIGHT_GROWWTH_DIRECTION = dna_encoding.RANDOM_WEIGHT_GROWWTH_DIRECTION || true
 
         /** =====================================
          * Variables defining the seed behaviour
             ===================================== */
 
-        this.seed_activation_level =    dna_encoding.seed_activation_level || 5
+        this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 5
         this.seed_color =               dna_encoding.seed_color || "#FF80FF"
 
         /** ====================================
          * Variables defining the particle type
             ==================================== */
+
         this.node_type = dna_encoding.node_type || "stem"
         this.node_activation_level = dna_encoding.node_activation_level || 0
 

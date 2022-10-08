@@ -10,7 +10,7 @@ export class SeedParticle extends PlantParticleFamily {
         this.moveable = true;
         this.weight = 2;
 
-        this.activation_level = this.dna.seed_activation_level || 5
+        this.activation_level = this.dna.seed_activation_level
         this.base_color = this.dna.seed_color || "#FF80FF"
 
         this.germinated = false
@@ -22,11 +22,15 @@ export class SeedParticle extends PlantParticleFamily {
          * @param {Environment} environment     The current game environment
          */
         this.compute_gravity(environment)
+
+        // Compute health before absorption in case plant dies
+        this.health_update(environment)
+
         this.absorb_nutrients(environment, this.__neighbours, [SoilParticle, CompostParticle])
         this.absorb_water(environment, this.__neighbours, [SoilParticle, CompostParticle])
-        this.generate_energy()
-        this.health_update(environment)
         
+        this.generate_energy()
+
         if (!this.germinated)
             if (this.energy >= this.activation_level)
                 this.germinated = true
@@ -46,7 +50,7 @@ export class SeedParticle extends PlantParticleFamily {
             environment.set(new_stem_cell)
 
             let new_root = new RootParticle(this.x, this.y-1, this.dna)
-            environment.set(new_root)
+            // environment.set(new_root)
         }
     }
 }

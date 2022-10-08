@@ -12,16 +12,20 @@ import {
 
 import { DNANode } from "./plant_dna_node";
 import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO } from "../../environment";
+import { SoilParticle } from "../soil";
 
-const MAX_HEALTH = 100  // Effectively how many frames a plant survives while "unhealthy" until dying
-                        // Might make rate double if unhealthy in water AND nutrients
-const MAX_ENERGY = 10  // Maximum amount of energy a plant particle will contain
-
-const MIN_HEALTHY_WATER = 3     // Minimum amount of water to be considered "healthy"; will not create energy to go below
-const MIN_HEALTHY_NUTRIENTS = 3 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
-const CREATE_ENERGY_PROBABILITY = 1
 
 export class PlantParticleFamily extends OrganicParticle {
+
+    static DEFAULT_MAX_HEALTH = 100     // Effectively how many frames a plant survives while "unhealthy" until dying
+                                        // Can be set in DNA per-plant, else defaults to this value
+                                        
+    static MAX_ENERGY = 10  // Maximum amount of energy a plant particle will contain
+    
+    static MIN_HEALTHY_WATER = 3444     // Minimum amount of water to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_NUTRIENTS = 3444 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+    static CREATE_ENERGY_PROBABILITY = 1
+
     constructor(x, y, plant_dna=null) {
         super(x, y);
         // Default moveable/weight values for most plant-type particles
@@ -40,10 +44,6 @@ export class PlantParticleFamily extends OrganicParticle {
         this.__neighbours = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]]
         this.__current_length = 1
 
-        this.health = MAX_HEALTH
-        this.energy = 0
-        this.energy_capacity = MAX_ENERGY
-        this.dead = false
         
         this.dna = plant_dna
         if (this.dna == null) {
@@ -53,6 +53,13 @@ export class PlantParticleFamily extends OrganicParticle {
         
         this.is_active = true
         this.activation_level = this.dna.node_activation_level || 0
+
+        this.health = this.dna.max_health != null ? this.dna.max_health : PlantParticleFamily.DEFAULT_MAX_HEALTH
+        this.energy = 0
+        this.energy_capacity = PlantParticleFamily.MAX_ENERGY
+        this.dead = false
+        this.death_tick = -1
+
         this.base_color = this.dna.color
         this.color_variance = 0.1
     }
@@ -63,10 +70,10 @@ export class PlantParticleFamily extends OrganicParticle {
         if (!this.is_active)
             return;
         if (
-            this.water_level >= MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
-            this.nutrient_level >= MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
+            this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
+            this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
             this.energy <= this.energy_capacity &&
-            Math.random() < CREATE_ENERGY_PROBABILITY
+            Math.random() < PlantParticleFamily.CREATE_ENERGY_PROBABILITY
         ) {
             this.water_level -= WATER_ENERGY_RATIO
             this.nutrient_level -= NUTRIENT_ENERGY_RATIO
@@ -76,16 +83,16 @@ export class PlantParticleFamily extends OrganicParticle {
 
     health_update(environment) {
         if (this.dead)
-            return this.die()
-        let damage_to_take
-        if (this.water_level < MIN_HEALTHY_WATER)
+            return this.die(environment)
+        let damage_to_take = 0
+        if (this.water_level < PlantParticleFamily.MIN_HEALTHY_WATER)
             damage_to_take++
-        if (this.nutrient_level < MIN_HEALTHY_NUTRIENTS)
+        if (this.nutrient_level < PlantParticleFamily.MIN_HEALTHY_NUTRIENTS)
             damage_to_take++
         this.health -= damage_to_take
 
         if (damage_to_take == 0)
-            this.health = Math.min(this.health + 2, MAX_HEALTH)
+            this.health = Math.min(this.health + 2, PlantParticleFamily.DEFAULT_MAX_HEALTH)
         
         if (this.health <= 0)
             this.die(environment)
@@ -93,13 +100,19 @@ export class PlantParticleFamily extends OrganicParticle {
 
     die(environment) {
         this.dead = true
+        if (this.death_tick == -1)
+            this.death_tick = environment.tick
+        if (this.death_tick == environment.tick)
+            return
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof PlantParticleFamily)
-                target_particle.dead = true
+            if (target_particle instanceof PlantParticleFamily && !target_particle.dead)
+                target_particle.die(environment)
         }
+        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
         let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
         environment.set(new_dead_plant)
+        console.log('sad')
     }
 
     weighted_random(items, weights) {

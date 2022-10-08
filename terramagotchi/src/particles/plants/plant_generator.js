@@ -18,6 +18,7 @@ switch (TREE_TYPE) {
         tree_height = randint(4, 7)
 
         let first_node = {
+            seed_activation_level: 0,
             node_activation_level: 0,
             color: "#3F7B25",
             stem_curve: "spherical",

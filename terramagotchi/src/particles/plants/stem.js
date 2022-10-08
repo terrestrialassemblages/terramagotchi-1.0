@@ -6,8 +6,6 @@ import { BarkParticle } from "./bark";
 import { LeafParticle } from "./leaf";
 import { FlowerParticle } from "./flower";
 
-const RANDOM_WEIGHT_GROWWTH_DIRECTION = true
-
 export class StemParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         /**
@@ -154,7 +152,7 @@ export class StemParticle extends PlantParticleFamily {
         if (this.energy < this.activation_level)
             return;
         let [offset_x, offset_y] = this.__growth_direction
-        if (RANDOM_WEIGHT_GROWWTH_DIRECTION) {
+        if (this.dna.RANDOM_WEIGHT_GROWWTH_DIRECTION) {
             let random_rotation = this.weighted_random([-2, -1, 0, 1, 2], [0, 5, 100, 5, 0]);
             if (random_rotation != 0)
                 [offset_x, offset_y] = this.get_rotated_offset(offset_x, offset_y, random_rotation)
