@@ -12,7 +12,8 @@ export class BarkParticle extends PlantParticleFamily {
         super(x, y, plant_dna);
     }
 
-    update(environment) {
+    update(environment) {        
+        this.health_update(environment)
         this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
         this.generate_energy()

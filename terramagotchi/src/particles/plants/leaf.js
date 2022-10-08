@@ -8,9 +8,11 @@ export class LeafParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
-        this.__leaf_children = null
         this.max_health = 1000
         this.health = this.max_health
+
+        this.__leaf_children = null
+        this.leaf_dead = false
     }
 
     update(environment) {
@@ -66,20 +68,23 @@ export class LeafParticle extends PlantParticleFamily {
     }
 
     health_update(environment) {
+        if (this.dead) {
+            this.die(environment)
+        }
         this.health -= 1
         if (this.health <= 0)
-            this.die(environment)
+            this.leaf_die(environment)
     }
 
-    die(environment) {
-        this.dead = true
+    leaf_die(environment) {
+        this.leaf_dead = true
         if (this.death_tick == -1)
             this.death_tick = environment.tick
         if (this.death_tick == environment.tick)
             return
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof LeafParticle && !target_particle.dead && this.dna.get_root() == target_particle.dna.get_root())
+            if (target_particle instanceof LeafParticle && !target_particle.leaf_dead && this.dna.get_root() == target_particle.dna.get_root())
                 target_particle.die(environment)
         }
         if (this.__current_length == 1) {
