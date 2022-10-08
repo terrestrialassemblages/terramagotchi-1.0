@@ -10,6 +10,7 @@ export class LeafParticle extends PlantParticleFamily {
         this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
         this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
         this.generate_energy()
+        this.health_update(environment)
         
         if (this.is_active && this.energy >= this.activation_level)
             this.grow_children(environment)
