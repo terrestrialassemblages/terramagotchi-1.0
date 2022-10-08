@@ -6,21 +6,23 @@ import {
     SoilParticle,
 } from "./particles";
 
-const ORGANISM_UPDATE_INTERVAL = 1;
+const ORGANISM_UPDATE_INTERVAL = 15;
 const CAN_TRAVERSE = [
     AirParticle,
     SoilParticle,
     DeadPlantParticle,
     CompostParticle,
 ];
-const MAX_SEEK_DEPTH = 10;
+const MAX_SEEK_DEPTH = 100;
+const MIN_NUTRIENTS = 100;
+const MIN_WATER = 100;
+const FALL_ASLEEP_WANDERING_CHANCE = 0.5;
 
 export class Organism {
-    alive = true;
     nutrient_capacity = 1000;
     water_capacity = 1000;
-    nutrient_level = 100;
-    water_level = 100;
+    nutrient_level = MIN_NUTRIENTS;
+    water_level = MIN_WATER;
 
     x = 120;
     y = 120;
@@ -41,72 +43,93 @@ export class Organism {
 
     update(environment) {
         if (this.location_history.length > this.nutrient_level / 100)
-            this.location_history.length = this.nutrient_level / 100;
+            this.location_history.length = (this.nutrient_level / 100) >> 0;
         const fell = this.compute_gravity(environment);
         if (fell) return;
 
         this.update_timer--;
         this.reseek_timer--;
 
-        if (this.update_timer <= 0) {
-            this.update_timer = ORGANISM_UPDATE_INTERVAL;
-            if (this.nutrient_level > 0 && this.water_level > 0) {
-                if (this.reseek_timer <= 0) {
-                    this.current_objective = "CONSUME";
-                    this.seek(DeadPlantParticle, environment);
-                }
+        if (this.update_timer > 0) return;
+        this.update_timer = ORGANISM_UPDATE_INTERVAL;
 
-                switch (this.current_objective) {
-                    case "CONSUME":
-                        if (
-                            this.x == this.target_location[0] &&
-                            this.y == this.target_location[1]
-                        ) {
-                            this.consume(environment);
+        if (this.nutrient_level > 0 && this.water_level > 0) {
+            switch (this.current_objective) {
+                case "CONSUME":
+                    if (this.reseek_timer <= 0) {
+                        this.current_objective = "CONSUME";
+                        this.seek(DeadPlantParticle, environment);
+                    }
+                    if (
+                        this.x == this.target_location[0] &&
+                        this.y == this.target_location[1]
+                    ) {
+                        this.consume(environment);
 
-                            if (this.nutrient_level == this.nutrient_capacity) {
-                                this.current_objective = "DEFECATE";
-                            } else {
-                                this.seek(DeadPlantParticle, environment);
-                            }
+                        if (this.nutrient_level == this.nutrient_capacity) {
+                            this.current_objective = "DEFECATE";
                         } else {
-                            if (
-                                !(
-                                    environment.get(
-                                        ...this.target_location
-                                    ) instanceof DeadPlantParticle
-                                )
-                            )
-                                this.seek(DeadPlantParticle, environment);
-                            this.move(environment);
+                            // Sleep for 30 frames (+ update_timer).
+                            this.current_objective = "SLEEP";
+                            this.reseek_timer = 30;
                         }
-                        break;
-                    case "DEFECATE":
+                    } else {
                         if (
-                            this.x == this.target_location[0] &&
-                            this.y == this.target_location[1]
-                        ) {
-                            this.defecate(environment);
-                        } else {
-                            if (
-                                !(
-                                    environment.get(
-                                        ...this.target_location
-                                    ) instanceof AirParticle
-                                )
+                            !(
+                                environment.get(
+                                    ...this.target_location
+                                ) instanceof DeadPlantParticle
                             )
-                                this.seek(AirParticle, environment);
-                            this.move(environment);
-                        }
-                        break;
-                    case "WANDER":
+                        )
+                            this.seek(DeadPlantParticle, environment);
                         this.move(environment);
-                        break;
-                }
-            } else {
-                this.alive = false;
+                    }
+                    break;
+                case "DEFECATE":
+                    if (this.reseek_timer <= 0) {
+                        this.current_objective = "DEFECATE";
+                        this.seek(AirParticle, environment);
+                    }
+                    if (
+                        this.x == this.target_location[0] &&
+                        this.y == this.target_location[1]
+                    ) {
+                        this.defecate(environment);
+                    } else {
+                        if (
+                            !(
+                                environment.get(
+                                    ...this.target_location
+                                ) instanceof AirParticle
+                            )
+                        )
+                            this.seek(AirParticle, environment);
+                        this.move(environment);
+                    }
+                    break;
+                case "WANDER":
+                    if (this.reseek_timer <= 0) {
+                        this.current_objective = "CONSUME";
+                        this.seek(DeadPlantParticle, environment);
+                    }
+                    this.move(environment);
+                    break;
+                case "SLEEP":
+                    if (this.reseek_timer <= 0) {
+                        this.current_objective = "CONSUME";
+                        this.seek(DeadPlantParticle, environment);
+                    }
+                    // They are asleep. They do nothing else.
+                    break;
             }
+        } else {
+            // for (let [x, y] of this.location_history) {
+            //     environment.set(new CompostParticle(x, y))
+            // }
+            // environment.organisms.splice(environment.organisms.indexOf(this), 1)
         }
+        // this.nutrient_level--;
+        // this.water_level--;
     }
 
     compute_gravity(environment) {
@@ -165,7 +188,11 @@ export class Organism {
             }
         }
 
-        this.current_objective = "WANDER";
+        if (Math.random() < FALL_ASLEEP_WANDERING_CHANCE) {
+            this.current_objective = "SLEEP";
+        } else {
+            this.current_objective = "WANDER";
+        }
         this.reseek_timer = 60;
         this.target_location = null;
     }
@@ -325,8 +352,9 @@ export class Organism {
         if (particle_below instanceof AirParticle) {
             const new_compost_particle = new CompostParticle(this.x, this.y);
 
-            new_compost_particle.nutrient_content = this.nutrient_level - 100;
-            this.nutrient_level = 100;
+            new_compost_particle.nutrient_content =
+                this.nutrient_level - MIN_NUTRIENTS;
+            this.nutrient_level = MIN_NUTRIENTS;
 
             environment.set(new_compost_particle);
             this.current_objective = "CONSUME";
