@@ -24,10 +24,9 @@ export const sketch = (s) => {
 
     let night_overlay, main, sky;
 
-    let sky_day_color = s.color(135,206,235);
-    let sky_night_color = s.color(0, 11, 31);
+    let sky_day_color, sky_night_color;
 
-    let night_overlay_opacity = 150;
+    let night_overlay_opacity;
 
     // The initial setup function.
     s.setup = () => {
@@ -43,6 +42,10 @@ export const sketch = (s) => {
         night_overlay = s.createGraphics(s.width, s.height);
         sky = s.createGraphics(s.width, s.height);
 
+        sky_day_color = s.color(135,206,235);
+        sky_night_color = s.color(0, 11, 3);
+        night_overlay_opacity = 150;
+
         s.colorMode(s.HSB);
         // s.frameRate(20);
         s.background("#000000");
@@ -56,14 +59,17 @@ export const sketch = (s) => {
         // have changed and need to be rendered.
         for (let particle of application.environment.particle_grid) {
             if (particle.rerender) {
+                // Particle is not empty, paint over with full color
                 if (!(particle instanceof AirParticle)) {
                     main.noErase()
                     main.fill(particle.get_color(s));
                 }
+                // Particle is empty, erase paint in square of grid
                 else {
                     main.erase()
                 }
 
+                // Paint square on grid
                 main.rect(
                     cell_size * particle.x,
                     cell_size * (application.height - 1 - particle.y),
