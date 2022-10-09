@@ -13,6 +13,7 @@ import {
 import { DNANode } from "./plant_dna_node";
 import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO } from "../../environment";
 import { SoilParticle } from "../soil";
+import { FastRandom } from "../../fast-random";
 
 
 export class PlantParticleFamily extends OrganicParticle {
@@ -74,7 +75,7 @@ export class PlantParticleFamily extends OrganicParticle {
             this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
             this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
             this.energy <= this.energy_capacity &&
-            Math.random() < PlantParticleFamily.CREATE_ENERGY_PROBABILITY
+            FastRandom.random() < PlantParticleFamily.CREATE_ENERGY_PROBABILITY
         ) {
             this.water_level -= WATER_ENERGY_RATIO
             this.nutrient_level -= NUTRIENT_ENERGY_RATIO
@@ -131,7 +132,7 @@ export class PlantParticleFamily extends OrganicParticle {
         for (i = 0; i < weights.length; i++)
             weights[i] += weights[i - 1] || 0;
         
-        var random = Math.random() * weights[weights.length - 1];
+        var random = FastRandom.random() * weights[weights.length - 1];
         
         for (i = 0; i < weights.length; i++)
             if (weights[i] > random)

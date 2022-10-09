@@ -2,6 +2,7 @@ import { OrganicParticle } from "./organic";
 import { AirParticle } from "./air";
 import { CompostParticle } from "./compost";
 import { WaterParticle } from "./water";
+import { FastRandom } from "../fast-random";
 
 export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
@@ -31,7 +32,7 @@ export class SoilParticle extends OrganicParticle {
         // Has not moved, Particle above is Air and Poisson Distribution chance
         if (this.moveable_x && this.moveable_y && 
             environment.get(this.x,this.y+1) instanceof AirParticle && 
-            Math.random() < this.grass_grow_chance) {
+            FastRandom.random() < this.grass_grow_chance) {
             // Grow grass
             environment.set(new GrassParticle(this.x,this.y+1));
         }
@@ -68,7 +69,7 @@ export class GrassParticle extends SoilParticle {
 
         // Chance for this Grass particle to grow extra grass above it
         this.stacked_grass_chance = 0.2;
-        this.grow_stacked_grass = Math.random() < this.stacked_grass_chance;
+        this.grow_stacked_grass = FastRandom.random() < this.stacked_grass_chance;
 
         // Poisson distribution chance to die
         this.grass_death_chance = 0.005;
@@ -92,7 +93,7 @@ export class GrassParticle extends SoilParticle {
         if (!(particel_above instanceof AirParticle || 
             particel_above instanceof GrassParticle || 
             particel_above instanceof WaterParticle) && 
-            Math.random() < this.grass_death_chance) {
+            FastRandom.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
             let new_compost = new CompostParticle(this.x,this.y);
             new_compost.nutrient_content = this.nutrient_level;

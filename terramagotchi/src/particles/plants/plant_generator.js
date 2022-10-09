@@ -1,3 +1,4 @@
+import { FastRandom } from "../../fast-random"
 
 const PALM_TREE = "PALM"
 const SUNFLOWER = "SUNFLOWER"
@@ -7,7 +8,7 @@ const KAURI = "KAURI"
 function randint(start, end=null) {
     if (!(end))
         [start, end] = [0, start]
-    return start + Math.random() * (end - start + 1) | 0
+    return start + FastRandom.random() * (end - start + 1) | 0
 }
 
 export default function generate_tree_dna(TREE_TYPE=LAVENDER) {

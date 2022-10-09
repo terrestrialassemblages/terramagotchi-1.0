@@ -1,3 +1,4 @@
+import { FastRandom } from "../fast-random";
 import { BaseParticle } from "./base";
 
 export class GasParticle extends BaseParticle {
@@ -22,9 +23,9 @@ export class GasParticle extends BaseParticle {
             }
 
             // Randomly decide to move horizontally
-            if (Math.random() < this.x_movement_probability) {
+            if (FastRandom.random() < this.x_movement_probability) {
                 // Randomly choose an x direction to move towards
-                const random_direction = Math.sign(Math.random() - 0.5);
+                const random_direction = Math.sign(FastRandom.random() - 0.5);
                 const random_x_neighbour = environment.get(this.x + random_direction, this.y);
                 // Try move in the random x direction
                 if (
