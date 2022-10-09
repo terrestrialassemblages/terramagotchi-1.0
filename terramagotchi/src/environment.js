@@ -8,6 +8,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
+    SteamParticle,
 } from "./particles";
 
 import {
@@ -51,7 +52,7 @@ export class Environment {
     }
 
     get_horizon(x) {
-        return 160 - this.river_depth - this.river_depth * 
+        return 150 - this.river_depth - this.river_depth * 
         (Math.sin((Math.min(this.river_radius, Math.abs(90 - x + this.river_offset)) + this.river_radius / 2)
          * Math.PI / this.river_radius)) 
         + 16 * this.noise2D((x) / 96, 0)
@@ -76,8 +77,16 @@ export class Environment {
                     this.set(new SoilParticle(x, y));
                 } 
                 // Set Water Particles
-                else if (y < 150 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
+                else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
+                }
+                // Set Steam Particles
+                else if (y > 280 && y < this.height - 5 
+                        //&& Math.abs(90 - x + this.river_offset) < this.river_radius
+                        && x >= 1 && x < this.width
+                        && Math.random() < 0.5
+                        ) {
+                    this.set(new SteamParticle(x, y));
                 } 
                 // Set Air Particles
                 else {
