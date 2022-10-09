@@ -12,7 +12,7 @@ export class BaseParticle {
 
         this.weight = 3;
 
-        // Particle is AirParticle (Can't use instanceOf AirParticle on BaseParticle class)
+        // Particle is AirParticle
         this.empty = false;
         // Particle is currently passing through other particles in the grid
         this.passing_through = false;
@@ -107,26 +107,20 @@ export class BaseParticle {
         if (this.moveable && (this.moveable_x || this.x == check_x) && (this.moveable_y || this.y == check_y)) {
             // Check if this particle can pass through check_particle
             let check_particle = environment.get(check_x, check_y);
-            let can_pass_through = false;
-            for (const valid_type of this.pass_through_types) {
-                if (check_particle instanceof valid_type) {
-                    can_pass_through = true;
-                    break;
-                }
-            }
 
             // Particle can pass through check_particle or particle is already passing and is now in empty particle
-            if (can_pass_through || (this.passing_through && check_particle.empty)) {
+            if (this.can_pass_through(check_x, check_y, environment) || (this.passing_through && check_particle.empty)) {
 
                 environment.pass_through(this, check_x, check_y);
             }
-            // Passing particle needs relocation to closest empty particle
+            // Passing particle needs relocation to closest empty particle away from pass-through types
             else if (this.passing_through) {
+                let [offset_x, offset_y] = [check_x - this.x, check_y - this.y]
                 let neighbour = environment.get(this.x, this.y);
                 let checking_neighbours = [neighbour];
                 let neighbour_offsets = [[1,0],[-1,0],[0,-1],[0,1]];
                 let i = 0;
-                while (!neighbour.empty) {
+                while (!neighbour.empty || this.check_pass_through_loop(neighbour.x, neighbour.y, offset_x, offset_y, environment)) {
                     for (let offset of neighbour_offsets) {
                         let new_neighbour = environment.get(neighbour.x + offset[0], neighbour.y + offset[1]);
                         if (new_neighbour.weight != 4 && !checking_neighbours.includes(new_neighbour)) {
@@ -138,6 +132,30 @@ export class BaseParticle {
                 environment.pass_through(this, neighbour.x, neighbour.y);
             }
         }
+    }
+
+    // Checks if relocation to this position will cause an infinite pass-through relocation loop
+    check_pass_through_loop(new_x, new_y, offset_x, offset_y, environment) {
+        let [i, j] = [offset_x, offset_y]
+        let check_particle = environment.get(new_x + i, new_y + j);
+        while (check_particle.empty || check_particle.constructor.name == this.constructor.name) {
+            [i, j] = [i + offset_x, j + offset_y];
+            check_particle = environment.get(new_x + i, new_y + j);
+        }
+        return this.can_pass_through(new_x + i, new_y + j, environment)
+    }
+
+    // Can this particle pass through the particle type at coordinates new_x, new_y
+    can_pass_through(new_x, new_y, environment) {
+        let check_particle = environment.get(new_x, new_y);
+        let pass_through = false;
+        for (const valid_type of this.pass_through_types) {
+            if (check_particle instanceof valid_type) {
+                pass_through = true;
+                break;
+            }
+        }
+        return pass_through;
     }
 
     // Function to initalise random colour variation and update colour when needed

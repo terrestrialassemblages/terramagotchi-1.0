@@ -148,14 +148,13 @@ export class Environment {
         if (old_x != new_x) passing_particle.moveable_x = false;
         if (old_y != new_y) passing_particle.moveable_y = false;
 
-        // Passing_particle is in empty particle
+        // Passing_particle is now in empty particle
         if (this.get(new_x, new_y).empty) {
             // Move to regular particle layer
             this.set(passing_particle);
             passing_particle.passing_through = false;
             // Remove from __pass_through_layer
             this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
-            console.log(this.__pass_through_layer)
         }
     }
 
