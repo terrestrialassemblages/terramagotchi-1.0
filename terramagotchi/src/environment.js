@@ -7,6 +7,20 @@ import {
     AirParticle,
 } from "./particles";
 
+import {
+    PlantParticle,
+    SeedParticle,
+    DeadPlantParticle,
+    LeafParticle,
+    DeadLeafParticle,
+    FlowerParticle,
+    RootParticle,
+    StemParticle,
+} from "./particles/plants";
+
+export const WATER_ENERGY_RATIO = 1
+export const NUTRIENT_ENERGY_RATIO = 1
+
 export class Environment {
     constructor(width, height) {
         this.__tick = 0;
