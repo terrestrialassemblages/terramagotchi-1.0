@@ -21,7 +21,10 @@ export class LeafParticle extends PlantParticleFamily {
         this.generate_energy()
         this.health_update(environment)
         
-        if (this.is_active && this.energy >= this.activation_level)
+        if (this.is_active &&
+            this.energy >= this.activation_level &&
+            this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS &&
+            this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER)
             this.grow_children(environment)
     }
 
