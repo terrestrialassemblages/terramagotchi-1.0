@@ -10,31 +10,32 @@ export class OrganicParticle extends BaseParticle {
 
         this.__nutrient_level = 0;
         this.nutrient_capacity = 100;
-        this.__nutrient_render_step = 7;
+        this.__nutrient_render_step = 100;
+        this.__last_rendered_nutrient_level = 0;
 
         this.__water_level = 0;
         this.water_capacity = 100;
         this.__water_render_step = 10 + FastRandom.random_int(10);
+        this.__last_rendered_water_level = 0;
 
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
     }
 
     set water_level(level) {
-        if (
-            Math.floor(this.__water_level / this.__water_render_step) !=
-            Math.floor(level / this.__water_render_step)
-        ) {
+        if (Math.abs(this.water_level - this.__last_rendered_water_level) >= this.__water_render_step) {
             this.rerender = true;
+            this.__last_rendered_water_level = this.water_level;
         }
 
         this.__water_level = level;
     }
 
     set nutrient_level(level) {
-        // if (Math.floor(this.__nutrient_level / this.__nutrient_render_step) != Math.floor(level / this.__nutrient_render_step)) {
-        //     this.rerender = true;
-        // }
+        //if (Math.abs(this.nutrient_level - this.__last_rendered_nutrient_level) >= this.__nutrient_render_step) {
+        //    this.rerender = true;
+        //    this.__last_rendered_nutrient_level = this.nutrient_level;
+        //}
 
         this.__nutrient_level = level;
     }
