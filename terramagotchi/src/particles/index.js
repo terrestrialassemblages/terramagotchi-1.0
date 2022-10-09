@@ -8,3 +8,4 @@ export * from "./soil";
 export * from "./compost";
 export * from "./water";
 export * from "./steam";
+export * from "./deadplant";

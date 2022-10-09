@@ -1,3 +1,4 @@
+import { Organism } from "./organism";
 import {
     BoundaryParticle,
     StoneParticle,
@@ -5,12 +6,14 @@ import {
     CompostParticle,
     WaterParticle,
     AirParticle,
+    DeadPlantParticle,
 } from "./particles";
 
 export class Environment {
     constructor(width, height) {
         this.__tick = 0;
         this.__particle_grid = new Array(width * height); // We store the particle grid as a 1D array for optimization.
+        this.organisms = [];
 
         this.width = width;
         this.height = height;
@@ -46,7 +49,8 @@ export class Environment {
                         ) <
                     85
                 ) {
-                    this.set(new SoilParticle(x, y));
+                    this.set(new SoilParticle(x, y - 1));
+                    this.set(new (Math.random() < 0 ? DeadPlantParticle : AirParticle)(x, y));
                 } else if (y < 100) {
                     this.set(new WaterParticle(x, y));
                 } else if (y > 140 && Math.random() < 0.01) {
@@ -57,7 +61,10 @@ export class Environment {
             }
         }
 
-        this.refresh()
+        // Spawn some organisms
+        for (let i = 0; i < 10; i++) this.organisms.push(new Organism(this));
+
+        this.refresh();
     }
 
     update() {
@@ -66,6 +73,11 @@ export class Environment {
                 particle.update(this);
             }
         }
+
+        for (let organism of this.organisms) {
+            organism.update(this);
+        }
+
         this.__tick++;
     }
 
@@ -83,31 +95,31 @@ export class Environment {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroyed = true;
-        
+
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
         particle.rerender = true;
     }
 
     swap(x1, y1, x2, y2) {
-        const particle1 = this.get(x1, y1)
-        const particle2 = this.get(x2, y2)
+        const particle1 = this.get(x1, y1);
+        const particle2 = this.get(x2, y2);
 
-        particle1.x = x2
-        particle1.y = y2
-        particle2.x = x1
-        particle2.y = y1
+        particle1.x = x2;
+        particle1.y = y2;
+        particle2.x = x1;
+        particle2.y = y1;
 
-        this.__particle_grid[y1 * this.width + x1] = particle2
-        this.__particle_grid[y2 * this.width + x2] = particle1
+        this.__particle_grid[y1 * this.width + x1] = particle2;
+        this.__particle_grid[y2 * this.width + x2] = particle1;
 
         if (x1 != x2) {
-            particle1.moveable_x = false
-            particle2.moveable_x = false
+            particle1.moveable_x = false;
+            particle2.moveable_x = false;
         }
 
         if (y1 != y2) {
-            particle1.moveable_y = false
-            particle2.moveable_y = false
+            particle1.moveable_y = false;
+            particle2.moveable_y = false;
         }
 
         particle1.rerender = true;
@@ -119,6 +131,6 @@ export class Environment {
     }
 
     get particle_grid() {
-        return this.__particle_grid
+        return this.__particle_grid;
     }
 }

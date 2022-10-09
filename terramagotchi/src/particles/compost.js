@@ -15,7 +15,7 @@ export class CompostParticle extends OrganicParticle {
         this.nutrient_capacity = 0;
 
         this.nutrient_content = 1000;
-        this.water_content = 100;
+        this.water_content = 0;
     }
 
     update(environment) {
@@ -49,8 +49,8 @@ export class CompostParticle extends OrganicParticle {
                     random_neighbour.nutrient_capacity -
                         random_neighbour.nutrient_level
                 );
-                random_neighbour.nutrient_level += transfer_amount;
-                this.nutrient_content -= transfer_amount;
+                random_neighbour.nutrient_level += Math.ceil(transfer_amount / 4);
+                this.nutrient_content -= Math.ceil(transfer_amount / 4);
             }
 
             // Attempt water dispersion
