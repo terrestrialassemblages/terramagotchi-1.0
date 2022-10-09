@@ -3,20 +3,20 @@ import { BaseParticle } from "./base";
 export class OrganicParticle extends BaseParticle {
     constructor(x, y) {
         super(x, y);
+        
+        this.moveable = true;
+        this.weight = 2;
 
         this.__nutrient_level = 0;
         this.nutrient_capacity = 100;
-        this.__nutrient_render_step = 10 + Math.floor(Math.random() * 10);
+        this.__nutrient_render_step = 7;
 
         this.__water_level = 0;
         this.water_capacity = 100;
         this.__water_render_step = 10 + Math.floor(Math.random() * 10);
 
-
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
-
-        this.__transfer_difference_minimum = 3
     }
 
     set water_level(level) {
@@ -73,9 +73,9 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        let transfer_amount = 1;
+        //let transfer_amount = 5;
         // Method 2
-        // let transfer_amount = Math.floor(Math.random() * 10);
+        let transfer_amount = Math.floor(Math.random() * 10);
         // Method 3
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + Math.random()));
 
@@ -119,7 +119,7 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        // let transfer_amount = 1;
+        //let transfer_amount = 5;
         // Method 2
         //let transfer_amount = Math.floor(Math.random() * 2);
         // Method 3

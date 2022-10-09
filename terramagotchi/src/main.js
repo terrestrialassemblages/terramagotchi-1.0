@@ -31,7 +31,7 @@ export const sketch = (s) => {
         canvas.canvas.style = ""; // Remove inline styling so that css works.
         s.noStroke();
         s.colorMode(s.HSB);
-        s.frameRate(90);
+        // s.frameRate(20);
         s.background("#87CEEB");
     };
 
