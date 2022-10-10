@@ -5,6 +5,7 @@ import {
     CompostParticle,
     WaterParticle,
     AirParticle,
+    OrganicParticle,
 } from "./particles";
 
 import {
@@ -29,9 +30,12 @@ export class Environment {
         this.width = width;
         this.height = height;
         this.organisms = [];
-        this.light_level = 100; // max 100
         this.oxygen_level = 100; // max 100
         this.temperature_level = 25; // max 100
+
+        this.__light_level = 100; // max 100
+        this.__length_of_day = 36000;
+        this.time_of_day = this.__length_of_day / 2;
     }
 
     generate() {
@@ -81,6 +85,8 @@ export class Environment {
             }
         }
         this.__tick++;
+
+        this.compute_day_night_cycle();
     }
 
     refresh() {
@@ -97,7 +103,12 @@ export class Environment {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroyed = true;
-        
+
+        if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
+            particle.water_level += destroyed_particle.water_level
+            particle.nutrient_level += destroyed_particle.nutrient_level
+        }
+
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
         particle.rerender = true;
     }
@@ -134,5 +145,22 @@ export class Environment {
 
     get particle_grid() {
         return this.__particle_grid
+    }
+
+    compute_day_night_cycle() {
+        // Elapse time of day per tick
+        this.time_of_day = (this.time_of_day + 1) % this.__length_of_day;
+
+        // Compute light level
+        let normalised_midday_difference = Math.abs((this.time_of_day / this.__length_of_day) - 0.5) * 2;
+        this.light_level = (-5 * normalised_midday_difference) + 3.5;
+        this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
+    }
+
+    get light_level() {
+        return this.__light_level;
+    }
+    set light_level(_val) {
+        this.__light_level = _val;
     }
 }
