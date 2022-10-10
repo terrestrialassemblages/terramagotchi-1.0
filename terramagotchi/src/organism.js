@@ -140,6 +140,10 @@ export class Organism {
     }
 
     compute_gravity(environment) {
+        /**
+         * Computes gravity on the head of the organism.
+         * If the row of pixels 3 wide below of the organism's head are not supportive, the organism will fall.
+         */
         // Falls through particles with weight < 1, i.e. Air, Steam, Water.
         if (
             environment.get(this.x, this.y - 1).weight <= 1 &&
@@ -155,12 +159,13 @@ export class Organism {
     }
 
     seek(looking_for, environment) {
-        /*
-            Seek for the next target location.
-        */
-        // Search in circles (really diamonds) based on the manhattan distance from itself.
+        /**
+         * Seek for the next target location based on the manhattan distance from the organism.
+         * Where `depth` is the manhattan distance.
+         * At each depth, it searches in a circular order, starting on the right of itself.
+         */
+        let y = 0
         for (let depth = 1; depth <= MAX_SEEK_DEPTH; depth++) {
-            let y = 0
             for (let x = depth; x >= -depth; x--) {
                 y = Math.abs(x) - depth
                 if (
@@ -211,6 +216,9 @@ export class Organism {
     }
 
     __can_traverse(x, y, environment) {
+        /**
+         * Checks that the given location is a particle type on which the organism can traverse.
+         */
         for (let type of CAN_TRAVERSE) if (environment.get(x, y) instanceof type) return true
     }
 
