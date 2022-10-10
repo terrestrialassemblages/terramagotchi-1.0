@@ -7,6 +7,8 @@ export class AirParticle extends InorganicParticle {
         this.color_variance = 0.01;
         this.moveable = true;
         this.weight = 0;
+
+        this.empty = true;
     }
 
     set moveable_x(_val) {}
