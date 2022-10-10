@@ -149,14 +149,15 @@ export class OrganicParticle extends BaseParticle {
     }
 
     get_color(s) {
-        // if (this.nutrient_capacity != 0) {
-        //    s.push()
-        //    s.colorMode(s.RGB)
-        //    //this.color = s.color((this.water_level - 30) * 10)
+        if (this.nutrient_capacity != 0) {
+            s.push()
+            s.colorMode(s.RGB)
         //    this.color = s.color((this.water_level - 30) * 10)
-        //    s.pop()
-        //    return this.color
-        // }
+            this.color = s.color(255*(this.nutrient_level/this.nutrient_capacity))
+            
+            s.pop()
+            return this.color
+        }
 
         // Initialise colour if needed
         if (this.color === "#000000") {

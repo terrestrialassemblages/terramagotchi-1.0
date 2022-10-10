@@ -225,4 +225,35 @@ export class PlantParticleFamily extends OrganicParticle {
         // swag logic, no else needed
         return [1, 0]
     }
+
+
+
+
+
+    
+
+    get_color(s) {
+        if (this.nutrient_capacity != 0) {
+            s.push()
+            s.colorMode(s.RGB)
+        //    this.color = s.color((this.water_level - 30) * 10)
+            this.color = s.color(255*(this.nutrient_level/this.nutrient_capacity), 0, 255*(this.nutrient_level/this.nutrient_capacity))
+            
+            s.pop()
+            return this.color
+        }
+
+        // Initialise colour if needed
+        if (this.color === "#000000") {
+            super.get_color(s);
+        }
+
+        this.color = s.color(
+            s.hue(this.color),
+            s.saturation(this.base_color) * this.saturation_offset,
+            s.brightness(this.base_color) * this.brightness_offset -
+                this.water_level / 4
+        );
+        return this.color;
+    }
 }

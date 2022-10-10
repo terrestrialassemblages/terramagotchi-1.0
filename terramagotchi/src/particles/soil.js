@@ -41,21 +41,21 @@ export class SoilParticle extends OrganicParticle {
         return this.base_color == this.grass_color;
     }
 
-    get_color(s) {
+    // get_color(s) {
 
-        // Initialise colour if needed
-        if (this.color === "#000000" || this.change_color) {
-            super.get_color(s);
-        }
+    //     // Initialise colour if needed
+    //     if (this.color === "#000000" || this.change_color) {
+    //         super.get_color(s);
+    //     }
 
-        this.color = s.color(
-            s.hue(this.color),
-            s.saturation(this.base_color) * this.saturation_offset,
-            s.brightness(this.base_color) * this.brightness_offset -
-                this.water_level / 4
-        );
-        return this.color;
-    }
+    //     this.color = s.color(
+    //         s.hue(this.color),
+    //         s.saturation(this.base_color) * this.saturation_offset,
+    //         s.brightness(this.base_color) * this.brightness_offset -
+    //             this.water_level / 4
+    //     );
+    //     return this.color;
+    // }
 }
 
 export class GrassParticle extends SoilParticle {
