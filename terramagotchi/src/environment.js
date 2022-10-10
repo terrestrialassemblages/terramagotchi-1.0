@@ -1,3 +1,4 @@
+import { FastRandom } from "./fast-random";
 import {
     BoundaryParticle,
     StoneParticle,
@@ -5,19 +6,38 @@ import {
     CompostParticle,
     WaterParticle,
     AirParticle,
+    OrganicParticle,
 } from "./particles";
+
+import {
+    PlantParticle,
+    SeedParticle,
+    DeadPlantParticle,
+    LeafParticle,
+    DeadLeafParticle,
+    FlowerParticle,
+    RootParticle,
+    StemParticle,
+} from "./particles/plants";
+
+export const WATER_ENERGY_RATIO = 1
+export const NUTRIENT_ENERGY_RATIO = 1
 
 export class Environment {
     constructor(width, height) {
         this.__tick = 0;
         this.__particle_grid = new Array(width * height); // We store the particle grid as a 1D array for optimization.
+        this.__pass_through_layer = [];
 
         this.width = width;
         this.height = height;
         this.organisms = [];
-        this.light_level = 100; // max 100
         this.oxygen_level = 100; // max 100
         this.temperature_level = 25; // max 100
+
+        this.__light_level = 100; // max 100
+        this.__length_of_day = 36000;
+        this.time_of_day = this.__length_of_day / 2;
     }
 
     generate() {
@@ -49,7 +69,7 @@ export class Environment {
                     this.set(new SoilParticle(x, y));
                 } else if (y < 100) {
                     this.set(new WaterParticle(x, y));
-                } else if (y > 140 && Math.random() < 0.01) {
+                } else if (y > 140 && FastRandom.random() < 0.01) {
                     this.set(new AirParticle(x, y));
                 } else {
                     this.set(new AirParticle(x, y));
@@ -61,16 +81,28 @@ export class Environment {
     }
 
     update() {
+        for (let i = this.__pass_through_layer.length - 1; i > -1; i--) {
+            let particle = this.__pass_through_layer[i];
+            if (!particle.destroyed) {
+                particle.update(this);
+            }
+        }
+        
         for (let particle of [...this.__particle_grid]) {
             if (!particle.destroyed) {
                 particle.update(this);
             }
         }
         this.__tick++;
+
+        this.compute_day_night_cycle();
     }
 
     refresh() {
         for (let particle of this.__particle_grid) {
+            particle.refresh();
+        }
+        for (let particle of this.__pass_through_layer) {
             particle.refresh();
         }
     }
@@ -83,7 +115,12 @@ export class Environment {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroyed = true;
-        
+
+        if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
+            particle.water_level += destroyed_particle.water_level
+            particle.nutrient_level += destroyed_particle.nutrient_level
+        }
+
         this.__particle_grid[particle.y * this.width + particle.x] = particle;
         particle.rerender = true;
     }
@@ -114,11 +151,61 @@ export class Environment {
         particle2.rerender = true;
     }
 
+    pass_through(passing_particle,new_x,new_y) {
+        let old_x = passing_particle.x;
+        let old_y = passing_particle.y;
+
+        // Passing_particle is not on pass_through_layer
+        if (!passing_particle.passing_through) {
+            // Set passing_through
+            passing_particle.passing_through = true;
+            // Move passing_particle to pass_through_layer
+            this.__pass_through_layer.push(passing_particle)
+            // Remove from regular particle layer
+            this.set(new AirParticle(old_x,old_y));
+            // Unset destroyed
+            passing_particle.destroyed = false;
+        }
+
+        // Move to new position
+        passing_particle.x = new_x;
+        passing_particle.y = new_y;
+
+        if (old_x != new_x) passing_particle.moveable_x = false;
+        if (old_y != new_y) passing_particle.moveable_y = false;
+
+        // Passing_particle is now in empty particle
+        if (this.get(new_x, new_y).empty) {
+            // Move to regular particle layer
+            this.set(passing_particle);
+            passing_particle.passing_through = false;
+            // Remove from __pass_through_layer
+            this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+        }
+    }
+
     get tick() {
         return this.__tick;
     }
 
     get particle_grid() {
         return this.__particle_grid
+    }
+
+    compute_day_night_cycle() {
+        // Elapse time of day per tick
+        this.time_of_day = (this.time_of_day + 1) % this.__length_of_day;
+
+        // Compute light level
+        let normalised_midday_difference = Math.abs((this.time_of_day / this.__length_of_day) - 0.5) * 2;
+        this.light_level = (-5 * normalised_midday_difference) + 3.5;
+        this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
+    }
+
+    get light_level() {
+        return this.__light_level;
+    }
+    set light_level(_val) {
+        this.__light_level = _val;
     }
 }
