@@ -2,24 +2,46 @@ import { FastRandom } from "./fast-random"
 import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle } from "./particles"
 import { DeadPlantParticle } from "./particles/plants"
 
+// The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
 const ORGANISM_UPDATE_INTERVAL = 15
+
+// The organisms body is at least this long.
 const MIN_LENGTH = 5
+
+// The organism may move onto any of these particle types.
 const CAN_TRAVERSE = [AirParticle, SoilParticle, DeadPlantParticle, CompostParticle]
+
+// The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
 const MAX_SEEK_DEPTH = 100
+
+// The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
 const MIN_NUTRIENTS = 100
 const MIN_WATER = 100
+
+// The chance for nutrient and water levels to be decremented at the end of an update() call.
 const USE_FOOD_CHANCE = 0.1 // [0, 1]
+
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
+
 // Integer value. This adjusts how likely it is to walk over itself.
 const DISCOURAGE_WALKING_OVER_SELF_FACTOR = 10
+
 // Integer value. At about 4 it will generally result in just a random walk.
 // Does not affect wandering, use CHANGE_WANDER_DIRECTION_CHANCE.
 const RANDOM_MOVEMENT_FACTOR = 2
 const CHANGE_WANDER_DIRECTION_CHANCE = 0.2 // [0, 1]
 
+// The organism will sleep for (RESEEK_TIME_AFTER_CONSUME + update_timer) frames before reseeking.
 const RESEEK_TIME_AFTER_CONSUME = 30
+
+// The organism will reseek (RESEEK_TIMER_AFTER_FOUND_NEW_TARGET + update_timer) frames
+// after successfully finding a target. This prevents it from trying to get to a dead plant
+// which it can't reach when there may be new dead plants it can consume instead.
 const RESEEK_TIMER_AFTER_FOUND_NEW_TARGET = 600
+
+// The organism will reseek (RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET + update_timer)
+// frames after it failed to find dead plants during a seek.
 const RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET = 60
 
 export class Organism {
