@@ -24,10 +24,10 @@ export const sketch = (s) => {
     let cell_size = 3 // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic;
-
     let sky_day_color, sky_night_color;
 
     let night_overlay_opacity;
+    let smooth_darkness_intensity, darkness_banding, banded_darkness_intensity;
 
     // The initial setup function.
     s.setup = () => {
@@ -48,8 +48,12 @@ export const sketch = (s) => {
 
         s.colorMode(s.HSB);
         // s.frameRate(20);
-        s.background("#000000");
-    };
+        s.background("#000")
+
+        smooth_darkness_intensity = 0.9;
+        darkness_banding = 5;
+        banded_darkness_intensity = 0.7;
+    }
 
     // The update function. Fires every frame
     s.draw = () => {
@@ -69,31 +73,25 @@ export const sketch = (s) => {
 
                     particle.rerender = false
 
-                    let new_color = particle.get_color(s)
-                    let particle_brightness = s.brightness(new_color)
+                    let particle_color = particle.get_color(s)
 
+                    // Darken particle appropriately if under the horizon
                     if (particle.y < application.environment.get_horizon(particle.x)) {
-                        let smooth_darkness_intensity = 0.9;
                         let smooth_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 20;
-
                         let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + Math.random() * 0.05), 1, (1-smooth_darkness_intensity));
 
-                        let darkness_banding = 5;
-                        let banded_darkness_intensity = 0.7;
                         let banded_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 60;
                         let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + Math.random() * 0.02), 1, (1-banded_darkness_intensity)) 
                             * darkness_banding) | 0) / darkness_banding;
-                        
-                        particle_brightness *= s.lerp(banded_brightness, smooth_brightness, 0.85);
+
+                        particle_color = s.color(
+                            s.hue(particle_color),
+                            s.saturation(particle_color),
+                            s.brightness(particle_color) * s.lerp(banded_brightness, smooth_brightness, 0.85)
+                        )
                     }
 
-                    new_color = s.color(
-                        s.hue(new_color),
-                        s.saturation(new_color),
-                        particle_brightness
-                    )
-
-                    main_graphic.fill(new_color);
+                    main_graphic.fill(particle_color);
                 }
 
                 // Paint square on grid
