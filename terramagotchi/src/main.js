@@ -1,6 +1,7 @@
 import p5 from "p5"
 
 import { Application } from "./application"
+import { FastRandom } from "./fast-random";
 
 // Testing code: Imports for testing particles by manually adding
 import {
@@ -78,10 +79,10 @@ export const sketch = (s) => {
                     // Darken particle appropriately if under the horizon
                     if (particle.y < application.environment.get_horizon(particle.x)) {
                         let smooth_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 20;
-                        let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + Math.random() * 0.05), 1, (1-smooth_darkness_intensity));
+                        let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + FastRandom.random() * 0.05), 1, (1-smooth_darkness_intensity));
 
                         let banded_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 60;
-                        let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + Math.random() * 0.02), 1, (1-banded_darkness_intensity)) 
+                        let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + FastRandom.random() * 0.02), 1, (1-banded_darkness_intensity)) 
                             * darkness_banding) | 0) / darkness_banding;
 
                         particle_color = s.color(

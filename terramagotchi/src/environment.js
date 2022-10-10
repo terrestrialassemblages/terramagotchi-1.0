@@ -5,7 +5,6 @@ import {
     BoundaryParticle,
     StoneParticle,
     SoilParticle,
-    CompostParticle,
     WaterParticle,
     AirParticle,
     OrganicParticle,
@@ -44,7 +43,7 @@ export class Environment {
 
         // How far the river can randomly move
         this.max_river_offset = 25;
-        this.river_offset = (Math.random() * this.max_river_offset * 2) - this.max_river_offset;
+        this.river_offset = (FastRandom.random() * this.max_river_offset * 2) - this.max_river_offset;
         // Half of how wide the river is
         this.river_radius = 40;
         // How deep the river is
@@ -71,11 +70,7 @@ export class Environment {
                 // Set Boundary Particles
                 if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1 ) {
                     this.set(new BoundaryParticle(x, y));
-                } 
-                //// Set bottom Stone Particles
-                //else if (y < 30 - Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 250))) {
-                //    this.set(new StoneParticle(x, y));
-                //}
+                }
                 // Set Soil Particles
                 else if (y < this.get_horizon(x)) {
                     this.set(new SoilParticle(x, y));
