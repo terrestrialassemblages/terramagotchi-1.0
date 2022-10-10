@@ -25,12 +25,12 @@ export class CompostParticle extends OrganicParticle {
     disperse_nutrients(environment) {
 
         // Choose a random neighbour
-        let [offset_x, offset_y] = [
+        let [offset_x, offset_y] = FastRandom.choice([
             [0, 1],
             [1, 0],
             [0, -1],
             [-1, 0],
-        ][FastRandom.random_int(4)];
+        ]);
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y

@@ -15,7 +15,7 @@ export class OrganicParticle extends BaseParticle {
 
         this.__water_level = 0;
         this.water_capacity = 100;
-        this.__water_render_step = 10 + FastRandom.random_int(10);
+        this.__water_render_step = 10 + FastRandom.int_max(9);
         this.__last_rendered_water_level = 0;
 
         this.__water_transferred = false;
@@ -56,10 +56,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_water(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] =
-            potential_neighbours[
-                FastRandom.random_int(potential_neighbours.length)
-            ];
+        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours)
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y
@@ -77,7 +74,7 @@ export class OrganicParticle extends BaseParticle {
         // Method 1
         //let transfer_amount = 5;
         // Method 2
-        let transfer_amount = FastRandom.random_int(10);
+        let transfer_amount = FastRandom.int_max(9);
         // Method 3
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + FastRandom.random()));
 
@@ -102,8 +99,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] =
-            potential_neighbours[FastRandom.random_int(potential_neighbours.length)];
+        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours);
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y
@@ -121,7 +117,7 @@ export class OrganicParticle extends BaseParticle {
         // Method 1
         //let transfer_amount = 5;
         // Method 2
-        //let transfer_amount = FastRandom.random_int(2);
+        //let transfer_amount = FastRandom.int_max(1);
         // Method 3
         let transfer_amount = Math.floor(
             (random_neighbour.nutrient_level - this.nutrient_level) /

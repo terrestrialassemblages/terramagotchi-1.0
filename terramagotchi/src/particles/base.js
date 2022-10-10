@@ -78,10 +78,7 @@ export class BaseParticle {
                 free_neighbours.push(+1);
 
             if (free_neighbours.length > 1) {
-                let offset =
-                    free_neighbours[
-                        FastRandom.random_int(free_neighbours.length)
-                    ];
+                let offset = FastRandom.choice(free_neighbours)
                 if (offset != 0) {
                     environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
