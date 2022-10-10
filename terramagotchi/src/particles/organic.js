@@ -15,7 +15,7 @@ export class OrganicParticle extends BaseParticle {
 
         this.__water_level = 0;
         this.water_capacity = 100;
-        this.__water_render_step = 10 + FastRandom.int_max(9);
+        this.__water_render_step = FastRandom.int_min_max(10, 20);
         this.__last_rendered_water_level = 0;
 
         this.__water_transferred = false;
@@ -74,7 +74,7 @@ export class OrganicParticle extends BaseParticle {
         // Method 1
         //let transfer_amount = 5;
         // Method 2
-        let transfer_amount = FastRandom.int_max(9);
+        let transfer_amount = FastRandom.int_max(10);
         // Method 3
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + FastRandom.random()));
 
