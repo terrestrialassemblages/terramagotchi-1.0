@@ -1,14 +1,9 @@
+import { FastRandom } from "../../fast-random"
 
 const PALM_TREE = "PALM"
 const SUNFLOWER = "SUNFLOWER"
 const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
-
-function randint(start, end=null) {
-    if (!(end))
-        [start, end] = [0, start]
-    return start + Math.random() * (end - start + 1) | 0
-}
 
 export default function generate_tree_dna(TREE_TYPE=LAVENDER) {
 let tree_direction, tree_scale, tree_angle_offset, tree_height
@@ -16,7 +11,7 @@ switch (TREE_TYPE) {
     case KAURI:
         
     case PALM_TREE:
-        tree_direction = [-1, 1][randint(1)]
+        tree_direction = [-1, 1][FastRandom.int_max(1)]
         return {
             node_activation_level: 1,
             RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
@@ -27,7 +22,7 @@ switch (TREE_TYPE) {
             stem_curve: "spherical",
             stem_thickness: 10,
             stem_end_thickness: 3,
-            curve_radius: randint(10, 20),
+            curve_radius: FastRandom.int_min_max(10, 20),
             curve_direction: tree_direction,
             children: [
                 {
@@ -88,9 +83,9 @@ switch (TREE_TYPE) {
             ],
         }
     case LAVENDER:
-        tree_direction = [-1, 1][randint(1)]
-        tree_angle_offset = randint(15, 25)
-        tree_height = randint(4, 7)
+        tree_direction = [-1, 1][FastRandom.int_max(1)]
+        tree_angle_offset = FastRandom.int_min_max(15, 25)
+        tree_height = FastRandom.int_min_max(4, 7)
 
         let first_node = {
             root_node_spawn_distance: 4,
@@ -141,13 +136,13 @@ switch (TREE_TYPE) {
         return first_node
 
     case SUNFLOWER:
-        tree_direction = [-1, 1][randint(1)]
+        tree_direction = [-1, 1][FastRandom.int_max(1)]
         tree_angle_offset = -14
         return {
             node_activation_level: 1,
             color: "#3F7B25", // color inspo: https://colorswall.com/palette/34441
             stem_angle: 90 + tree_direction*tree_angle_offset,
-            stem_length: randint(5, 6),
+            stem_length: FastRandom.int_min_max(5, 6),
             stem_curve: "spherical",
             stem_thickness: 1,
             stem_end_thickness: 1,
@@ -167,7 +162,7 @@ switch (TREE_TYPE) {
                 node_activation_level: 1,
                 color: "#3F7B25",
                 stem_angle: -tree_direction*tree_angle_offset+tree_direction*45,
-                stem_length: randint(1, 2),
+                stem_length: FastRandom.int_min_max(1, 2),
                 stem_curve: "linear",
                 stem_thickness: 1,
                 stem_end_thickness: 1,
@@ -187,7 +182,7 @@ switch (TREE_TYPE) {
                     node_activation_level: 1,
                     color: "#3F7B25",
                     stem_angle: -tree_direction*45,
-                    stem_length: randint(2, 3),
+                    stem_length: FastRandom.int_min_max(2, 3),
                     stem_curve: "linear",
                     stem_thickness: 1,
                     stem_end_thickness: 1,
@@ -212,7 +207,7 @@ switch (TREE_TYPE) {
         }
 
     case PALM_TREE:
-        tree_direction = [-1, 1][randint(1)]
+        tree_direction = [-1, 1][FastRandom.int_max(1)]
         return {
             node_activation_level: 1,
             // color: "#FF0000",
@@ -222,7 +217,7 @@ switch (TREE_TYPE) {
             stem_curve: "spherical",
             stem_thickness: 5,
             stem_end_thickness: 3,
-            curve_radius: randint(10, 20),
+            curve_radius: FastRandom.int_min_max(10, 20),
             curve_direction: tree_direction,
             children: [
                 {

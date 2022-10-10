@@ -1,3 +1,5 @@
+import { FastRandom } from "../fast-random";
+
 export class BaseParticle {
     constructor(x, y) {
         if (x == undefined || y == undefined) throw "x and y are required parameters."
@@ -86,10 +88,7 @@ export class BaseParticle {
                 free_neighbours.push(+1);
 
             if (free_neighbours.length > 1) {
-                let offset =
-                    free_neighbours[
-                        Math.floor(Math.random() * free_neighbours.length)
-                    ];
+                let offset = FastRandom.choice(free_neighbours)
                 if (offset != 0) {
                     environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
@@ -165,8 +164,8 @@ export class BaseParticle {
             let c = s.color(this.base_color);
             let min = 1 - this.color_variance;
             let max = 1 + this.color_variance;
-            this.brightness_offset = Math.random() * (max - min) + min;
-            this.saturation_offset = Math.random() * (max - min) + min;
+            this.brightness_offset = FastRandom.random() * (max - min) + min;
+            this.saturation_offset = FastRandom.random() * (max - min) + min;
 
             c = s.color(
                 s.hue(c),

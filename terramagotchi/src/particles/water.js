@@ -1,3 +1,4 @@
+import { FastRandom } from "../fast-random";
 import { AirParticle } from "./air";
 import { LiquidParticle } from "./liquid";
 import { OrganicParticle } from "./organic";
@@ -21,7 +22,7 @@ export class WaterParticle extends LiquidParticle {
 
     disperse_water(environment) {
         // Choose a random neighbour
-        let [offset_x, offset_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][Math.random()*4 | 0];
+        let [offset_x, offset_y] = FastRandom.choice([[0, 1], [1, 0], [0, -1], [-1, 0]]);
         let random_neighbour = environment.get(this.x + offset_x, this.y + offset_y);
 
         // Attempt to disperse water to random organic neighbour

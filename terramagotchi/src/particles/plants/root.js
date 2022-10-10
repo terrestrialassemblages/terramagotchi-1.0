@@ -1,5 +1,6 @@
 import { PlantParticleFamily } from "./plant";
 import { SoilParticle } from "../soil";
+import { FastRandom } from "../../fast-random";
 
 
 export class RootParticle extends PlantParticleFamily {
@@ -40,8 +41,8 @@ export class RootParticle extends PlantParticleFamily {
                 this.current_curve_length = 0;
             }
             if (this.is_node) { // if its a node, it randomly spawns a random amount of roots in a random directions
-                for (let i = 0; i <= Math.floor(Math.random() * 5); i++) {
-                    this.direction = Math.floor(Math.random() * 5);
+                for (let i = 0; i <= FastRandom.int_max(4); i++) {
+                    this.direction = FastRandom.int_max(4);
                     this.grow_child_root(environment);
                 }
                 this.is_active = false; // once a root grows, it stops growing and just absorbes water and nutrients
@@ -56,7 +57,7 @@ export class RootParticle extends PlantParticleFamily {
         this.is_active = false; // check to make it stop growing further
         let [offset_x, offset_y] = [[-1, 0], [0, -1], [1, 0], [-1, -1], [1, -1]][this.direction]; // is the possible directions it can grow, and the one its set to grow in
 
-        let curve_direction = Math.floor(Math.random() * 3) // 0 = follow current path, 1 = curve clockwise, 2 = curve anti-clockwise
+        let curve_direction = FastRandom.int_max(2) // 0 = follow current path, 1 = curve clockwise, 2 = curve anti-clockwise
         if (this.current_curve_length < this.root_max_curve_length && this.current_curve_length > (this.root_max_curve_length * -1) && curve_direction != 0) {
             if (curve_direction == 1) {
                 [offset_x, offset_y] = [[-1, 1], [-1, -1], [1, -1], [-1, 0], [0, -1]][this.direction]

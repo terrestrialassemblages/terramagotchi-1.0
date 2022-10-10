@@ -1,3 +1,4 @@
+import { FastRandom } from "../fast-random";
 import { BaseParticle } from "./base";
 
 export class OrganicParticle extends BaseParticle {
@@ -14,7 +15,7 @@ export class OrganicParticle extends BaseParticle {
 
         this.__water_level = 0;
         this.water_capacity = 100;
-        this.__water_render_step = 10 + Math.floor(Math.random() * 10);
+        this.__water_render_step = FastRandom.int_min_max(10, 20);
         this.__last_rendered_water_level = 0;
 
         this.__water_transferred = false;
@@ -55,10 +56,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_water(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] =
-            potential_neighbours[
-                Math.floor(Math.random() * potential_neighbours.length)
-            ];
+        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours)
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y
@@ -76,9 +74,9 @@ export class OrganicParticle extends BaseParticle {
         // Method 1
         //let transfer_amount = 5;
         // Method 2
-        let transfer_amount = Math.floor(Math.random() * 10);
+        let transfer_amount = FastRandom.int_max(10);
         // Method 3
-        //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + Math.random()));
+        //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + FastRandom.random()));
 
         // Attempt to absorb water from random neighbour
         if (
@@ -101,10 +99,7 @@ export class OrganicParticle extends BaseParticle {
 
     absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
-        let [offset_x, offset_y] =
-            potential_neighbours[
-                Math.floor(Math.random() * potential_neighbours.length)
-            ];
+        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours);
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y
@@ -122,11 +117,11 @@ export class OrganicParticle extends BaseParticle {
         // Method 1
         //let transfer_amount = 5;
         // Method 2
-        //let transfer_amount = Math.floor(Math.random() * 2);
+        //let transfer_amount = FastRandom.int_max(1);
         // Method 3
         let transfer_amount = Math.floor(
             (random_neighbour.nutrient_level - this.nutrient_level) /
-                (1.5 + Math.random())
+                (1.5 + FastRandom.random())
         );
 
         // Attempt to absorb nutrient from random neighbour

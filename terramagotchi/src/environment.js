@@ -1,3 +1,4 @@
+import { FastRandom } from "./fast-random";
 import {
     BoundaryParticle,
     StoneParticle,
@@ -68,7 +69,7 @@ export class Environment {
                     this.set(new SoilParticle(x, y));
                 } else if (y < 100) {
                     this.set(new WaterParticle(x, y));
-                } else if (y > 140 && Math.random() < 0.01) {
+                } else if (y > 140 && FastRandom.random() < 0.01) {
                     this.set(new AirParticle(x, y));
                 } else {
                     this.set(new AirParticle(x, y));
