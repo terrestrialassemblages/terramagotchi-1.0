@@ -37,10 +37,6 @@ export class SoilParticle extends OrganicParticle {
         }
     }
 
-    get is_grass() {
-        return this.base_color == this.grass_color;
-    }
-
     get_color(s) {
 
         // Initialise colour if needed
