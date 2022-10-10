@@ -1,5 +1,4 @@
 import { InorganicParticle } from "./inorganic";
-import { SoilParticle } from "./soil";
 
 export class StoneParticle extends InorganicParticle {
     constructor(x, y) {
