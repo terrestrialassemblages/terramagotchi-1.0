@@ -1,10 +1,14 @@
-import { AirParticle, BoundaryParticle, CompostParticle, DeadPlantParticle, SoilParticle } from "./particles"
+import { FastRandom } from "./fast-random"
+import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle } from "./particles"
+import { DeadPlantParticle } from "./particles/plants"
 
 const ORGANISM_UPDATE_INTERVAL = 15
+const MIN_LENGTH = 5
 const CAN_TRAVERSE = [AirParticle, SoilParticle, DeadPlantParticle, CompostParticle]
 const MAX_SEEK_DEPTH = 100
 const MIN_NUTRIENTS = 100
 const MIN_WATER = 100
+const USE_FOOD_CHANCE = 0.1 // [0, 1]
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
 // Integer value. This adjusts how likely it is to walk over itself.
@@ -42,8 +46,8 @@ export class Organism {
     }
 
     update(environment) {
-        if (this.location_history.length > this.nutrient_level / 100)
-            this.location_history.length = (this.nutrient_level / 100) >> 0
+        if (this.location_history.length > this.nutrient_level / 100 + MIN_LENGTH)
+            this.location_history.length = (this.nutrient_level / 100 + MIN_LENGTH) >> 0
         const fell = this.compute_gravity(environment)
         if (fell) return
 
@@ -105,13 +109,12 @@ export class Organism {
                     break
             }
         } else {
-            // for (let [x, y] of this.location_history) {
-            //     environment.set(new CompostParticle(x, y))
-            // }
-            // environment.organisms.splice(environment.organisms.indexOf(this), 1)
+            this.die(environment)
         }
-        // this.nutrient_level--;
-        // this.water_level--;
+        if (FastRandom.random() < USE_FOOD_CHANCE) {
+            this.nutrient_level--
+            this.water_level--
+        }
     }
 
     compute_gravity(environment) {
@@ -315,5 +318,17 @@ export class Organism {
         } else {
             this.seek(AirParticle, environment)
         }
+    }
+
+    die(environment) {
+        for (let [x, y] of this.location_history) {
+            let new_compost_particle = new CompostParticle(x, y)
+            new_compost_particle.nutrient_content = Math.round(this.nutrient_level / this.location_history.length)
+            new_compost_particle.water_content = Math.round(this.water_level / this.location_history.length)
+            if (environment.get(x, y) instanceof SoilParticle) new_compost_particle.decay_into = SoilParticle
+
+            environment.set(new_compost_particle)
+        }
+        environment.organisms.splice(environment.organisms.indexOf(this), 1)
     }
 }
