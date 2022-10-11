@@ -33,6 +33,7 @@ export class Application {
         setDoc(doc(this.db, this.instance_id, "soil"), { value: 0 });
         setDoc(doc(this.db, this.instance_id, "seed"), { value: 0 });
         setDoc(doc(this.db, this.instance_id, "time"), { value: 0 });
+        setDoc(doc(this.db, this.instance_id, "worm"), { value: 0 });
         
         return collection(this.db, this.instance_id);
     }
@@ -40,27 +41,32 @@ export class Application {
     start_db_listener() {
         // When the database is updated, add a new 2x2 of a particle at a random location
         onSnapshot(this.db_collection, (snapshot) => {
-            const [x, y] = [FastRandom.int_min_max(10, 230), FastRandom.int_min_max(130, 220)];
+            const [x, y] = [FastRandom.int_min_max(10, 170), FastRandom.int_min_max(160, 310)];
 
             // Check which document was modified
             snapshot.docChanges().forEach((change) => {
-                if (change.doc.id == "water") {
-                    this.environment.set(new WaterParticle(x, y));
-                    this.environment.set(new WaterParticle(x+1, y));
-                    this.environment.set(new WaterParticle(x, y+1));
-                    this.environment.set(new WaterParticle(x+1, y+1));
-                }
-                if (change.doc.id == "soil") {
-                    this.environment.set(new SoilParticle(x, y));
-                    this.environment.set(new SoilParticle(x+1, y));
-                    this.environment.set(new SoilParticle(x, y+1));
-                    this.environment.set(new SoilParticle(x+1, y+1));
-                }
-                if (change.doc.id == "seed") {
-                    this.environment.set(new SeedParticle(x, y));
-                }
-                if (change.doc.id == "time" && change.doc.data().value != 0) {
-                    this.environment.toggle_time();
+                if (change.doc.data().value != 0) {
+                    if (change.doc.id == "water") {
+                        this.environment.set(new WaterParticle(x, y));
+                        this.environment.set(new WaterParticle(x+1, y));
+                        this.environment.set(new WaterParticle(x, y+1));
+                        this.environment.set(new WaterParticle(x+1, y+1));
+                    }
+                    if (change.doc.id == "soil") {
+                        this.environment.set(new SoilParticle(x, y));
+                        this.environment.set(new SoilParticle(x+1, y));
+                        this.environment.set(new SoilParticle(x, y+1));
+                        this.environment.set(new SoilParticle(x+1, y+1));
+                    }
+                    if (change.doc.id == "seed") {
+                        this.environment.set(new SeedParticle(x, y));
+                    }
+                    if (change.doc.id == "worm") {
+                        this.environment.spawn_organism(x, y);
+                    }
+                    if (change.doc.id == "time") {
+                        this.environment.toggle_time();
+                    }
                 }
             });
         });

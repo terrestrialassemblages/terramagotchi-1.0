@@ -2,6 +2,7 @@ import p5 from "p5";
 import { Application } from "./application";
 import cryptoRandomString from "crypto-random-string";
 import { toCanvas as generate_QR } from "qrcode";
+import { FastRandom } from "./fast-random";
 
 // Testing code: Imports for testing particles by manually adding
 import {
@@ -37,7 +38,7 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(240, 240, INSTANCE_ID, FIREBASE_CONFIG);
+    const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
     let cell_size = 3; // Defines cell size in pixels.
     console.log("Running on instance: " + INSTANCE_ID);
 
@@ -54,6 +55,8 @@ export const sketch = (s) => {
             application.height * cell_size
         );
         canvas.canvas.style = ""; // Remove inline styling so that css works.
+
+        application.start_db_listener();
 
         main_graphic = s.createGraphics(s.width, s.height);
         main_graphic.noStroke();

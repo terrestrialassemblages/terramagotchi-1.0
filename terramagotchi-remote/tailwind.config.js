@@ -9,6 +9,7 @@ module.exports = {
         slate: colors.slate,
         blue: colors.blue,
         white: colors.white,
+        pink: colors.pink,
         'soil': {
             600: '#92745b',
             700: '#715a47',
