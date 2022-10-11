@@ -1,4 +1,5 @@
 import { FastRandom } from "./fast-random";
+import { Organism } from "./organism";
 import {
     BoundaryParticle,
     StoneParticle,
@@ -14,7 +15,6 @@ import {
     SeedParticle,
     DeadPlantParticle,
     LeafParticle,
-    DeadLeafParticle,
     FlowerParticle,
     RootParticle,
     StemParticle,
@@ -31,13 +31,17 @@ export class Environment {
 
         this.width = width;
         this.height = height;
-        this.organisms = [];
+        this.__organisms = [];
         this.oxygen_level = 100; // max 100
         this.temperature_level = 25; // max 100
 
         this.__light_level = 100; // max 100
         this.__length_of_day = 36000;
         this.time_of_day = this.__length_of_day / 2;
+    }
+
+    get organisms() {
+        return this.__organisms
     }
 
     generate() {
@@ -93,6 +97,11 @@ export class Environment {
                 particle.update(this);
             }
         }
+
+        for (let organism of this.__organisms) {
+            organism.update(this);
+        }
+
         this.__tick++;
 
         this.compute_day_night_cycle();
@@ -184,12 +193,16 @@ export class Environment {
         }
     }
 
+    spawn_organism(x, y) {
+        this.__organisms.push(new Organism(x, y, this))
+    }
+
     get tick() {
         return this.__tick;
     }
 
     get particle_grid() {
-        return this.__particle_grid
+        return this.__particle_grid;
     }
 
     compute_day_night_cycle() {

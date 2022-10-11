@@ -62,7 +62,9 @@ export class Organism {
     head_color = "#550000"
     body_color = "#bc4b52"
 
-    constructor(environment) {
+    constructor(x, y, environment) {
+        this.x = x
+        this.y = y
         this.update_timer = (Math.random() * ORGANISM_UPDATE_INTERVAL) >> 0
         this.seek(DeadPlantParticle, environment)
     }
