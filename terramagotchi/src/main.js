@@ -12,7 +12,7 @@ import {
     SteamParticle,
     CompostParticle,
 } from "./particles";
-import { SeedParticle } from "./particles/plants";
+import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true
@@ -24,7 +24,7 @@ export const sketch = (s) => {
     const application = new Application(180, 320)
     let cell_size = 3 // Defines cell size in pixels.
 
-    let night_overlay_graphic, main_graphic;
+    let night_overlay_graphic, main_graphic, organisms_graphic;
     let sky_day_color, sky_night_color;
 
     let night_overlay_opacity;
@@ -40,6 +40,9 @@ export const sketch = (s) => {
 
         main_graphic = s.createGraphics(s.width, s.height);
         main_graphic.noStroke();
+
+        organisms_graphic = s.createGraphics(s.width, s.height);
+        organisms_graphic.noStroke();
 
         night_overlay_graphic = s.createGraphics(s.width, s.height);
 
@@ -106,10 +109,48 @@ export const sketch = (s) => {
             }
         }
 
+        // Render organisms
+        organisms_graphic.clear();
+        for (let organism of application.environment.organisms) {
+            for (let [prev_x, prev_y] of organism.location_history) {
+                organisms_graphic.fill(organism.body_color);
+                organisms_graphic.rect(
+                    cell_size * prev_x,
+                    cell_size * (application.height - 1 - prev_y),
+                    cell_size,
+                    cell_size
+                );
+            }
+
+            organisms_graphic.fill(organism.head_color);
+            organisms_graphic.rect(
+                cell_size * organism.x,
+                cell_size * (application.height - 1 - organism.y),
+                cell_size,
+                cell_size
+            );
+
+            // Display target locations of each organism.
+            // if (organism.target_location !== null) {
+            //     organisms_graphic.push();
+            //     organisms_graphic.fill("#00FF0012");
+            //     organisms_graphic.rect(
+            //         cell_size * organism.target_location[0],
+            //         cell_size *
+            //             (application.height - 1 - organism.target_location[1]),
+            //         cell_size,
+            //         cell_size
+            //     );
+            //     organisms_graphic.pop();
+            // }
+        }
+
         // Render background color
         s.background(s.lerpColor(sky_night_color, sky_day_color, application.environment.light_level / 100));
         // Render main environment grid
         s.image(main_graphic, 0, 0);
+        // Display organisms
+        s.image(organisms_graphic, 0, 0);
 
         // Render night-time darkening overlay
         night_overlay_graphic.clear();
@@ -126,11 +167,19 @@ export const sketch = (s) => {
         4: SteamParticle,
         5: CompostParticle,
         6: SeedParticle,
-        7: SeedParticle,
+        7: DeadPlantParticle,
     };
 
     s.keyPressed = () => {
-        if (s.key in keys) current_material = s.key
+        if (s.key in keys) {
+            current_material = s.key;
+        } else if (s.key == 'o') {
+            const [x, y] = [
+                Math.floor(s.mouseX / cell_size),
+                application.height - 1 - Math.floor(s.mouseY / cell_size),
+            ];
+            application.environment.spawn_organism(x, y)
+        }
     }
 
     s.mouseDragged = () => {
