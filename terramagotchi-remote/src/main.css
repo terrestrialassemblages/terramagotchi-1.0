@@ -11,3 +11,7 @@ body {
     @apply hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0;
     @apply active:shadow-lg transition duration-150 ease-in-out;
 }
+
+.grecaptcha-badge { 
+    @apply visually-hidden;
+}
