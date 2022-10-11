@@ -21,6 +21,10 @@ const MIN_WATER = 100
 // The organism should only drink water while water_level <= nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
 const MAX_WATER_NUTRIENT_LEVEL_RATIO = 2
 
+// The organism can only eat/drink this much at a time.
+const MAX_EAT_AMOUNT = 100
+const MAX_DRINK_AMOUNT = 100
+
 // The ratio for how much energy 1 nutrient/water is worth.
 const ENERGY_RATIO = 1
 
@@ -392,13 +396,18 @@ export class Organism {
         // Consume nutrients from the DeadPlantParticle
         let transfer_nutrients_amount = Math.min(
             organic_particle.nutrient_level,
-            this.nutrient_capacity - this.nutrient_level
+            this.nutrient_capacity - this.nutrient_level,
+            MAX_EAT_AMOUNT
         )
         this.nutrient_level += transfer_nutrients_amount
         organic_particle.nutrient_level -= transfer_nutrients_amount
 
         // Consume water from the DeadPlantParticle
-        let transfer_water_amount = Math.min(organic_particle.water_level, this.water_capacity - this.water_level)
+        let transfer_water_amount = Math.min(
+            organic_particle.water_level,
+            this.water_capacity - this.water_level,
+            MAX_DRINK_AMOUNT
+        )
         this.water_level += transfer_water_amount
         organic_particle.water_level -= transfer_water_amount
 
@@ -420,7 +429,11 @@ export class Organism {
         const water_particle = environment.get(this.x, this.y)
 
         // Consume water from the WaterParticle
-        let transfer_water_amount = Math.min(water_particle.water_content, this.water_capacity - this.water_level)
+        let transfer_water_amount = Math.min(
+            water_particle.water_content,
+            this.water_capacity - this.water_level,
+            MAX_EAT_AMOUNT
+        )
         this.water_level += transfer_water_amount
         water_particle.water_level -= transfer_water_amount
 
