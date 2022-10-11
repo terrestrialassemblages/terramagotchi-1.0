@@ -20,7 +20,9 @@ import {
     FlowerParticle,
     RootParticle,
     StemParticle,
+    DNANode,
 } from "./particles/plants";
+import generate_tree_dna from "./particles/plants/plant_generator";
 
 export const WATER_ENERGY_RATIO = 1
 export const NUTRIENT_ENERGY_RATIO = 1
@@ -87,7 +89,7 @@ export class Environment {
             }
         }
 
-        this.set(new SeedParticle(160, 200))
+        this.set(new SeedParticle(160, 180, new DNANode(null, generate_tree_dna("KAURI"))))
         this.refresh()
     }
 

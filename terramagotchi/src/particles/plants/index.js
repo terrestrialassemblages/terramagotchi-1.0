@@ -6,3 +6,4 @@ export * from "./root";
 export * from "./stem";
 export * from "./bark";
 export * from "./deadplant";
+export * from "./plant_dna_node";

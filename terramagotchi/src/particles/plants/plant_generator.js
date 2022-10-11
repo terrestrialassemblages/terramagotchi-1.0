@@ -5,14 +5,14 @@ const SUNFLOWER = "SUNFLOWER"
 const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
 
-export default function generate_tree_dna(TREE_TYPE=KAURI) {
+export default function generate_tree_dna(TREE_TYPE=LAVENDER) {
 let tree_direction, tree_scale, tree_angle_offset, tree_height, tree_color
 switch (TREE_TYPE) {
     case KAURI:
         tree_direction = [-1, 1][FastRandom.int_max(1)]
         tree_angle_offset = FastRandom.int_min_max(15, 25)
         tree_height = 16//FastRandom.int_min_max(10, 14)
-        tree_color = "#FF00FF"//"#8B341F"
+        tree_color = "#8B341F"
 
         function section_factory(height, width) {
             return {
@@ -28,15 +28,20 @@ switch (TREE_TYPE) {
                 children: []
             }
         }
-
+        
         let section_1 = section_factory(14, 6)
         let section_2 = section_factory(6, 6)
         let section_3 = section_factory(4, 4)
-        let section_4 = section_factory(8, 4)
+        let section_4 = section_factory(6, 4)
         let section_5 = section_factory(8, 4)
         let section_6 = section_factory(8, 4)
-        let section_7 = section_factory(8, 2)
+        let section_7 = section_factory(2, 2)
         let section_8 = section_factory(8, 2)
+        
+        section_1.stem_angle = 90
+        section_1.root_node_spawn_distance = 8
+        section_1.root_length_max = 40
+        section_1.root_max_curve_length = 4
 
         section_1.children.push({
             seed_activation_level: 0,
@@ -61,7 +66,19 @@ switch (TREE_TYPE) {
                 stem_curve: "spherical",
                 curve_radius: 7,
                 curve_direction: -1,
-                children: []
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
             },
             {
                 seed_activation_level: 0,
@@ -75,7 +92,19 @@ switch (TREE_TYPE) {
                 stem_curve: "spherical",
                 curve_radius: 3,
                 curve_direction: -1,
-                children: []
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
             },
             {
                 seed_activation_level: 0,
@@ -89,7 +118,19 @@ switch (TREE_TYPE) {
                 stem_curve: "spherical",
                 curve_radius: 10,
                 curve_direction: 1,
-                children: []
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
             },
         ]
         })
@@ -99,7 +140,7 @@ switch (TREE_TYPE) {
             node_activation_level: 0,
             RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
             color: tree_color,
-            stem_angle: -50,
+            stem_angle: -40,
             stem_length: 6,
             stem_thickness: 2,
             stem_end_thickness: 2,
@@ -110,14 +151,329 @@ switch (TREE_TYPE) {
                     node_activation_level: 0,
                     RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
                     color: tree_color,
-                    stem_angle: -15,
+                    stem_angle: -5,
                     stem_length: 3,
                     stem_thickness: 2,
                     stem_end_thickness: 2,
                     stem_curve: "linear",
-                    children: []
+                    children: [
+                        {seed_activation_level: 0,
+                        node_activation_level: 0,
+                        RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                        color: tree_color,
+                        stem_angle: 30,
+                        stem_length: 3,
+                        stem_thickness: 2,
+                        stem_end_thickness: 1,
+                        stem_curve: "spherical",
+                        curve_radius: 100,
+                        curve_direction: 1,
+                        children: [{
+                            node_type: "flower",
+                            color: "#087830",
+                            secondary_color: "#059033",
+                            secondary_color_length: 2,
+                            node_activation_level: 0,
+                            use_angle_absolute: true,
+                            // growth_destructive: true,
+                            stem_angle: 0,
+                            stem_length: 1,
+                            leaf_shape: "sunflower",
+                            leaf_size: 3,
+                        }]}
+                    ]
                 }
             ]
+        })
+
+        section_4.children.push({
+            seed_activation_level: 0,
+            node_activation_level: 0,
+            RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+            color: tree_color,
+            stem_angle: 40,
+            stem_length: 10,
+            stem_thickness: 2,
+            stem_end_thickness: 2,
+            stem_curve: "linear",
+            children: [
+                {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: -30,
+                stem_length: 9,
+                stem_thickness: 2,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 7,
+                curve_direction: -1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: 30,
+                stem_length: 7,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 3,
+                curve_direction: -1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: -55,
+                stem_length: 6,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 10,
+                curve_direction: 1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+        ]
+        })
+
+        section_5.children.push({
+            seed_activation_level: 0,
+            node_activation_level: 0,
+            RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+            color: tree_color,
+            stem_angle: -40,
+            stem_length: 10,
+            stem_thickness: 2,
+            stem_end_thickness: 2,
+            stem_curve: "linear",
+            children: [
+                {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: 30,
+                stem_length: 9,
+                stem_thickness: 2,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 7,
+                curve_direction: 1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: -20,
+                stem_length: 7,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 3,
+                curve_direction: 1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: 55,
+                stem_length: 6,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 10,
+                curve_direction: -1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+        ]
+        })
+
+        section_7.children.push({
+            seed_activation_level: 0,
+            node_activation_level: 0,
+            RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+            color: tree_color,
+            stem_angle: 40,
+            stem_length: 10,
+            stem_thickness: 2,
+            stem_end_thickness: 2,
+            stem_curve: "linear",
+            children: [
+                {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: -30,
+                stem_length: 9,
+                stem_thickness: 2,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 7,
+                curve_direction: -1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: 30,
+                stem_length: 7,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 3,
+                curve_direction: -1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+            {
+                seed_activation_level: 0,
+                node_activation_level: 0,
+                RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+                color: tree_color,
+                stem_angle: -55,
+                stem_length: 6,
+                stem_thickness: 1,
+                stem_end_thickness: 1,
+                stem_curve: "spherical",
+                curve_radius: 10,
+                curve_direction: 1,
+                children: [{
+                    node_type: "flower",
+                    color: "#087830",
+                    secondary_color: "#059033",
+                    secondary_color_length: 2,
+                    node_activation_level: 0,
+                    use_angle_absolute: true,
+                    // growth_destructive: true,
+                    stem_angle: 0,
+                    stem_length: 1,
+                    leaf_shape: "sunflower",
+                    leaf_size: 3,
+                }]
+            },
+        ]
+        })
+
+        section_8.children.push({
+            node_type: "flower",
+            color: "#087830",
+            secondary_color: "#059033",
+            secondary_color_length: 2,
+            node_activation_level: 0,
+            use_angle_absolute: true,
+            // growth_destructive: true,
+            stem_angle: 0,
+            stem_length: 1,
+            leaf_shape: "sunflower",
+            leaf_size: 3,
         })
 
 
@@ -130,7 +486,6 @@ switch (TREE_TYPE) {
         section_6.children.push(section_7)
         section_7.children.push(section_8)
 
-        section_1.stem_angle = 90
         return section_1
 
         
