@@ -65,11 +65,17 @@ onAuthStateChanged(auth, (user) => {
 const id_param = (new URL(document.location)).searchParams.get("id");
 const instance = id_param ? id_param : "main"; // Constant instance id for debug
 
+// Boolean for waiting on server requests
+let awaiting_response = false;
+
 // Setting Instance display text
 document.getElementById("instance-text").innerText = instance;
 
 const particle_button_click = (type) => {
-    if (uid !== null) {
+    if (uid !== null && !awaiting_response) {
+        awaiting_response = true;
+        status_text.innerText = "Waiting...";
+        show_spin();
         userInteract({ document: type, instance_id: instance}).then((result) => {
             let message = result.data.message;
             if (typeof message == "string") {
@@ -78,6 +84,7 @@ const particle_button_click = (type) => {
             } else {
                 start_cooldown(message);
             }
+            awaiting_response = false;
         });
     } else {
         window.recaptchaVerifier.verify();
