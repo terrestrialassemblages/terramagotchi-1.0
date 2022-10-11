@@ -13,6 +13,8 @@ export class CompostParticle extends OrganicParticle {
 
         this.nutrient_content = 1000;
         this.water_content = 100;
+
+        this.decay_into = AirParticle;
     }
 
     update(environment) {
@@ -64,7 +66,7 @@ export class CompostParticle extends OrganicParticle {
 
             // Has transfered all nutrients and water contents
             if (this.nutrient_content == 0 && this.water_content == 0) {
-                environment.set(new AirParticle(this.x, this.y));
+                environment.set(new this.decay_into(this.x, this.y));
             }
         }
     }
