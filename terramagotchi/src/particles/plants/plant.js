@@ -11,7 +11,7 @@ import {
 } from ".";
 
 import { DNANode } from "./plant_dna_node";
-import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO } from "../../environment";
+import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO, Environment } from "../../environment";
 import { SoilParticle } from "../soil";
 import { FastRandom } from "../../fast-random";
 
@@ -21,7 +21,7 @@ export class PlantParticleFamily extends OrganicParticle {
     static DEFAULT_MAX_HEALTH = 100     // Effectively how many frames a plant survives while "unhealthy" until dying
                                         // Can be set in DNA per-plant, else defaults to this value
                                         
-    static MAX_ENERGY = 0  // Maximum amount of energy a plant particle will contain
+    static MAX_ENERGY = 3  // Maximum amount of energy a plant particle will contain
     
     static MIN_HEALTHY_WATER = 0     // Minimum amount of water to be considered "healthy"; will not create energy to go below
     static MIN_HEALTHY_NUTRIENTS = 0 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
@@ -66,22 +66,91 @@ export class PlantParticleFamily extends OrganicParticle {
         this.color_variance = 0.1
     }
 
-    // Overriding absorption functions
     absorb_water(environment, potential_neighbours, valid_neighbour_types) {
-        let filtered_potential_neighbours = []
+        /** 
+         * Overriding the existing water absorption code to increase water transfer between plant particles
+         * Forces a transfer between neighbouring plant particles if possible
+         * @param {Environment}                 environment             The current game environment
+         * @param {Array<Array<Number>>}        potential_neighbours    List of potential neighbours to check from
+         * @param {Array<ObjectConstructor>}    valid_neighbour_types   List of valid neighbour particle types to steal from
+         */
+        let target_amount = 5
         for (let offset of potential_neighbours) {
+
+            // Guard clause for plant particle being saturated or already transferred
+            if (this.__water_transferred || this.water_level + target_amount > this.water_capacity)
+                return
+
             let [offset_x, offset_y] = offset
             let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+
+            // Prevent further checks if target particle has already transferred
+            if (target_particle.__water_transferred)
+                continue
+
             for (let particle_type of valid_neighbour_types) {
-                if (target_particle instanceof particle_type) {
-                    filtered_potential_neighbours.push(offset)
+                // Guard clause for invalid neighbour type-check (per type in valid_neighbour_types array)
+                // Also checks __water_transferred condition
+                if (!(target_particle instanceof particle_type))
+                    continue
+                    // Tries to absorb
+                if (target_particle.water_level > this.water_level && target_particle.water_level >= target_amount) {
+                    this.water_level += target_amount
+                    target_particle.water_level -= target_amount
+
+                    // Setting these to true slows absorption down to an unallowable level
+                    // this.__water_transferred = true
+                    // target_particle.__water_transferred = true
+    
                     break
                 }
             }
         }
-        if (filtered_potential_neighbours.length == 0)
-            return;
-        super.absorb_water(environment, filtered_potential_neighbours, valid_neighbour_types)
+    }
+
+    // Overriding nutrients absorption function
+
+
+    absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
+        /** 
+         * Overriding the existing nutrient absorption code to increase nutrient transfer between plant particles
+         * Forces a transfer between neighbouring plant particles if possible
+         * @param {Environment}                 environment             The current game environment
+         * @param {Array<Array<Number>>}        potential_neighbours    List of potential neighbours to check from
+         * @param {Array<ObjectConstructor>}    valid_neighbour_types   List of valid neighbour particle types to steal from
+         */
+        let target_amount = 5
+        for (let offset of potential_neighbours) {
+
+            // Guard clause for plant particle being saturated or already transferred
+            if (this.__nutrient_transferred || this.nutrient_level + target_amount > this.nutrient_capacity)
+                return
+
+            let [offset_x, offset_y] = offset
+            let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+
+            // Prevent further checks if target particle has already transferred
+            if (target_particle.__nutrient_transferred)
+                continue
+
+            for (let particle_type of valid_neighbour_types) {
+                // Guard clause for invalid neighbour type-check (per type in valid_neighbour_types array)
+                // Also checks __nutrient_transferred condition
+                if (!(target_particle instanceof particle_type))
+                    continue
+                    // Tries to absorb
+                if (target_particle.nutrient_level > this.nutrient_level && target_particle.nutrient_level >= target_amount) {
+                    this.nutrient_level += target_amount
+                    target_particle.nutrient_level -= target_amount
+
+                    // Setting these to true slows absorption down to an unallowable level
+                    // this.__nutrient_transferred = true
+                    // target_particle.__nutrient_transferred = true
+    
+                    break
+                }
+            }
+        }
     }
     
     // Below are some common functions for plant-type particles
@@ -92,7 +161,7 @@ export class PlantParticleFamily extends OrganicParticle {
         if (
             this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
             this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
-            this.energy <= this.energy_capacity &&
+            this.energy < this.energy_capacity &&
             FastRandom.random() < PlantParticleFamily.CREATE_ENERGY_PROBABILITY
         ) {
             this.water_level -= WATER_ENERGY_RATIO
@@ -250,31 +319,31 @@ export class PlantParticleFamily extends OrganicParticle {
 
 
     
-
-    get_color(s) {
-        if (this.nutrient_capacity != 0) {
-            s.push()
-            s.colorMode(s.RGB)
-        //    this.color = s.color((this.water_level - 30) * 10)
-            let red = 255*(this.nutrient_level/this.nutrient_capacity)
-            let blue = 255*(this.water_level/this.water_capacity)
-            this.color = s.color(red, 0, blue)
+    // Debug colouring code
+    // get_color(s) {
+    //     if (this.nutrient_capacity != 0) {
+    //         s.push()
+    //         s.colorMode(s.RGB)
+    //     //    this.color = s.color((this.water_level - 30) * 10)
+    //         let red = 255*(this.nutrient_level/this.nutrient_capacity)
+    //         let blue = 255*(this.water_level/this.water_capacity)
+    //         this.color = s.color(red, 0, blue)
             
-            s.pop()
-            return this.color
-        }
+    //         s.pop()
+    //         return this.color
+    //     }
 
-        // Initialise colour if needed
-        if (this.color === "#000000") {
-            super.get_color(s);
-        }
+    //     // Initialise colour if needed
+    //     if (this.color === "#000000") {
+    //         super.get_color(s);
+    //     }
 
-        this.color = s.color(
-            s.hue(this.color),
-            s.saturation(this.base_color) * this.saturation_offset,
-            s.brightness(this.base_color) * this.brightness_offset -
-                this.water_level / 4
-        );
-        return this.color;
-    }
+    //     this.color = s.color(
+    //         s.hue(this.color),
+    //         s.saturation(this.base_color) * this.saturation_offset,
+    //         s.brightness(this.base_color) * this.brightness_offset -
+    //             this.water_level / 4
+    //     );
+    //     return this.color;
+    // }
 }

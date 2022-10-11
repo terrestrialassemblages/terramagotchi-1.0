@@ -94,8 +94,8 @@ export class LeafParticle extends PlantParticleFamily {
             this.is_active = true
             return;
         }
-        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
-        let new_dead_plant = new AirParticle(this.x, this.y, this.dna)
+        let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        // let new_dead_plant = new AirParticle(this.x, this.y, this.dna)
         environment.set(new_dead_plant)
     }
 }

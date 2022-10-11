@@ -8,6 +8,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
+    BaseParticle,
 } from "./particles";
 
 import {
@@ -121,6 +122,11 @@ export class Environment {
     }
 
     set(particle) {
+        /**
+         * Replaces a particle in the particle grid with a new particle, while handling W/N conservation and the destruction of the old particle
+         * @param {BaseParticle} particle   The new particle to be inserted into the particle grid
+         *                                  Destroyed particle determined by the new particles x/y coordinates
+         */
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroyed = true;
