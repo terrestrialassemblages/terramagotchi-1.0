@@ -24,9 +24,6 @@ const USE_FOOD_CHANCE = 0.1 // [0, 1]
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
 
-// Integer value. This adjusts how likely it is to walk over itself.
-const DISCOURAGE_WALKING_OVER_SELF_FACTOR = 10
-
 // Integer value. At about 4 it will generally result in just a random walk.
 // Does not affect wandering, use CHANGE_WANDER_DIRECTION_CHANCE.
 const RANDOM_MOVEMENT_FACTOR = 2
@@ -293,14 +290,12 @@ export class Organism {
                 if (neighbour_direction_x == this.facing[0] && neighbour_direction_y == this.facing[1]) distance -= 2
             }
 
-            if (
-                this.location_history.find(
-                    ([previous_x, previous_y]) => previous_x == neighbour[0] && previous_y == neighbour[1]
-                )
-            ) {
-                // Discourage the organism from walking on itself.
-                distance += DISCOURAGE_WALKING_OVER_SELF_FACTOR
-            }
+            
+            // Discourage the organism from walking on itself.
+            distance += this.location_history.filter(
+                ([previous_x, previous_y]) => previous_x == neighbour[0] && previous_y == neighbour[1]
+            ).length * DISCOURAGE_WALKING_OVER_SELF_FACTOR
+            
 
             if (distance < best_distance) {
                 best_neighbours = [neighbour]
