@@ -1,5 +1,6 @@
 import { OrganicParticle } from "./organic";
 import { AirParticle } from "./air";
+import { FastRandom } from "../fast-random";
 
 export class CompostParticle extends OrganicParticle {
     constructor(x, y) {
@@ -24,12 +25,12 @@ export class CompostParticle extends OrganicParticle {
     disperse_nutrients(environment) {
 
         // Choose a random neighbour
-        let [offset_x, offset_y] = [
+        let [offset_x, offset_y] = FastRandom.choice([
             [0, 1],
             [1, 0],
             [0, -1],
             [-1, 0],
-        ][Math.floor(Math.random() * 4)];
+        ]);
         let random_neighbour = environment.get(
             this.x + offset_x,
             this.y + offset_y

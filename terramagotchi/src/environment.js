@@ -1,8 +1,10 @@
+import { FastRandom } from "./fast-random";
+import { createNoise2D } from 'simplex-noise';
+
 import {
     BoundaryParticle,
     StoneParticle,
     SoilParticle,
-    CompostParticle,
     WaterParticle,
     AirParticle,
     OrganicParticle,
@@ -26,6 +28,7 @@ export class Environment {
     constructor(width, height) {
         this.__tick = 0;
         this.__particle_grid = new Array(width * height); // We store the particle grid as a 1D array for optimization.
+        this.__pass_through_layer = [];
 
         this.width = width;
         this.height = height;
@@ -36,40 +39,48 @@ export class Environment {
         this.__light_level = 100; // max 100
         this.__length_of_day = 36000;
         this.time_of_day = this.__length_of_day / 2;
+        this.noise2D = createNoise2D();
+
+        // How far the river can randomly move
+        this.max_river_offset = 25;
+        this.river_offset = (FastRandom.random() * this.max_river_offset * 2) - this.max_river_offset;
+        // Half of how wide the river is
+        this.river_radius = 40;
+        // How deep the river is
+        this.river_depth = 25;
+    }
+
+    get_horizon(x) {
+        return 160 - this.river_depth - this.river_depth * 
+        (Math.sin((Math.min(this.river_radius, Math.abs(90 - x + this.river_offset)) + this.river_radius / 2)
+         * Math.PI / this.river_radius)) 
+        + 16 * this.noise2D((x) / 96, 0)
+        + 4 * this.noise2D((x) / 32, 1000)
+        + 2 * this.noise2D((x) / 16, 2000)
+        + this.noise2D((x) / 8, 3000);
     }
 
     generate() {
+
         /**
          * Populates the application environment with particles
          */
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
-                if (
-                    x == 0 ||
-                    y == 0 ||
-                    x == this.width - 1 ||
-                    y == this.height - 1
-                ) {
+                // Set Boundary Particles
+                if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1 ) {
                     this.set(new BoundaryParticle(x, y));
-                } else if (
-                    y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
-                    25
-                ) {
-                    this.set(new StoneParticle(x, y));
-                } else if (
-                    y +
-                        Math.floor(
-                            50 * Math.sin(((x + 100) * Math.PI) / 200) +
-                                4 * Math.sin((x + 20) / 12)
-                        ) <
-                    85
-                ) {
+                }
+                // Set Soil Particles
+                else if (y < this.get_horizon(x)) {
                     this.set(new SoilParticle(x, y));
-                } else if (y < 100) {
+                } 
+                // Set Water Particles
+                else if (y < 150 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
-                } else if (y > 140 && Math.random() < 0.01) {
-                    this.set(new AirParticle(x, y));
-                } else {
+                } 
+                // Set Air Particles
+                else {
                     this.set(new AirParticle(x, y));
                 }
             }
@@ -79,6 +90,13 @@ export class Environment {
     }
 
     update() {
+        for (let i = this.__pass_through_layer.length - 1; i > -1; i--) {
+            let particle = this.__pass_through_layer[i];
+            if (!particle.destroyed) {
+                particle.update(this);
+            }
+        }
+        
         for (let particle of [...this.__particle_grid]) {
             if (!particle.destroyed) {
                 particle.update(this);
@@ -91,6 +109,9 @@ export class Environment {
 
     refresh() {
         for (let particle of this.__particle_grid) {
+            particle.refresh();
+        }
+        for (let particle of this.__pass_through_layer) {
             particle.refresh();
         }
     }
@@ -137,6 +158,39 @@ export class Environment {
 
         particle1.rerender = true;
         particle2.rerender = true;
+    }
+
+    pass_through(passing_particle,new_x,new_y) {
+        let old_x = passing_particle.x;
+        let old_y = passing_particle.y;
+
+        // Passing_particle is not on pass_through_layer
+        if (!passing_particle.passing_through) {
+            // Set passing_through
+            passing_particle.passing_through = true;
+            // Move passing_particle to pass_through_layer
+            this.__pass_through_layer.push(passing_particle)
+            // Remove from regular particle layer
+            this.set(new AirParticle(old_x,old_y));
+            // Unset destroyed
+            passing_particle.destroyed = false;
+        }
+
+        // Move to new position
+        passing_particle.x = new_x;
+        passing_particle.y = new_y;
+
+        if (old_x != new_x) passing_particle.moveable_x = false;
+        if (old_y != new_y) passing_particle.moveable_y = false;
+
+        // Passing_particle is now in empty particle
+        if (this.get(new_x, new_y).empty) {
+            // Move to regular particle layer
+            this.set(passing_particle);
+            passing_particle.passing_through = false;
+            // Remove from __pass_through_layer
+            this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+        }
     }
 
     get tick() {
