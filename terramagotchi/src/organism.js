@@ -52,9 +52,9 @@ export class Organism {
     facing = [0, -1] // Spawns facing downwards.
     location_history = []
     target_location = null
-    reseek_timer = 0
     current_objective = "CONSUME" // Possible objectives are CONSUME, DEFECATE and WANDER
-    update_timer = ORGANISM_UPDATE_INTERVAL
+    reseek_timer = 0
+    update_timer = 0
 
     head_color = "#550000"
     body_color = "#bc4b52"
@@ -108,6 +108,9 @@ export class Organism {
                     }
                     if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
                         this.defecate(environment)
+
+                        this.current_objective = "CONSUME"
+                        this.seek(DeadPlantParticle, environment)
                     } else {
                         if (!(environment.get(...this.target_location) instanceof AirParticle))
                             this.seek(AirParticle, environment)
@@ -329,20 +332,11 @@ export class Organism {
     }
 
     defecate(environment) {
-        const particle_below = environment.get(this.x, this.y)
-
-        if (particle_below instanceof AirParticle) {
-            const new_compost_particle = new CompostParticle(this.x, this.y)
-
-            new_compost_particle.nutrient_content = this.nutrient_level - MIN_NUTRIENTS
-            this.nutrient_level = MIN_NUTRIENTS
-
-            environment.set(new_compost_particle)
-            this.current_objective = "CONSUME"
-            this.seek(DeadPlantParticle, environment)
-        } else {
-            this.seek(AirParticle, environment)
-        }
+        const new_compost_particle = new CompostParticle(this.x, this.y)
+        // new_compost_particle.decay_into = environment.get(this.x, this.y)
+        new_compost_particle.nutrient_content = this.nutrient_level - MIN_NUTRIENTS
+        this.nutrient_level = MIN_NUTRIENTS
+        environment.set(new_compost_particle)
     }
 
     die(environment) {
