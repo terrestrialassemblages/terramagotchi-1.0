@@ -7,6 +7,7 @@ import {
     SoilParticle,
     WaterParticle,
 } from "./particles";
+import { SeedParticle } from "./particles/plants";
 
 export class Application {
     constructor(width = 400, height = 400, instance_id, firebase_config) {
@@ -30,6 +31,8 @@ export class Application {
         // Firestore creates a collection [instance_id] when a document is set
         setDoc(doc(this.db, this.instance_id, "water"), { value: 0 });
         setDoc(doc(this.db, this.instance_id, "soil"), { value: 0 });
+        setDoc(doc(this.db, this.instance_id, "seed"), { value: 0 });
+        setDoc(doc(this.db, this.instance_id, "time"), { value: 0 });
         
         return collection(this.db, this.instance_id);
     }
@@ -52,6 +55,12 @@ export class Application {
                     this.environment.set(new SoilParticle(x+1, y));
                     this.environment.set(new SoilParticle(x, y+1));
                     this.environment.set(new SoilParticle(x+1, y+1));
+                }
+                if (change.doc.id == "seed") {
+                    this.environment.set(new SeedParticle(x, y));
+                }
+                if (change.doc.id == "time" && change.doc.data().value != 0) {
+                    this.environment.toggle_time();
                 }
             });
         });

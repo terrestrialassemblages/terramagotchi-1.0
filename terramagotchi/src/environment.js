@@ -224,6 +224,15 @@ export class Environment {
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
     }
 
+    // For toggling day/night via user interaction
+    toggle_time() {
+        if (this.time_of_day < 4 * this.__length_of_day / 5) {
+            this.time_of_day = Math.abs((4 * this.__length_of_day) / 5);
+        } else {
+            this.time_of_day = Math.abs(this.__length_of_day / 4);
+        }
+    }
+
     get light_level() {
         return this.__light_level;
     }

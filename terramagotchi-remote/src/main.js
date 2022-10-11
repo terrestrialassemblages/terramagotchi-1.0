@@ -49,6 +49,9 @@ onAuthStateChanged(auth, (user) => {
 const id_param = (new URL(document.location)).searchParams.get("id");
 const instance = id_param ? id_param : "main"; // Constant instance id for debug
 
+// Setting Instance display text
+document.getElementById("instance-text").innerText = instance;
+
 const particle_button_click = (type) => {
     if (uid !== null) {
         userInteract({ document: type, instance_id: instance}).then((result) => {
@@ -59,11 +62,15 @@ const particle_button_click = (type) => {
     }
 }
 
+// Adding listeners to each user button
 const water_button = document.getElementById("water-button");
 water_button.addEventListener('click', () => particle_button_click("water"));
 
 const soil_button = document.getElementById("soil-button");
 soil_button.addEventListener('click', () => particle_button_click("soil"));
 
+const seed_button = document.getElementById("seed-button");
+seed_button.addEventListener('click', () => particle_button_click("seed"));
 
-
+const time_button = document.getElementById("time-button");
+time_button.addEventListener('click', () => particle_button_click("time"));
