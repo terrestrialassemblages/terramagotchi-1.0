@@ -1,5 +1,5 @@
 import { FastRandom } from "./fast-random"
-import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle } from "./particles"
+import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
 import { DeadPlantParticle } from "./particles/plants"
 
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
@@ -9,7 +9,7 @@ const ORGANISM_UPDATE_INTERVAL = 15
 const MIN_LENGTH = 5
 
 // The organism may move onto any of these particle types.
-const CAN_TRAVERSE = [AirParticle, SoilParticle, DeadPlantParticle, CompostParticle]
+const CAN_TRAVERSE = [AirParticle, WaterParticle, SoilParticle, DeadPlantParticle, CompostParticle]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
 const MAX_SEEK_DEPTH = 100
@@ -18,8 +18,11 @@ const MAX_SEEK_DEPTH = 100
 const MIN_NUTRIENTS = 100
 const MIN_WATER = 100
 
+// The organism should only drink water while water_level <= nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
+const MAX_WATER_NUTRIENT_LEVEL_RATIO = 2
+
 // The ratio for how much energy 1 nutrient/water is worth.
-const ENERGY_RATIO = 10
+const ENERGY_RATIO = 1
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -33,12 +36,11 @@ const CHANGE_WANDER_DIRECTION_CHANCE = 0.2 // [0, 1]
 const RESEEK_TIME_AFTER_CONSUME = 30
 
 // The organism will reseek (RESEEK_TIMER_AFTER_FOUND_NEW_TARGET + update_timer) frames
-// after successfully finding a target. This prevents it from trying to get to a dead plant
-// which it can't reach when there may be new dead plants it can consume instead.
+// after successfully finding a target.
 const RESEEK_TIMER_AFTER_FOUND_NEW_TARGET = 600
 
 // The organism will reseek (RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET + update_timer)
-// frames after it failed to find dead plants during a seek.
+// frames after it failed to find the target type during a seek.
 const RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET = 60
 
 export class Organism {
@@ -53,7 +55,7 @@ export class Organism {
     facing = [0, -1] // Spawns facing downwards.
     location_history = []
     target_location = null
-    current_objective = "CONSUME" // Possible objectives are CONSUME, DEFECATE, WANDER and SLEEP
+    current_objective = "EAT" // Possible objectives are EAT, DRINK, DEFECATE, WANDER and SLEEP
     reseek_timer = 0
     update_timer = 0
 
@@ -72,8 +74,10 @@ export class Organism {
          * The main function which directs the organism's state and behaviour.
          */
 
-        if (this.location_history.length > this.nutrient_level / 100 + MIN_LENGTH)
-            this.location_history.length = (this.nutrient_level / 100 + MIN_LENGTH) >> 0
+        this.location_history.length = Math.min(
+            this.location_history.length,
+            (this.nutrient_level / 100 + MIN_LENGTH) | 0
+        )
 
         const fell = this.compute_gravity(environment)
         if (fell) return
@@ -84,7 +88,7 @@ export class Organism {
         if (this.update_timer > 0) return
         this.update_timer = ORGANISM_UPDATE_INTERVAL
 
-        if (this.nutrient_level > 0 && this.water_level > 0) {
+        if (this.energy > 0) {
             this.advance_object(environment)
         } else {
             this.die(environment)
@@ -98,7 +102,7 @@ export class Organism {
          * Computes gravity on the head of the organism.
          * If the row of pixels 3 wide below of the organism's head are not supportive, the organism will fall.
          */
-        // Falls through particles with weight < 1, i.e. Air, Steam, Water.
+        // Falls through particles with weight <= 1, i.e. Air, Steam, Water.
         if (
             environment.get(this.x, this.y - 1).weight <= 1 &&
             environment.get(this.x - 1, this.y - 1).weight <= 1 && // This and the following check if there is support to the side
@@ -122,11 +126,21 @@ export class Organism {
         }
 
         switch (this.current_objective) {
-            case "CONSUME":
+            case "EAT":
                 if (!(environment.get(...this.target_location) instanceof DeadPlantParticle)) {
                     this.seek(DeadPlantParticle, environment)
                 } else if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
-                    this.consume(environment)
+                    this.eat(environment)
+                    this.evaluate_objective(environment)
+                } else {
+                    this.move(environment)
+                }
+                break
+            case "DRINK":
+                if (!(environment.get(...this.target_location) instanceof WaterParticle)) {
+                    this.seek(WaterParticle, environment)
+                } else if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
+                    this.drink(environment)
                     this.evaluate_objective(environment)
                 } else {
                     this.move(environment)
@@ -156,15 +170,40 @@ export class Organism {
          * Decide what the organism's current objective should be.
          */
 
-        if (this.nutrient_level < this.nutrient_capacity) {
-            if (this.current_objective == "CONSUME") {
+        if (
+            this.nutrient_level < this.nutrient_capacity &&
+            // We check that the object is not current DRINK to ensure that the organism
+            // will not just always be trying to eat, even when it cannot find DeadPlantParticles.
+            this.current_objective != "DRINK"
+        ) {
+            // As we check here whether the organism needs to eat, there will be a preference from
+            // the organism to eat first, before going somewhere to drink.
+            if (this.current_objective == "EAT") {
+                // If the objective is already to eat, the organism will sleep. Once it finished sleeping,
+                // the objective is re-evaluated and it will eat if it still wants to eat.
                 this.current_objective = "SLEEP"
                 this.reseek_timer = RESEEK_TIME_AFTER_CONSUME
             } else {
-                this.current_objective = "CONSUME"
+                this.current_objective = "EAT"
                 this.seek(DeadPlantParticle, environment)
+                if (this.target_location === null) {
+                    // If organism cannot find a DeadPlantParticle to eat, it should try to drink instead.
+                    this.current_objective = "DRINK"
+                    this.seek(WaterParticle, environment)
+                }
             }
-        } else if (this.nutrient_level == this.nutrient_capacity) {
+        } else if (
+            this.water_level < this.water_capacity &&
+            this.water_level <= this.nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
+        ) {
+            if (this.current_objective == "DRINK") {
+                this.current_objective = "SLEEP"
+                this.reseek_timer = RESEEK_TIME_AFTER_CONSUME
+            } else {
+                this.current_objective = "DRINK"
+                this.seek(WaterParticle, environment)
+            }
+        } else if (this.nutrient_level == this.nutrient_capacity || this.water_level == this.water_capacity) {
             this.current_objective = "DEFECATE"
             this.seek(AirParticle, environment)
         } else {
@@ -269,7 +308,7 @@ export class Organism {
             // Find neighbours who are next to at least 1 particle which the organism can walk on.
             if (
                 this.__can_traverse(x + neighbour_x, y + neighbour_y, environment) &&
-                !(environment.get(x + neighbour_x, y + neighbour_y) instanceof AirParticle)
+                environment.get(x + neighbour_x, y + neighbour_y).weight > 1
             ) {
                 return true
             }
@@ -343,30 +382,64 @@ export class Organism {
         return FastRandom.choice(best_neighbours)
     }
 
-    consume(environment) {
+    eat(environment) {
         /**
-         * Handles transferring nutrients/water from a particle to the organism.
+         * Handles transferring nutrients/water from an organic particle to the organism.
          */
 
-        const particle = environment.get(this.x, this.y)
+        const organic_particle = environment.get(this.x, this.y)
 
         // Consume nutrients from the DeadPlantParticle
-        let transfer_nutrients_amount = Math.min(particle.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+        let transfer_nutrients_amount = Math.min(
+            organic_particle.nutrient_level,
+            this.nutrient_capacity - this.nutrient_level
+        )
         this.nutrient_level += transfer_nutrients_amount
-        particle.nutrient_level -= transfer_nutrients_amount
+        organic_particle.nutrient_level -= transfer_nutrients_amount
 
         // Consume water from the DeadPlantParticle
-        let transfer_water_amount = Math.min(particle.water_level, this.water_capacity - this.water_level)
+        let transfer_water_amount = Math.min(organic_particle.water_level, this.water_capacity - this.water_level)
         this.water_level += transfer_water_amount
-        particle.water_level -= transfer_water_amount
+        organic_particle.water_level -= transfer_water_amount
 
         // Increase energy based on what was consumed.
         this.energy += ENERGY_RATIO * (transfer_nutrients_amount + transfer_water_amount)
 
         // If the DeadPlantParticle now has no water nor nutrients left, replace it with AirParticle.
-        if (particle.nutrient_level == 0 && particle.water_level == 0) {
-            let new_air_particle = new AirParticle(particle.x, particle.y)
+        if (organic_particle.nutrient_level == 0 && organic_particle.water_level == 0) {
+            let new_air_particle = new AirParticle(organic_particle.x, organic_particle.y)
             environment.set(new_air_particle)
+        }
+    }
+
+    drink(environment) {
+        /**
+         * Handles transferring water from a water particle to the organism.
+         */
+
+        const water_particle = environment.get(this.x, this.y)
+
+        // Consume water from the WaterParticle
+        let transfer_water_amount = Math.min(water_particle.water_content, this.water_capacity - this.water_level)
+        this.water_level += transfer_water_amount
+        water_particle.water_level -= transfer_water_amount
+
+        // Increase energy based on what was consumed.
+        this.energy += ENERGY_RATIO * transfer_water_amount
+
+        // Water has transfered as much as it can
+        if (water_particle.water_content == 0) {
+            let new_air_particle = new AirParticle(water_particle.x, water_particle.y)
+            environment.set(new_air_particle)
+
+            // Move new air bubble to the top of liquid pool
+            let check_liquid_y = water_particle.y + 1
+            while (environment.get(water_particle.x, check_liquid_y) instanceof LiquidParticle) {
+                new_air_particle.moveable_y = true
+                environment.get(water_particle.x, check_liquid_y).moveable_y = true
+                environment.get(water_particle.x, check_liquid_y).compute_gravity(environment)
+                check_liquid_y++
+            }
         }
     }
 
