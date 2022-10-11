@@ -4,40 +4,27 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
   <title>Terramagotchi (Remote)</title>
+  <link rel="stylesheet" href="./main.css">
 </head>
 <body>
-    <div class="button-container">
-        <button id="water-button">Add water</button>
-        <button id="soil-button">Add soil</button>
+    <div class="flex flex-col justify-evenly h-screen">
+        <div class="flex flex-row m-4 justify-center">
+            <button id="water-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6 float-left">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>                  
+                <p class="m-auto">water</p>
+            </button>
+        </div>
+        <div class="flex flex-row m-4 justify-center">
+            <button id="soil-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6 float-left">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>                  
+                <p class="m-auto">soil</p>
+            </button>
+        </div>
     </div>
     <div id="recaptcha-container"></div>
 </body>
-<style>
-    .button-container {
-        display: flex;
-        justify-content: space-evenly;
-    }
-    button {
-        background-color: #555555;
-        border: none;
-        color: #FFFFFF;
-        padding: 15px 32px;
-        text-align: center;
-        -webkit-transition-duration: 0.2s;
-        transition-duration: 0.2s;
-        text-decoration: none;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #333333;
-    }
-    button:active {
-        background-color: #777777;
-    }
-    button:disabled,
-    button[disabled] {
-        background-color: #BBBBBB;
-    }
-</style>
 </html>

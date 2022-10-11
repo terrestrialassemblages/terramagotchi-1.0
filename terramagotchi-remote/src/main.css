@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-slate-300;
+}
+
+.user-button {
+    @apply px-6 py-2.5 bg-blue-600 text-white font-light text-lg w-48 leading-tight uppercase rounded shadow-md;
+    @apply hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0;
+    @apply active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out;
+}
