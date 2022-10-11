@@ -63,7 +63,7 @@ export class Organism {
     constructor(x, y, environment) {
         this.x = x
         this.y = y
-        this.update_timer = (Math.random() * ORGANISM_UPDATE_INTERVAL) >> 0
+        this.update_timer = FastRandom.int_max(ORGANISM_UPDATE_INTERVAL)
         this.seek(DeadPlantParticle, environment)
     }
 
@@ -123,22 +123,22 @@ export class Organism {
 
         switch (this.current_objective) {
             case "CONSUME":
-                if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
+                if (!(environment.get(...this.target_location) instanceof DeadPlantParticle)) {
+                    this.seek(DeadPlantParticle, environment)
+                } else if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
                     this.consume(environment)
                     this.evaluate_objective(environment)
                 } else {
-                    if (!(environment.get(...this.target_location) instanceof DeadPlantParticle))
-                        this.seek(DeadPlantParticle, environment)
                     this.move(environment)
                 }
                 break
             case "DEFECATE":
-                if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
+                if (!(environment.get(...this.target_location) instanceof AirParticle)) {
+                    this.seek(AirParticle, environment)
+                } else if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
                     this.defecate(environment)
                     this.evaluate_objective(environment)
                 } else {
-                    if (!(environment.get(...this.target_location) instanceof AirParticle))
-                        this.seek(AirParticle, environment)
                     this.move(environment)
                 }
                 break
@@ -206,7 +206,7 @@ export class Organism {
             }
         }
 
-        if (Math.random() < FALL_ASLEEP_WANDERING_CHANCE) {
+        if (FastRandom.random() < FALL_ASLEEP_WANDERING_CHANCE) {
             this.current_objective = "SLEEP"
         } else {
             this.current_objective = "WANDER"
@@ -317,10 +317,10 @@ export class Organism {
                     : Math.abs(this.target_location[0] - neighbour[0]) +
                       Math.abs(this.target_location[1] - neighbour[1])
 
-            // Add some randomness to bug movement
-            distance += (Math.random() * (current_distance - distance + RANDOM_MOVEMENT_FACTOR)) >> 0
+            // Add some randomness to organism movement
+            distance += FastRandom.int_max(current_distance - distance + RANDOM_MOVEMENT_FACTOR)
 
-            if (this.current_objective == "WANDER" && Math.random() < 1 - CHANGE_WANDER_DIRECTION_CHANCE) {
+            if (this.current_objective == "WANDER" && FastRandom.random() < 1 - CHANGE_WANDER_DIRECTION_CHANCE) {
                 const neighbour_direction_x = neighbour[0] - this.x
                 const neighbour_direction_y = neighbour[1] - this.y
                 if (neighbour_direction_x == this.facing[0] && neighbour_direction_y == this.facing[1]) distance -= 2
@@ -340,7 +340,7 @@ export class Organism {
             }
         }
 
-        return best_neighbours[(Math.random() * best_neighbours.length) >> 0]
+        return FastRandom.choice(best_neighbours)
     }
 
     consume(environment) {
