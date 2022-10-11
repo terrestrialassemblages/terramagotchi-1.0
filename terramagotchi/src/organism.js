@@ -114,22 +114,16 @@ export class Organism {
         /**
          * Perform actions according to the current objective, in effort to complete it.
          */
+
+        if (this.reseek_timer <= 0) {
+            this.evaluate_objective(environment)
+        }
+
         switch (this.current_objective) {
             case "CONSUME":
-                if (this.reseek_timer <= 0) {
-                    this.current_objective = "CONSUME"
-                    this.seek(DeadPlantParticle, environment)
-                }
                 if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
                     this.consume(environment)
-
-                    if (this.nutrient_level == this.nutrient_capacity) {
-                        this.current_objective = "DEFECATE"
-                    } else {
-                        // Sleep for 30 frames (+ update_timer).
-                        this.current_objective = "SLEEP"
-                        this.reseek_timer = RESEEK_TIME_AFTER_CONSUME
-                    }
+                    this.evaluate_objective(environment)
                 } else {
                     if (!(environment.get(...this.target_location) instanceof DeadPlantParticle))
                         this.seek(DeadPlantParticle, environment)
@@ -137,15 +131,9 @@ export class Organism {
                 }
                 break
             case "DEFECATE":
-                if (this.reseek_timer <= 0) {
-                    this.current_objective = "DEFECATE"
-                    this.seek(AirParticle, environment)
-                }
                 if (this.x == this.target_location[0] && this.y == this.target_location[1]) {
                     this.defecate(environment)
-
-                    this.current_objective = "CONSUME"
-                    this.seek(DeadPlantParticle, environment)
+                    this.evaluate_objective(environment)
                 } else {
                     if (!(environment.get(...this.target_location) instanceof AirParticle))
                         this.seek(AirParticle, environment)
@@ -153,19 +141,33 @@ export class Organism {
                 }
                 break
             case "WANDER":
-                if (this.reseek_timer <= 0) {
-                    this.current_objective = "CONSUME"
-                    this.seek(DeadPlantParticle, environment)
-                }
                 this.move(environment)
                 break
             case "SLEEP":
-                if (this.reseek_timer <= 0) {
-                    this.current_objective = "CONSUME"
-                    this.seek(DeadPlantParticle, environment)
-                }
                 // They are asleep. They do nothing else.
                 break
+        }
+    }
+
+    evaluate_objective(environment) {
+        /**
+         * Decide what the organism's current objective should be.
+         */
+
+        if (this.nutrient_level < this.nutrient_capacity) {
+            if (this.current_objective == "CONSUME") {
+                this.current_objective = "SLEEP"
+                this.reseek_timer = RESEEK_TIME_AFTER_CONSUME
+            } else {
+                this.current_objective = "CONSUME"
+                this.seek(DeadPlantParticle, environment)
+            }
+        } else if (this.nutrient_level == this.nutrient_capacity) {
+            this.current_objective = "DEFECATE"
+            this.seek(AirParticle, environment)
+        } else {
+            this.current_objective = "WANDER"
+            this.target_location = null
         }
     }
 
