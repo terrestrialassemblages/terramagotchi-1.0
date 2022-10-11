@@ -87,6 +87,7 @@ export class Environment {
             }
         }
 
+        this.set(new SeedParticle(160, 200))
         this.refresh()
     }
 

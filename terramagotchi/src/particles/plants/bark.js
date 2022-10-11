@@ -10,6 +10,7 @@ export class BarkParticle extends PlantParticleFamily {
          * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
          */
         super(x, y, plant_dna);
+        this.activation_level = 0
     }
 
     update(environment) {        

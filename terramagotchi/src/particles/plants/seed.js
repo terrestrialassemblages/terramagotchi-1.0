@@ -3,6 +3,7 @@ import { PlantParticleFamily } from "./plant";
 import { RootParticle } from "./root";
 import { StemParticle } from "./stem";
 import { Environment } from "../../environment";
+import { GrassParticle } from "../soil";
 
 export class SeedParticle extends PlantParticleFamily {
     constructor(x, y, plant_dna=null) {
@@ -14,6 +15,8 @@ export class SeedParticle extends PlantParticleFamily {
         this.base_color = this.dna.seed_color || "#FF80FF"
 
         this.germinated = false
+
+        this.energy_capacity = Math.max(this.energy_capacity, this.activation_level)
     }
 
     update(environment) {
@@ -44,12 +47,13 @@ export class SeedParticle extends PlantParticleFamily {
         /**
          * Handles growing the seed into a stem and root particle if the conditions are correct
          * @param {Environment} environment     The current game environment
-         */
-        if (environment.get(this.x, this.y-1) instanceof SoilParticle) {
+        */
+        if (environment.get(this.x, this.y - 1) instanceof SoilParticle && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             environment.set(new_stem_cell)
 
-            let new_root = new RootParticle(this.x, this.y-1, this.dna)
+            let new_root = new RootParticle(this.x, this.y - 1, this.dna)
+            new_root.is_node = true;
             environment.set(new_root)
         }
     }

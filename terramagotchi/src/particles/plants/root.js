@@ -14,24 +14,25 @@ export class RootParticle extends PlantParticleFamily {
         this.direction = 1; // direction the root is growing. 0 = left, 1 = down, 2 = right, 3 = bottom left, 4 = bottom right, by default, it grows in the direction it was initially spawned in
         this.activation_level = 0
 
-        this.root_node_spawn_distance = this.dna.root_node_spawn_distance || 7
-        this.root_length_max = this.dna.root_length_max || 10
-        this.root_max_curve_length = this.dna.root_max_curve_length || 1
+        this.root_node_spawn_distance = this.dna.root_node_spawn_distance || 5
+        this.root_length_max = this.dna.root_length_max || 20
+        this.root_max_curve_length = this.dna.root_max_curve_length || 3
         
         this.direction = 1
         this.current_curve_length = 0
     }
     
     update(environment) {
-        super.absorb_water(environment, this.__neighbours, [RootParticle, SoilParticle]);
-        super.absorb_nutrients(environment, this.__neighbours, [RootParticle, SoilParticle]);
-        this.check_growth_conditions(environment);
+        this.absorb_water(environment, this.__neighbours, [RootParticle, SoilParticle]);
+        this.absorb_nutrients(environment, this.__neighbours, [RootParticle, SoilParticle]);
+        if (this.is_active == true) {
+            this.check_growth_conditions(environment);
+        }
     }
 
     check_growth_conditions(environment) {
         if (this.nutrient_level >= this.activation_level
             && this.water_level >= this.activation_level
-            && this.is_active == true
             && this.__current_length <= this.root_length_max) // checks to make sure the roots are only as long as we want it to be
         {
             this.grow_child_root(environment);
@@ -42,7 +43,10 @@ export class RootParticle extends PlantParticleFamily {
             }
             if (this.is_node) { // if its a node, it randomly spawns a random amount of roots in a random directions
                 for (let i = 0; i <= FastRandom.int_max(4); i++) {
-                    this.direction = FastRandom.int_max(4);
+                    this.direction = FastRandom.int_max(5);
+                    if (this.direction > 4) {
+                        this.direction = 1;
+                    }
                     this.grow_child_root(environment);
                 }
                 this.is_active = false; // once a root grows, it stops growing and just absorbes water and nutrients

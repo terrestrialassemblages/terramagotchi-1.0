@@ -156,12 +156,12 @@ export class PlantParticleFamily extends OrganicParticle {
     // Below are some common functions for plant-type particles
 
     generate_energy() {
-        if (!this.is_active)
-            return;
+        // if (!this.is_active)
+        //     return;
         if (
+            this.energy < this.energy_capacity &&
             this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
             this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS + NUTRIENT_ENERGY_RATIO &&
-            this.energy < this.energy_capacity &&
             FastRandom.random() < PlantParticleFamily.CREATE_ENERGY_PROBABILITY
         ) {
             this.water_level -= WATER_ENERGY_RATIO
