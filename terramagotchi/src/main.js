@@ -1,6 +1,7 @@
-import p5 from "p5";
+import p5 from "p5"
 
-import { Application } from "./application";
+import { Application } from "./application"
+import { FastRandom } from "./fast-random";
 
 // Testing code: Imports for testing particles by manually adding
 import {
@@ -14,20 +15,20 @@ import {
 import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
 // cringe safety feature
-p5.disableFriendlyErrors = true;
+p5.disableFriendlyErrors = true
 
 export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(270, 270);
-    let cell_size = 3; // Defines cell size in pixels.
+    const application = new Application(180, 320)
+    let cell_size = 3 // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic, organisms_graphic;
-
     let sky_day_color, sky_night_color;
 
     let night_overlay_opacity;
+    let smooth_darkness_intensity, darkness_banding, banded_darkness_intensity;
 
     // The initial setup function.
     s.setup = () => {
@@ -51,12 +52,17 @@ export const sketch = (s) => {
 
         s.colorMode(s.HSB);
         // s.frameRate(20);
-        s.background("#000000");
-    };
+        s.background("#000")
+
+        smooth_darkness_intensity = 0.9;
+        darkness_banding = 5;
+        banded_darkness_intensity = 0.7;
+    }
 
     // The update function. Fires every frame
     s.draw = () => {
-        application.update();
+        application.update()
+
         // Iterates through all particles in the application's environment that
         // have changed and need to be rendered.
         for (let particle of application.environment.particle_grid) {
@@ -68,7 +74,28 @@ export const sketch = (s) => {
                 // Particle is not empty, paint over with full color
                 else {
                     main_graphic.noErase()
-                    main_graphic.fill(particle.get_color(s));
+
+                    particle.rerender = false
+
+                    let particle_color = particle.get_color(s)
+
+                    // Darken particle appropriately if under the horizon
+                    if (particle.y < application.environment.get_horizon(particle.x)) {
+                        let smooth_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 20;
+                        let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + FastRandom.random() * 0.05), 1, (1-smooth_darkness_intensity));
+
+                        let banded_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 60;
+                        let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + FastRandom.random() * 0.02), 1, (1-banded_darkness_intensity)) 
+                            * darkness_banding) | 0) / darkness_banding;
+
+                        particle_color = s.color(
+                            s.hue(particle_color),
+                            s.saturation(particle_color),
+                            s.brightness(particle_color) * s.lerp(banded_brightness, smooth_brightness, 0.85)
+                        )
+                    }
+
+                    main_graphic.fill(particle_color);
                 }
 
                 // Paint square on grid
@@ -129,10 +156,10 @@ export const sketch = (s) => {
         night_overlay_graphic.clear();
         night_overlay_graphic.background(0, 0, 10, s.lerp(night_overlay_opacity, 0, application.environment.light_level / 100));
         s.image(night_overlay_graphic, 0, 0);
-    };
+    };       
 
     // Debug code for drawing
-    let current_material = 1; // Default to stone
+    let current_material = 1 // Default to stone
     let keys = {
         1: StoneParticle,
         2: SoilParticle,
@@ -153,15 +180,12 @@ export const sketch = (s) => {
             ];
             application.environment.spawn_organism(x, y)
         }
-    };
+    }
 
     s.mouseDragged = () => {
-        const [x, y] = [
-            Math.floor(s.mouseX / cell_size),
-            application.height - 1 - Math.floor(s.mouseY / cell_size),
-        ];
-        application.environment.set(new keys[current_material](x, y));
-    };
-};
+        const [x, y] = [Math.floor(s.mouseX / cell_size), application.height - 1 - Math.floor(s.mouseY / cell_size)]
+        application.environment.set(new keys[current_material](x, y))
+    }
+}
 
-const sketchInstance = new p5(sketch);
+const sketchInstance = new p5(sketch)

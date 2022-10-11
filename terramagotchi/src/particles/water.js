@@ -9,7 +9,7 @@ export class WaterParticle extends LiquidParticle {
         this.base_color = "#5080D0";
         this.moveable = true;
         this.weight = 1;
-        this.water_content = 100;
+        this.water_content = 1000;
     }
 
     update(environment) {
