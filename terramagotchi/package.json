@@ -25,6 +25,7 @@
     "webpack-dev-server": "^4.10.1"
   },
   "dependencies": {
-    "p5": "^1.4.2"
+    "p5": "^1.4.2",
+    "simplex-noise": "^4.0.0"
   }
 }

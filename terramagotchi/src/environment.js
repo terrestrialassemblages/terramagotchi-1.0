@@ -1,9 +1,10 @@
 import { FastRandom } from "./fast-random";
+import { createNoise2D } from 'simplex-noise';
+
 import {
     BoundaryParticle,
     StoneParticle,
     SoilParticle,
-    CompostParticle,
     WaterParticle,
     AirParticle,
     OrganicParticle,
@@ -38,40 +39,48 @@ export class Environment {
         this.__light_level = 100; // max 100
         this.__length_of_day = 36000;
         this.time_of_day = this.__length_of_day / 2;
+        this.noise2D = createNoise2D();
+
+        // How far the river can randomly move
+        this.max_river_offset = 25;
+        this.river_offset = (FastRandom.random() * this.max_river_offset * 2) - this.max_river_offset;
+        // Half of how wide the river is
+        this.river_radius = 40;
+        // How deep the river is
+        this.river_depth = 25;
+    }
+
+    get_horizon(x) {
+        return 160 - this.river_depth - this.river_depth * 
+        (Math.sin((Math.min(this.river_radius, Math.abs(90 - x + this.river_offset)) + this.river_radius / 2)
+         * Math.PI / this.river_radius)) 
+        + 16 * this.noise2D((x) / 96, 0)
+        + 4 * this.noise2D((x) / 32, 1000)
+        + 2 * this.noise2D((x) / 16, 2000)
+        + this.noise2D((x) / 8, 3000);
     }
 
     generate() {
+
         /**
          * Populates the application environment with particles
          */
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
-                if (
-                    x == 0 ||
-                    y == 0 ||
-                    x == this.width - 1 ||
-                    y == this.height - 1
-                ) {
+                // Set Boundary Particles
+                if (x == 0 || y == 0 || x == this.width - 1 || y == this.height - 1 ) {
                     this.set(new BoundaryParticle(x, y));
-                } else if (
-                    y + Math.floor(10 * Math.sin(((x + 80) * Math.PI) / 300)) <
-                    25
-                ) {
-                    this.set(new StoneParticle(x, y));
-                } else if (
-                    y +
-                        Math.floor(
-                            50 * Math.sin(((x + 100) * Math.PI) / 200) +
-                                4 * Math.sin((x + 20) / 12)
-                        ) <
-                    85
-                ) {
+                }
+                // Set Soil Particles
+                else if (y < this.get_horizon(x)) {
                     this.set(new SoilParticle(x, y));
-                } else if (y < 100) {
+                } 
+                // Set Water Particles
+                else if (y < 150 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
-                } else if (y > 140 && FastRandom.random() < 0.01) {
-                    this.set(new AirParticle(x, y));
-                } else {
+                } 
+                // Set Air Particles
+                else {
                     this.set(new AirParticle(x, y));
                 }
             }
