@@ -290,12 +290,10 @@ export class Organism {
                 if (neighbour_direction_x == this.facing[0] && neighbour_direction_y == this.facing[1]) distance -= 2
             }
 
-            
             // Discourage the organism from walking on itself.
             distance += this.location_history.filter(
                 ([previous_x, previous_y]) => previous_x == neighbour[0] && previous_y == neighbour[1]
-            ).length * DISCOURAGE_WALKING_OVER_SELF_FACTOR
-            
+            ).length
 
             if (distance < best_distance) {
                 best_neighbours = [neighbour]
