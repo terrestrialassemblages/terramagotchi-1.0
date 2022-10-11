@@ -19,7 +19,7 @@ exports.userInteract = functions
             let time_passed = user.exists ? timestamp - user.data().last_interaction : 5000;
             // Check if it has been 5 seconds since the user's last interaction
             if (time_passed < 5000) {
-                return { message: `Please wait ${(5000 - time_passed) / 1000}s` }
+                return { message: 5000 - time_passed }
             } else {
                 // Update the specified variable document
                 return docRef.get().then((doc) => {
@@ -29,9 +29,9 @@ exports.userInteract = functions
                         });
                         // Set timestamp for user
                         colRef.doc(uid).set({ last_interaction: timestamp });
-                        return { message: `Successfully sent ${data.document} to ${data.instance_id} at ${timestamp}` }
+                        return { message: `Successfully sent ${data.document}` }
                     }
-                    return { message: `Unknown instance Id: ${data.instance_id}` }
+                    return { message: `Unknown instance: ${data.instance_id}` }
                 });
             }
         }).catch((reason) => {

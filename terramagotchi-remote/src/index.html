@@ -12,7 +12,7 @@
             <h1 id="instance-text" class="font-semibold text-2xl text-slate-800"></h1>
         </div>
         <div class="flex flex-row justify-center">
-            <button id="water-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+            <button id="water-button" class="user-button bg-water-600 hover:bg-water-700 focus:bg-water-700 active:bg-water-800" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-5 h-5 float-left">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>                  
@@ -20,7 +20,7 @@
             </button>
         </div>
         <div class="flex flex-row justify-center">
-            <button id="soil-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+            <button id="soil-button" class="user-button bg-soil-600 hover:bg-soil-700 focus:bg-soil-700 active:bg-soil-800" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-5 h-5 float-left">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>                  
@@ -28,7 +28,7 @@
             </button>
         </div>
         <div class="flex flex-row justify-center">
-            <button id="seed-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+            <button id="seed-button" class="user-button bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-800" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-5 h-5 float-left">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>                  
@@ -36,12 +36,16 @@
             </button>
         </div>
         <div class="flex flex-row justify-center">
-            <button id="time-button" class="user-button" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
+            <button id="time-button" class="user-button bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 active:bg-slate-800" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 float-left">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>                             
                 <p class="m-auto">change time</p>
             </button>
+        </div>
+        <div class="flex flex-row mx-auto text-center">
+            <h1 id="status-text" class="font-semibold text-2xl text-slate-800"></h1>
+            <div id="loading-spin" class="spinner-border animate-spin w-7 h-7 mx-5 border-5 rounded-full text-slate-800 visually-hidden" role="status"></div>
         </div>
     </div>
     <div id="recaptcha-container"></div>

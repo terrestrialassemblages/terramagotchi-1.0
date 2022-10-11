@@ -19,14 +19,25 @@ const functions = getFunctions(app, "australia-southeast1");
 const auth = getAuth(app);
 const userInteract = httpsCallable(functions, "userInteract");
 
+// HTML elements for displaying server status
+const status_text = document.getElementById("status-text");
+const loading_spin = document.getElementById("loading-spin");
+
+const hide_spin = () => { loading_spin.classList.add("visually-hidden") }
+const show_spin = () => { loading_spin.classList.remove("visually-hidden") }
+
 // Recaptcha verification setup
+status_text.innerText = "Authenticating..."
+loading_spin.classList.remove("visually-hidden");
 window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
     "size": "invisible",
     "callback": (response) => {
         signInAnonymously(auth).then(() => {
-            console.log("Authenticated Successfully!");
+            // Do something on sign in
         }).catch((err) => {
             console.error(err);
+            status_text.innerText = "Error Authenticating, Please Refresh"
+            hide_spin();
         })
     }
 }, auth);
@@ -39,9 +50,14 @@ window.recaptchaVerifier.render().then((widgetId) => {
 let uid = null
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        uid = user.uid;
+        if (uid == null) {
+            uid = user.uid;
+            status_text.innerText = "Successfully Authenticated!"
+            hide_spin();
+        }
     } else {
         uid = null;
+        window.recaptchaVerifier.verify();
     }
 });
 
@@ -55,7 +71,13 @@ document.getElementById("instance-text").innerText = instance;
 const particle_button_click = (type) => {
     if (uid !== null) {
         userInteract({ document: type, instance_id: instance}).then((result) => {
-            console.log(result.data.message);
+            let message = result.data.message;
+            if (typeof message == "string") {
+                status_text.innerText = message.includes("time") ? "Successfully Changed Time" : message;
+                hide_spin();
+            } else {
+                start_cooldown(message);
+            }
         });
     } else {
         window.recaptchaVerifier.verify();
@@ -74,3 +96,30 @@ seed_button.addEventListener('click', () => particle_button_click("seed"));
 
 const time_button = document.getElementById("time-button");
 time_button.addEventListener('click', () => particle_button_click("time"));
+
+// Visual cooldown display
+const start_cooldown = (time) => {
+    water_button.disabled = true;
+    soil_button.disabled = true;
+    seed_button.disabled = true;
+    time_button.disabled = true;
+
+    let curr_time = time;
+    status_text.innerText = `Cooldown ${(curr_time / 1000).toFixed(1)}s`;
+    show_spin();
+    let timer = setInterval(function() {
+        curr_time = curr_time -= 100;
+        if (curr_time > 0) {
+            status_text.innerText = `Cooldown ${(curr_time / 1000).toFixed(1)}s`;
+        } else {
+            clearInterval(timer);
+            status_text.innerText = "Done!";
+            water_button.disabled = false;
+            soil_button.disabled = false;
+            seed_button.disabled = false;
+            time_button.disabled = false;
+            hide_spin();
+        }
+    }, 100);
+    return timer
+}
