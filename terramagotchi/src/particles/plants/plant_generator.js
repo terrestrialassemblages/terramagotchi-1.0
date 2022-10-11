@@ -10,7 +10,7 @@ function randint(start, end=null) {
     return start + Math.random() * (end - start + 1) | 0
 }
 
-export default function generate_tree_dna(TREE_TYPE=LAVENDER) {
+export default function generate_tree_dna(TREE_TYPE = LAVENDER) {
 let tree_direction, tree_scale, tree_angle_offset, tree_height
 switch (TREE_TYPE) {
     case KAURI:
@@ -93,9 +93,9 @@ switch (TREE_TYPE) {
         tree_height = randint(4, 7)
 
         let first_node = {
-            root_node_spawn_distance: 4,
-            root_length_max: 10,
-            root_max_curve_length: 100,
+            root_node_spawn_distance: 6,
+            root_length_max: 5,
+            root_max_curve_length: 2,
 
 
             seed_activation_level: 0,
