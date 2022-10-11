@@ -88,13 +88,14 @@ export class LeafParticle extends PlantParticleFamily {
         for (let [offset_x, offset_y] of this.__neighbours) {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
             if (target_particle instanceof LeafParticle && !target_particle.leaf_dead && this.dna.get_root() == target_particle.dna.get_root())
-                target_particle.die(environment)
+                target_particle.leaf_die(environment)
         }
         if (this.__current_length == 1) {
             this.is_active = true
             return;
         }
-        let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        // let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+        let new_dead_plant = new AirParticle(this.x, this.y, this.dna)
         environment.set(new_dead_plant)
     }
 }

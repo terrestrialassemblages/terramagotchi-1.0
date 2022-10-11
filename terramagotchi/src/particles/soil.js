@@ -9,8 +9,8 @@ export class SoilParticle extends OrganicParticle {
 
         this.base_color = "#92745B";
 
-        this.water_level = 30;
-        this.nutrient_level = 30;
+        this.water_level = this.water_capacity/2|0;
+        this.nutrient_level = this.nutrient_capacity/2|0;
 
         // Poisson distribution chance to grow grass
         this.grass_grow_chance = 0.001;
@@ -40,22 +40,6 @@ export class SoilParticle extends OrganicParticle {
     get is_grass() {
         return this.base_color == this.grass_color;
     }
-
-    // get_color(s) {
-
-    //     // Initialise colour if needed
-    //     if (this.color === "#000000" || this.change_color) {
-    //         super.get_color(s);
-    //     }
-
-    //     this.color = s.color(
-    //         s.hue(this.color),
-    //         s.saturation(this.base_color) * this.saturation_offset,
-    //         s.brightness(this.base_color) * this.brightness_offset -
-    //             this.water_level / 4
-    //     );
-    //     return this.color;
-    // }
 }
 
 export class GrassParticle extends SoilParticle {

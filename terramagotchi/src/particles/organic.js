@@ -8,12 +8,12 @@ export class OrganicParticle extends BaseParticle {
         this.weight = 2;
 
         this.__nutrient_level = 0;
-        this.nutrient_capacity = 100;
+        this.nutrient_capacity = 100
         this.__nutrient_render_step = 100;
         this.__last_rendered_nutrient_level = 0;
 
         this.__water_level = 0;
-        this.water_capacity = 100;
+        this.water_capacity = 100
         this.__water_render_step = 10 + Math.floor(Math.random() * 10);
         this.__last_rendered_water_level = 0;
 
@@ -31,10 +31,10 @@ export class OrganicParticle extends BaseParticle {
     }
 
     set nutrient_level(level) {
-        //if (Math.abs(this.nutrient_level - this.__last_rendered_nutrient_level) >= this.__nutrient_render_step) {
-        //    this.rerender = true;
-        //    this.__last_rendered_nutrient_level = this.nutrient_level;
-        //}
+        if (Math.abs(this.nutrient_level - this.__last_rendered_nutrient_level) >= this.__nutrient_render_step) {
+           this.rerender = true;
+           this.__last_rendered_nutrient_level = this.nutrient_level;
+        }
 
         this.__nutrient_level = level;
     }
@@ -74,10 +74,11 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        //let transfer_amount = 5;
+        let transfer_amount = 5;
         // Method 2
-        let transfer_amount = Math.floor(Math.random() * 10);
+        // let transfer_amount = Math.floor(Math.random() * 10);
         // Method 3
+        // let transfer_amount = ((Math.min(random_neighbour.nutrient_level, this.nutrient_capacity) - this.nutrient_level) / 2) | 0;
         //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + Math.random()));
 
         // Attempt to absorb water from random neighbour
@@ -120,15 +121,16 @@ export class OrganicParticle extends BaseParticle {
         }
 
         // Method 1
-        //let transfer_amount = 5;
+        let transfer_amount = 5;
         // Method 2
         //let transfer_amount = Math.floor(Math.random() * 2);
         // Method 3
-        let transfer_amount = Math.floor(
-            (random_neighbour.nutrient_level - this.nutrient_level) /
-                (1.5 + Math.random())
-        );
-
+        // let transfer_amount = Math.floor(
+        //     (random_neighbour.nutrient_level - this.nutrient_level) /
+        //         (1.5 + Math.random())
+        // );
+        // let transfer_amount = ((random_neighbour.nutrient_level - this.nutrient_level) / 2) | 0;
+        // let transfer_amount = (Math.max(1, (random_neighbour.nutrient_level - this.nutrient_level) / 2) | 0);
         // Attempt to absorb nutrient from random neighbour
         if (
             neighbour_valid_type &&

@@ -20,7 +20,7 @@ export class PlantParticleFamily extends OrganicParticle {
     static DEFAULT_MAX_HEALTH = 100     // Effectively how many frames a plant survives while "unhealthy" until dying
                                         // Can be set in DNA per-plant, else defaults to this value
                                         
-    static MAX_ENERGY = 10  // Maximum amount of energy a plant particle will contain
+    static MAX_ENERGY = 0  // Maximum amount of energy a plant particle will contain
     
     static MIN_HEALTHY_WATER = 0     // Minimum amount of water to be considered "healthy"; will not create energy to go below
     static MIN_HEALTHY_NUTRIENTS = 0 // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
@@ -34,8 +34,8 @@ export class PlantParticleFamily extends OrganicParticle {
 
         this.color_variance = 0.05
 
-        this.water_capacity = 30
-        this.nutrient_capacity = 30
+        this.water_capacity = 100
+        this.nutrient_capacity = 100
 
         // List of plant-type particles to decide which particle types plants absorb from
         this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle, BarkParticle]
@@ -63,6 +63,24 @@ export class PlantParticleFamily extends OrganicParticle {
 
         this.base_color = this.dna.color
         this.color_variance = 0.1
+    }
+
+    // Overriding absorption functions
+    absorb_water(environment, potential_neighbours, valid_neighbour_types) {
+        let filtered_potential_neighbours = []
+        for (let offset of potential_neighbours) {
+            let [offset_x, offset_y] = offset
+            let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+            for (let particle_type of valid_neighbour_types) {
+                if (target_particle instanceof particle_type) {
+                    filtered_potential_neighbours.push(offset)
+                    break
+                }
+            }
+        }
+        if (filtered_potential_neighbours.length == 0)
+            return;
+        super.absorb_water(environment, filtered_potential_neighbours, valid_neighbour_types)
     }
     
     // Below are some common functions for plant-type particles
@@ -237,7 +255,9 @@ export class PlantParticleFamily extends OrganicParticle {
             s.push()
             s.colorMode(s.RGB)
         //    this.color = s.color((this.water_level - 30) * 10)
-            this.color = s.color(255*(this.nutrient_level/this.nutrient_capacity), 0, 255*(this.nutrient_level/this.nutrient_capacity))
+            let red = 255*(this.nutrient_level/this.nutrient_capacity)
+            let blue = 255*(this.water_level/this.water_capacity)
+            this.color = s.color(red, 0, blue)
             
             s.pop()
             return this.color

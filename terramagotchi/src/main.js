@@ -10,8 +10,10 @@ import {
     WaterParticle,
     SteamParticle,
     CompostParticle,
+    OrganicParticle,
 } from "./particles";
-import { SeedParticle } from "./particles/plants";
+
+import { PlantParticleFamily, SeedParticle } from "./particles/plants";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true;
@@ -49,6 +51,22 @@ export const sketch = (s) => {
         s.colorMode(s.HSB);
         // s.frameRate(20);
         s.background("#000000");
+
+        canvas.mouseClicked(() => {
+            let x_pos = s.mouseX / cell_size | 0
+            let y_pos = (application.height - (s.mouseY / cell_size)) | 0
+            let target_particle = application.environment.get(x_pos, y_pos)
+            
+            console.log(target_particle.constructor.name, "| moveable: " + target_particle.moveable, "| weight: " + target_particle.weight)
+            if (target_particle instanceof OrganicParticle) {
+                console.log("Water/Nutrient capacitys: ", target_particle.water_capacity, target_particle.nutrient_capacity)
+                console.log("Water/Nutrient levels: ", target_particle.water_level, target_particle.nutrient_level)
+            }
+            if (target_particle instanceof PlantParticleFamily) {
+                console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
+            }
+            console.log("")
+        })
     };
 
     // The update function. Fires every frame
