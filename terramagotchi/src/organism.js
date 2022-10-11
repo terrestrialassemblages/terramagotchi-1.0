@@ -18,8 +18,8 @@ const MAX_SEEK_DEPTH = 100
 const MIN_NUTRIENTS = 100
 const MIN_WATER = 100
 
-// The chance for nutrient and water levels to be decremented at the end of an update() call.
-const USE_FOOD_CHANCE = 0.1 // [0, 1]
+// The ratio for how much energy 1 nutrient/water is worth.
+const ENERGY_RATIO = 10
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -46,13 +46,14 @@ export class Organism {
     water_capacity = 1000
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
+    energy = 200
 
     x = 120
     y = 120
     facing = [0, -1] // Spawns facing downwards.
     location_history = []
     target_location = null
-    current_objective = "CONSUME" // Possible objectives are CONSUME, DEFECATE and WANDER
+    current_objective = "CONSUME" // Possible objectives are CONSUME, DEFECATE, WANDER and SLEEP
     reseek_timer = 0
     update_timer = 0
 
@@ -67,6 +68,10 @@ export class Organism {
     }
 
     update(environment) {
+        /**
+         * The main function which directs the organism's state and behaviour.
+         */
+
         if (this.location_history.length > this.nutrient_level / 100 + MIN_LENGTH)
             this.location_history.length = (this.nutrient_level / 100 + MIN_LENGTH) >> 0
 
@@ -85,10 +90,7 @@ export class Organism {
             this.die(environment)
         }
 
-        if (FastRandom.random() < USE_FOOD_CHANCE) {
-            this.nutrient_level--
-            this.water_level--
-        }
+        this.energy--
     }
 
     compute_gravity(environment) {
@@ -177,6 +179,7 @@ export class Organism {
          * Where `depth` is the manhattan distance.
          * At each depth, it searches in a circular order, starting on the right of itself.
          */
+
         let y = 0
         for (let depth = 1; depth <= MAX_SEEK_DEPTH; depth++) {
             for (let x = depth; x >= -depth; x--) {
@@ -208,6 +211,7 @@ export class Organism {
         } else {
             this.current_objective = "WANDER"
         }
+
         this.reseek_timer = RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET
         this.target_location = null
     }
@@ -232,10 +236,16 @@ export class Organism {
         /**
          * Checks that the given location is a particle type on which the organism can traverse.
          */
+
         for (let type of CAN_TRAVERSE) if (environment.get(x, y) instanceof type) return true
     }
 
     __is_location_accessible(x, y, environment) {
+        /**
+         * Checks that the given location is within bounds, is traversible, and has at least one
+         * traversible neighbour.
+         */
+
         if (
             x < 1 ||
             x > environment.width - 1 ||
@@ -267,6 +277,10 @@ export class Organism {
     }
 
     __get_valid_neighbours(environment) {
+        /**
+         * Checks the four neighbouring particles and returns which ones are accessible.
+         */
+
         let valid_neighbours = []
         for (let [move_x, move_y] of [
             [0, 1],
@@ -278,14 +292,22 @@ export class Organism {
                 valid_neighbours.push([this.x + move_x, this.y + move_y])
             }
         }
+
         return valid_neighbours
     }
 
     __choose_best_neighbour(valid_neighbours) {
+        /**
+         * Calculates the best neighbour based on its distance from the target location.
+         * If there is no target location, it performs a random walk, with a preference to
+         * walk in the same direction.
+         */
+
         const current_distance =
             this.target_location === null
                 ? 0
                 : Math.abs(this.target_location[0] - this.x) + Math.abs(this.target_location[1] - this.y)
+
         let best_neighbours = []
         let best_distance = Infinity
         for (let neighbour of valid_neighbours) {
@@ -317,48 +339,68 @@ export class Organism {
                 best_distance = distance
             }
         }
+
         return best_neighbours[(Math.random() * best_neighbours.length) >> 0]
     }
 
     consume(environment) {
+        /**
+         * Handles transferring nutrients/water from a particle to the organism.
+         */
+
         const particle = environment.get(this.x, this.y)
 
-        if (particle instanceof DeadPlantParticle) {
-            let transfer_nutrients_amount = Math.min(
-                particle.nutrient_level,
-                this.nutrient_capacity - this.nutrient_level
-            )
-            this.nutrient_level += transfer_nutrients_amount
-            particle.nutrient_level -= transfer_nutrients_amount
+        // Consume nutrients from the DeadPlantParticle
+        let transfer_nutrients_amount = Math.min(particle.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+        this.nutrient_level += transfer_nutrients_amount
+        particle.nutrient_level -= transfer_nutrients_amount
 
-            let transfer_water_amount = Math.min(particle.water_level, this.water_capacity - this.water_level)
-            this.water_level += transfer_water_amount
-            particle.water_level -= transfer_water_amount
+        // Consume water from the DeadPlantParticle
+        let transfer_water_amount = Math.min(particle.water_level, this.water_capacity - this.water_level)
+        this.water_level += transfer_water_amount
+        particle.water_level -= transfer_water_amount
 
-            if (particle.nutrient_level == 0 && particle.water_level == 0) {
-                let new_air_particle = new AirParticle(particle.x, particle.y)
-                environment.set(new_air_particle)
-            }
+        // Increase energy based on what was consumed.
+        this.energy += ENERGY_RATIO * (transfer_nutrients_amount + transfer_water_amount)
+
+        // If the DeadPlantParticle now has no water nor nutrients left, replace it with AirParticle.
+        if (particle.nutrient_level == 0 && particle.water_level == 0) {
+            let new_air_particle = new AirParticle(particle.x, particle.y)
+            environment.set(new_air_particle)
         }
     }
 
     defecate(environment) {
+        /**
+         * Handles producing a compost particle and donating nutrients/water to said particle.
+         */
+
         const new_compost_particle = new CompostParticle(this.x, this.y)
         // new_compost_particle.decay_into = environment.get(this.x, this.y)
+
         new_compost_particle.nutrient_content = this.nutrient_level - MIN_NUTRIENTS
         this.nutrient_level = MIN_NUTRIENTS
+        new_compost_particle.water_content = this.water_level - MIN_WATER
+        this.water_level = MIN_WATER
+
         environment.set(new_compost_particle)
     }
 
     die(environment) {
+        /**
+         * Handles when the organism dies and turns to compost.
+         */
+
         for (let [x, y] of this.location_history) {
             let new_compost_particle = new CompostParticle(x, y)
             new_compost_particle.nutrient_content = Math.round(this.nutrient_level / this.location_history.length)
             new_compost_particle.water_content = Math.round(this.water_level / this.location_history.length)
+
             if (environment.get(x, y) instanceof SoilParticle) new_compost_particle.decay_into = SoilParticle
 
             environment.set(new_compost_particle)
         }
+        // Remove the organism from the Environment.
         environment.organisms.splice(environment.organisms.indexOf(this), 1)
     }
 }
