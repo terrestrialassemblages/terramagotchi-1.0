@@ -6,7 +6,7 @@ export class BaseParticle {
         this.x = x
         this.y = y
 
-        this.base_color = "#000000";
+        this.base_color = "#FF00FF";
         this.color = "#FF00FF";
         this.color_variance = 0.05;
         this.saturation_offset = 0;
