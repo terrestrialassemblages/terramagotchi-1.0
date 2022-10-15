@@ -31,6 +31,11 @@ exports.userInteract = functions
         }
 
         return admin.firestore().collection("!global").doc("variables").get().then((global) => {
+            // Checks if the client is authenticated
+            if (!context.auth) {
+                return { message: "Please authenticate." }
+            }
+
             const docRef = colRef.doc(data.document);
             const timestamp = Date.now();
             const uid = context.auth.uid;
