@@ -92,8 +92,8 @@ export class GrassParticle extends SoilParticle {
             FastRandom.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
             let new_compost = new CompostParticle(this.x,this.y);
-            new_compost.nutrient_content = this.nutrient_level;
-            new_compost.water_content = this.water_level;
+            new_compost.nutrient_level = this.nutrient_level;
+            new_compost.water_level = this.water_level;
             environment.set(new_compost);
         }
     }
