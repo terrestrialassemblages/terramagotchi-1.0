@@ -40,7 +40,6 @@ export const sketch = (s) => {
      */
     const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
     let cell_size = 3; // Defines cell size in pixels.
-    console.log("Running on instance: " + INSTANCE_ID);
 
     let night_overlay_graphic, main_graphic, organisms_graphic;
     let sky_day_color, sky_night_color;
@@ -55,8 +54,6 @@ export const sketch = (s) => {
             application.height * cell_size
         );
         canvas.canvas.style = ""; // Remove inline styling so that css works.
-
-        application.start_db_listener();
 
         main_graphic = s.createGraphics(s.width, s.height);
         main_graphic.noStroke();

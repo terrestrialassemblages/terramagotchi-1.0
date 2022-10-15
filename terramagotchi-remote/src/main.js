@@ -76,7 +76,7 @@ const particle_button_click = (type) => {
         awaiting_response = true;
         status_text.innerText = "Waiting...";
         show_spin();
-        userInteract({ document: type, instance_id: instance}).then((result) => {
+        userInteract({ document: type, instance_id: instance }).then((result) => {
             let message = result.data.message;
             if (typeof message == "string") {
                 status_text.innerText = message.includes("time") ? "Successfully Changed Time" : message;

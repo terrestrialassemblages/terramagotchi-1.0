@@ -1,6 +1,7 @@
 import { Environment } from "./environment";
 import { initializeApp } from "firebase/app";
-import { doc, setDoc, collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { FastRandom } from "./fast-random";
 import {
@@ -18,8 +19,10 @@ export class Application {
         this.environment.generate();
 
         // Initialise firebase and firestore
-        this.db = getFirestore(initializeApp(firebase_config));
-        this.db_collection = this.initialize_db();
+        this.firebase_app = initializeApp(firebase_config);
+        this.db = getFirestore(this.firebase_app);
+        this.create_instance = httpsCallable(getFunctions(this.firebase_app, "australia-southeast1"), "userInteract");
+        this.initialize_db();
     }
 
     update() {
@@ -28,14 +31,12 @@ export class Application {
     }
 
     initialize_db() {
-        // Firestore creates a collection [instance_id] when a document is set
-        setDoc(doc(this.db, this.instance_id, "water"), { value: 0 });
-        setDoc(doc(this.db, this.instance_id, "soil"), { value: 0 });
-        setDoc(doc(this.db, this.instance_id, "seed"), { value: 0 });
-        setDoc(doc(this.db, this.instance_id, "time"), { value: 0 });
-        setDoc(doc(this.db, this.instance_id, "worm"), { value: 0 });
-        
-        return collection(this.db, this.instance_id);
+        // Initialize database varibles and start listening for changes
+        this.create_instance({ document: "init", instance_id: this.instance_id }).then((result) => {
+            this.db_collection = collection(this.db, this.instance_id);
+            this.start_db_listener();
+            console.log("Running on instance: " + this.instance_id);
+        });
     }
 
     start_db_listener() {
