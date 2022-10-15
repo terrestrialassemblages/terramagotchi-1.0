@@ -147,20 +147,6 @@ export const sketch = (s) => {
                 cell_size,
                 cell_size
             );
-
-            // Display target locations of each organism.
-            // if (organism.target_location !== null) {
-            //     organisms_graphic.push();
-            //     organisms_graphic.fill("#00FF0012");
-            //     organisms_graphic.rect(
-            //         cell_size * organism.target_location[0],
-            //         cell_size *
-            //             (application.height - 1 - organism.target_location[1]),
-            //         cell_size,
-            //         cell_size
-            //     );
-            //     organisms_graphic.pop();
-            // }
         }
 
         // Render background color
