@@ -39,7 +39,7 @@ export class PlantParticleFamily extends OrganicParticle {
         this.nutrient_capacity = 100
 
         // List of plant-type particles to decide which particle types plants absorb from
-        this.__living_plant_particle_types = [LeafParticle, FlowerParticle, RootParticle, StemParticle, BarkParticle]
+        this.__living_plant_particle_types = [PlantParticleFamily]
 
         // List of neighbours for absorb functions
         this.__neighbours = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]]
