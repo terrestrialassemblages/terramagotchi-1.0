@@ -21,8 +21,7 @@ export class SoilParticle extends OrganicParticle {
         this.compute_gravity(environment)
         this.compute_erosion(environment)
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
         this.grass_growth(environment);
     }
@@ -74,8 +73,7 @@ export class GrassParticle extends SoilParticle {
     update(environment) {
         this.compute_gravity(environment);
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
         if (this.grow_stacked_grass) this.grass_growth(environment);
         this.grass_death(environment);
