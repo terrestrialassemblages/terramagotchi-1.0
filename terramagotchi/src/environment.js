@@ -9,6 +9,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
+    BaseParticle,
 } from "./particles";
 
 import {
@@ -224,12 +225,19 @@ export class Environment {
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
     }
 
-    // For toggling day/night via user interaction
-    toggle_time() {
-        if (this.time_of_day < 4 * this.__length_of_day / 5) {
-            this.time_of_day = Math.abs((4 * this.__length_of_day) / 5);
-        } else {
-            this.time_of_day = Math.abs(this.__length_of_day / 4);
+    // Changes time_of_day by + length_of_day/time (for user interaction purposes)
+    change_time(time) {
+        this.time_of_day += this.__length_of_day / time;
+    }
+
+    // Creates a 4x4 with of the given particle at x,y (for user interaction purposes)
+    user_add_particle(particle, x, y) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                if (this.get(x + i, y + j) instanceof AirParticle) {
+                    this.set(new particle(x + i, y + j));
+                }
+            }
         }
     }
 

@@ -42,24 +42,17 @@ export class Application {
     }
 
     start_db_listener() {
-        // When the database is updated, add a new 2x2 of a particle at a random location
+        // Checks if database was updated
         onSnapshot(this.db_collection, (snapshot) => {
-            const [x, y] = [FastRandom.int_min_max(10, 170), FastRandom.int_min_max(160, 310)];
-
-            // Check which document was modified
+            // Checks each change in the document and changes environment as required
             snapshot.docChanges().forEach((change) => {
+                const [x, y] = [FastRandom.int_min_max(10, 170), FastRandom.int_min_max(160, 310)];
                 if (change.doc.data().value != 0) {
                     if (change.doc.id == "water") {
-                        this.environment.set(new WaterParticle(x, y));
-                        this.environment.set(new WaterParticle(x+1, y));
-                        this.environment.set(new WaterParticle(x, y+1));
-                        this.environment.set(new WaterParticle(x+1, y+1));
+                        this.environment.user_add_particle(WaterParticle, x, y);
                     }
                     if (change.doc.id == "soil") {
-                        this.environment.set(new SoilParticle(x, y));
-                        this.environment.set(new SoilParticle(x+1, y));
-                        this.environment.set(new SoilParticle(x, y+1));
-                        this.environment.set(new SoilParticle(x+1, y+1));
+                        this.environment.user_add_particle(SoilParticle, x, y);
                     }
                     if (change.doc.id == "seed") {
                         this.environment.set(new SeedParticle(x, y));
@@ -68,7 +61,7 @@ export class Application {
                         this.environment.spawn_organism(x, y);
                     }
                     if (change.doc.id == "time") {
-                        this.environment.toggle_time();
+                        this.environment.change_time(4);
                     }
                 }
             });
