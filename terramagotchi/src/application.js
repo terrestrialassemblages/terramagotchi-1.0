@@ -2,6 +2,7 @@ import { Environment } from "./environment";
 import { initializeApp } from "firebase/app";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 import { FastRandom } from "./fast-random";
 import {
@@ -21,6 +22,7 @@ export class Application {
         // Initialise firebase and firestore
         this.firebase_app = initializeApp(firebase_config);
         this.db = getFirestore(this.firebase_app);
+        signInAnonymously(getAuth(this.firebase_app)); // To keep the firestore secure, authentication is required from the client 
         this.create_instance = httpsCallable(getFunctions(this.firebase_app, "australia-southeast1"), "userInteract");
         this.initialize_db();
     }
