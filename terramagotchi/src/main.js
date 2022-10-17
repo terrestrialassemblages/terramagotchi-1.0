@@ -61,6 +61,10 @@ export const sketch = (s) => {
         darkness_banding = 5;
         banded_darkness_intensity = 0.7;
 
+        s.paint_deep_dark_overlay()
+    }
+
+    s.paint_deep_dark_overlay = () => {
         // Iterates through all particles in the application's environment to
         // draw the deep dark overlay
         for (let particle of application.environment.particle_grid) {
@@ -152,7 +156,7 @@ export const sketch = (s) => {
         night_overlay_graphic.clear();
         night_overlay_graphic.background(0, 0, 10, s.lerp(night_overlay_opacity, 0, application.environment.light_level / 100));
         s.image(night_overlay_graphic, 0, 0);
-    };       
+    };
 
     // Debug code for drawing
     let current_material = 1 // Default to stone
