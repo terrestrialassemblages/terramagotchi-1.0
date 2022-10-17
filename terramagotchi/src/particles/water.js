@@ -2,6 +2,7 @@ import { FastRandom } from "../fast-random";
 import { AirParticle } from "./air";
 import { LiquidParticle } from "./liquid";
 import { OrganicParticle } from "./organic";
+import { SteamParticle } from "./steam";
 
 export class WaterParticle extends LiquidParticle {
     constructor(x, y) {
@@ -10,6 +11,11 @@ export class WaterParticle extends LiquidParticle {
         this.moveable = true;
         this.weight = 1;
         this.water_content = 1000;
+
+        // Per-tick chance to evaporate into steam
+        this.evaporation_chance = 0.0001;
+        // How much water_level to evaporate
+        this.evaporate_water_level = 5;
     }
 
     update(environment) {
@@ -18,6 +24,7 @@ export class WaterParticle extends LiquidParticle {
         this.compute_gravity(environment);
 
         this.disperse_water(environment)
+        this.compute_evaporate(environment)
     }
 
     disperse_water(environment) {
@@ -45,6 +52,24 @@ export class WaterParticle extends LiquidParticle {
                     environment.get(this.x, check_liquid_y).compute_gravity(environment);
                     check_liquid_y++;
                 }
+            }
+        }
+    }
+
+    compute_evaporate(environment) {
+        // Evaporate water into steam in correct conditions
+        if (FastRandom.random() < this.evaporation_chance &&
+            environment.get(this.x, this.y + 1) instanceof AirParticle &&
+            this.water_content > 0 && 
+            environment.light_level == 100) {
+
+            // Create new steam particle with up to evaporate_water_level amount of water
+            environment.set(new SteamParticle(this.x, this.y + 1, Math.min(this.evaporate_water_level, this.water_content)))
+
+            // Has transferred all remaining water
+            if (this.water_content == 0) {
+                // Replace with air
+                environment.set(new AirParticle(this.x, this.y));
             }
         }
     }
