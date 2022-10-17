@@ -24,7 +24,7 @@ export class GasParticle extends BaseParticle {
             }
 
             // Randomly decide to move horizontally
-            if (FastRandom.random() < this.x_movement_probability) {
+            if (FastRandom.random() < this.x_move_probability) {
                 // Randomly choose an x direction to move towards
                 const random_direction = Math.sign(FastRandom.random() - 0.5);
                 const random_x_neighbour = environment.get(this.x + random_direction, this.y);

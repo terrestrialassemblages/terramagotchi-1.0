@@ -1,74 +1,50 @@
+import { FastRandom } from "../fast-random";
+import { CloudParticle } from "./cloud";
 import { GasParticle } from "./gas";
 import { WaterParticle } from "./water";
 
 export class SteamParticle extends GasParticle {
-    constructor(x, y) {
+
+
+
+    constructor(x, y, water_level) {
         super(x, y);
-        this.base_color = "#EEE";
+        this.base_color = "#DDD";
         //this.color_variance = 0;
         this.moveable = true;
         this.weight = 0;
 
         // How much water this particle contains
-        this.water_content = 10;
-        // How many ticks the steam particle has existed
-        this.lifetime = 0;
+        this.water_level = water_level;
+        // How many ticks the steam particle will take to turn into water
+        this.water_condensation_time = 1200;
+        // The Y level this steam will convert to a cloud particle
+        this.cloud_condensation_height = FastRandom.int_min_max(280, 310);
 
-        // Chance to move when computing cloud function
-        this.cloud_move_probability = 0.25;
+
     }
 
     update(environment) {
-        this.lifetime++;
-
-        //this.compute_rain(environment);
-
-        if (this.under_cloud_horizon(this.x, this.y, environment)) {
-            this.compute_rise(environment);
-        }
-        else {
-            this.compute_clouds(environment);
-        }
+        this.compute_rise(environment);
+        this.compute_water_condensation(environment);
+        this.compute_cloud_condensation(environment);
     }
-4
-    compute_rain() {
-        // Turn steam into water.
-        if (this.condensation_time > 3600) {
+
+    compute_water_condensation(environment) {
+        // Countdown timer
+        this.water_condensation_time--;
+        // Turn steam into water
+        if (this.water_condensation_time == 0) {
             let new_water = new WaterParticle(this.x, this.y)
-            new_water.water_content = this.water_content;
+            new_water.water_level = this.water_level;
             environment.set(new_water);
-            return;
         }
     }
 
-    under_cloud_horizon(new_x, new_y, environment) {
-        return new_y < 5 * environment.noise2D(new_x / 64,0) + 280
-    }
-
-    compute_clouds(environment) {
-        if (this.moveable_y) {
-
-            let [new_x, new_y] = [[0, 1], [1, 0], [0, -1], [-1, 0]][(Math.random() * 4) | 0];
-            [new_x, new_y] = [this.x + new_x, this.y + new_y]
-
-            const particle_ahead = environment.get(new_x, new_y)
-
-            if (!(particle_ahead instanceof GasParticle) &&
-                Math.random() < this.cloud_move_probability &&
-                this.cloud_noise(new_x, new_y, environment) > this.cloud_noise(this.x, this.y, environment) &&
-                particle_ahead.moveable_y &&
-                particle_ahead.weight <= this.weight
-            ) {
-                environment.swap(this.x, this.y, new_x, new_y)
-            }
+    compute_cloud_condensation(environment) {
+        // Convert to cloud at correct height
+        if (this.y >= this.cloud_condensation_height) {
+            environment.set(new CloudParticle(this.x, this.y, this.water_level, environment));
         }
-    }
-
-    cloud_noise(new_x, new_y, environment) {
-        if (!this.under_cloud_horizon(new_x, new_y, environment)) {
-            return environment.noise2D((1000 + new_x / 128), (1000 + new_y) / 16)
-        }
-        return -2
     }
 }
-4

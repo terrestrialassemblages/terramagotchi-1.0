@@ -42,6 +42,10 @@ export class BaseParticle {
         }
     }
 
+    destroy(environment) {
+        this.destroyed = true;
+    }
+
     update(environment) {}
 
     compute_gravity(environment) {

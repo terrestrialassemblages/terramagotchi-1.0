@@ -8,7 +8,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
-    SteamParticle,
+    CloudParticle,
 } from "./particles";
 
 import {
@@ -49,6 +49,15 @@ export class Environment {
         this.river_radius = 40;
         // How deep the river is
         this.river_depth = 25;
+
+        // Whether clouds are allowed to currently rain
+        this.is_raining = false;
+        // When there are this many or more cloud particles, start raining
+        this.rain_on_cloud_count = 3500;
+        // When there are this many or less cloud particles, stop raining
+        this.rain_until_cloud_count = 3000;
+        // The number of cloud particles
+        this.cloud_particle_count = 0;
     }
 
     get_horizon(x) {
@@ -80,13 +89,12 @@ export class Environment {
                 else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
                 }
-                // Set Steam Particles
-                else if (y > 280 && y < this.height - 5 
-                        //&& Math.abs(90 - x + this.river_offset) < this.river_radius
+                // Set Cloud Particles
+                else if (y > this.height - 40 && y < this.height - 5 
                         && x >= 1 && x < this.width
                         && Math.random() < 0.5
                         ) {
-                    this.set(new SteamParticle(x, y));
+                    this.set(new CloudParticle(x, y, 100, this));
                 } 
                 // Set Air Particles
                 else {
@@ -117,6 +125,7 @@ export class Environment {
     }
 
     refresh() {
+        
         for (let particle of this.__particle_grid) {
             particle.refresh();
         }
@@ -132,7 +141,7 @@ export class Environment {
     set(particle) {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
-        if (destroyed_particle) destroyed_particle.destroyed = true;
+        if (destroyed_particle) destroyed_particle.destroy(this);
 
         if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
             particle.water_level += destroyed_particle.water_level
@@ -179,10 +188,8 @@ export class Environment {
             passing_particle.passing_through = true;
             // Move passing_particle to pass_through_layer
             this.__pass_through_layer.push(passing_particle)
-            // Remove from regular particle layer
-            this.set(new AirParticle(old_x,old_y));
-            // Unset destroyed
-            passing_particle.destroyed = false;
+            // Replace cell in regular layer with air
+            this.__particle_grid[old_x * old_y] = new AirParticle(old_x, old_y);
         }
 
         // Move to new position
