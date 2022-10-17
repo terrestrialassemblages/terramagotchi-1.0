@@ -55,7 +55,7 @@ export class Environment {
         // When there are this many or more cloud particles, start raining
         this.rain_on_cloud_count = 3250;
         // When there are this many or less cloud particles, stop raining
-        this.rain_until_cloud_count = 2750;
+        this.rain_until_cloud_count = 2000;
         // The number of cloud particles
         this.cloud_particle_count = 0;
     }
@@ -229,7 +229,7 @@ export class Environment {
     }
 
     compute_rain() {
-        
+
         // Is currently raining
         if (this.is_raining) {
             // Start raining when too many cloud particles exist

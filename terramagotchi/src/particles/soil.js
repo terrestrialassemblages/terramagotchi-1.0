@@ -63,6 +63,9 @@ export class GrassParticle extends SoilParticle {
         this.water_level = 0;
         this.nutrient_level = 0;
 
+        this.water_capacity = 20;
+        this.nutrient_capacity = 20;
+
         // Chance for this Grass particle to grow extra grass above it
         this.stacked_grass_chance = 0.2;
         this.grow_stacked_grass = FastRandom.random() < this.stacked_grass_chance;

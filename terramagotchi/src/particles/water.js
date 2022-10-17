@@ -15,7 +15,7 @@ export class WaterParticle extends LiquidParticle {
         // Per-tick chance to evaporate into steam
         this.evaporation_chance = 0.0001;
         // How much water_level to evaporate
-        this.evaporate_water_level = 5;
+        this.evaporate_water_level = 50;
     }
 
     update(environment) {

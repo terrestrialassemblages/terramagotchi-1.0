@@ -7,7 +7,7 @@ export class SteamParticle extends GasParticle {
 
 
 
-    constructor(x, y, water_level = 10) {
+    constructor(x, y, water_level = 50) {
         super(x, y);
         this.base_color = "#DDD";
         //this.color_variance = 0;

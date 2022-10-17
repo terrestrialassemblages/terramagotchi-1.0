@@ -15,12 +15,12 @@ export class CloudParticle extends InorganicParticle {
         this.water_level = water_level;
 
         // Chance to move when computing cloud function
-        this.move_probability = 0.25;
+        this.move_probability = 0.1;
 
         // When raining, per-tick chance to create water droplet
         this.rain_droplet_chance = 0.0004;
         // When raining, how much water_level to transfer to new droplet
-        this.rain_droplet_water_level = 5;
+        this.rain_droplet_water_level = 50;
 
         // Increment cloud particle count
         environment.cloud_particle_count++;
