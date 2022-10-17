@@ -53,9 +53,9 @@ export class Environment {
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
         // When there are this many or more cloud particles, start raining
-        this.rain_on_cloud_count = 3500;
+        this.rain_on_cloud_count = 3250;
         // When there are this many or less cloud particles, stop raining
-        this.rain_until_cloud_count = 3000;
+        this.rain_until_cloud_count = 2750;
         // The number of cloud particles
         this.cloud_particle_count = 0;
     }
@@ -94,7 +94,7 @@ export class Environment {
                         && x >= 1 && x < this.width
                         && Math.random() < 0.5
                         ) {
-                    this.set(new CloudParticle(x, y, 100, this));
+                    this.set(new CloudParticle(x, y, 10, this));
                 } 
                 // Set Air Particles
                 else {
@@ -122,6 +122,7 @@ export class Environment {
         this.__tick++;
 
         this.compute_day_night_cycle();
+        this.compute_rain();
     }
 
     refresh() {
@@ -225,6 +226,24 @@ export class Environment {
         let normalised_midday_difference = Math.abs((this.time_of_day / this.__length_of_day) - 0.5) * 2;
         this.light_level = (-5 * normalised_midday_difference) + 3.5;
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
+    }
+
+    compute_rain() {
+        
+        // Is currently raining
+        if (this.is_raining) {
+            // Start raining when too many cloud particles exist
+            if (this.cloud_particle_count <= this.rain_until_cloud_count) {
+                this.is_raining = false;
+            }
+        }
+        // Is not currently raining
+        else {
+            // Stop raining when too few cloud particles exist
+            if (this.cloud_particle_count >= this.rain_on_cloud_count) {
+                this.is_raining = true;
+            }
+        }
     }
 
     get light_level() {

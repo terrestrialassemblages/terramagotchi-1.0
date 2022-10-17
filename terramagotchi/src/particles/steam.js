@@ -7,7 +7,7 @@ export class SteamParticle extends GasParticle {
 
 
 
-    constructor(x, y, water_level) {
+    constructor(x, y, water_level = 10) {
         super(x, y);
         this.base_color = "#DDD";
         //this.color_variance = 0;
@@ -35,9 +35,7 @@ export class SteamParticle extends GasParticle {
         this.water_condensation_time--;
         // Turn steam into water
         if (this.water_condensation_time == 0) {
-            let new_water = new WaterParticle(this.x, this.y)
-            new_water.water_level = this.water_level;
-            environment.set(new_water);
+            environment.set(new WaterParticle(this.x, this.y, this.water_level));
         }
     }
 
