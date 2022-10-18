@@ -21,8 +21,7 @@ export class SoilParticle extends OrganicParticle {
         this.compute_gravity(environment)
         this.compute_erosion(environment)
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
         this.grass_growth(environment);
     }
@@ -58,8 +57,7 @@ export class GrassParticle extends SoilParticle {
     update(environment) {
         this.compute_gravity(environment);
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
         if (this.grow_stacked_grass) this.grass_growth(environment);
         this.grass_death(environment);
@@ -76,8 +74,8 @@ export class GrassParticle extends SoilParticle {
             FastRandom.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
             let new_compost = new CompostParticle(this.x,this.y);
-            new_compost.nutrient_content = this.nutrient_level;
-            new_compost.water_content = this.water_level;
+            new_compost.nutrient_level = this.nutrient_level;
+            new_compost.water_level = this.water_level;
             environment.set(new_compost);
         }
     }

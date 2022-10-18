@@ -9,7 +9,7 @@ export class WaterParticle extends LiquidParticle {
         this.base_color = "#5080D0";
         this.moveable = true;
         this.weight = 1;
-        this.water_content = 1000;
+        this.water_level = 1000;
     }
 
     update(environment) {
@@ -28,12 +28,12 @@ export class WaterParticle extends LiquidParticle {
         // Attempt to disperse water to random organic neighbour
         if (random_neighbour instanceof OrganicParticle && random_neighbour.water_level < random_neighbour.water_capacity) {
             // Transfer as much water as possible to neighbour
-            let transfer_amount = Math.min(this.water_content, random_neighbour.water_capacity - random_neighbour.water_level)
+            let transfer_amount = Math.min(this.water_level, random_neighbour.water_capacity - random_neighbour.water_level)
             random_neighbour.water_level += transfer_amount;
-            this.water_content -= transfer_amount;
+            this.water_level -= transfer_amount;
 
             // Water has transfered as much as it can
-            if (this.water_content == 0) {
+            if (this.water_level == 0) {
                 let new_air_particle = new AirParticle(this.x, this.y);
                 environment.set(new_air_particle);
 

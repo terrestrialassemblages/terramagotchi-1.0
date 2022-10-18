@@ -23,8 +23,7 @@ export class RootParticle extends PlantParticleFamily {
     }
     
     update(environment) {
-        this.absorb_water(environment, this.__neighbours, [RootParticle, SoilParticle]);
-        this.absorb_nutrients(environment, this.__neighbours, [RootParticle, SoilParticle]);
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle]);
         this.check_growth_conditions(environment);
     }
 
