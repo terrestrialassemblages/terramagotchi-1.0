@@ -37,22 +37,6 @@ export class SoilParticle extends OrganicParticle {
             environment.set(new GrassParticle(this.x,this.y+1));
         }
     }
-
-    get_color(s) {
-
-        // Initialise colour if needed
-        if (this.color === "#000000" || this.change_color) {
-            super.get_color(s);
-        }
-
-        this.color = s.color(
-            s.hue(this.color),
-            s.saturation(this.base_color) * this.saturation_offset,
-            s.brightness(this.base_color) * this.brightness_offset -
-                this.water_level / 4
-        );
-        return this.color;
-    }
 }
 
 export class GrassParticle extends SoilParticle {

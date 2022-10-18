@@ -6,8 +6,8 @@ export class BaseParticle {
         this.x = x
         this.y = y
 
-        this.base_color = "#000000";
-        this.color = "#000000";
+        this.base_color = "#FF00FF";
+        this.color = "#FF00FF";
         this.color_variance = 0.05;
         this.saturation_offset = 0;
         this.brightness_offset = 0; // Purely for organic particles wetness visual currently
@@ -164,7 +164,7 @@ export class BaseParticle {
     // Function to initalise random colour variation and update colour when needed
     get_color(s) {
         // If color is uninitialised, randomise it based on color_variance
-        if (this.color === "#000000") {
+        if (this.color === "#FF00FF") {
             let c = s.color(this.base_color);
             let min = 1 - this.color_variance;
             let max = 1 + this.color_variance;
