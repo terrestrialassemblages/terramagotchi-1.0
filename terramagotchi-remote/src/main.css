@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        @apply h-full;
+    }
+
+    body {
+        @apply bg-slate-50 h-full text-slate-800;
+    }
+}
+
+@layer components {
+    .user-button {
+        @apply px-6 py-2.5 text-white font-light text-lg w-56 leading-tight uppercase rounded shadow-md;
+        @apply hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0;
+        @apply active:shadow-lg transition duration-150 ease-in-out;
+    }
+}
+
+@layer utilites {
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+.grecaptcha-badge { 
+    @apply visually-hidden;
+}
+
+

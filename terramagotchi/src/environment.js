@@ -9,6 +9,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
+    BaseParticle,
     CloudParticle,
 } from "./particles";
 
@@ -49,6 +50,11 @@ export class Environment {
         this.river_radius = 40;
         // How deep the river is
         this.river_depth = 25;
+
+        this.__water_added = 0; // Amount of water added to the environment
+        this.__soil_added = 0; // Amount of soil added to the environment
+        this.max_water_added = 1000; // Max amount of water added before environment reloads
+        this.max_soil_added = 1000; // Max amount of soil added before environment reloads
 
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
@@ -241,6 +247,47 @@ export class Environment {
         let normalised_midday_difference = Math.abs((this.time_of_day / this.__length_of_day) - 0.5) * 2;
         this.light_level = (-5 * normalised_midday_difference) + 3.5;
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
+    }
+
+    // Changes time_of_day by + length_of_day/time (for user interaction purposes)
+    change_time(time) {
+        this.time_of_day += this.__length_of_day / time;
+    }
+
+    // Creates a 4x4 with of the given particle at x,y (for user interaction purposes)
+    user_add_particle(particle, x, y) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                // Checks that the particle being replaced is Air
+                if (this.get(x + i, y + j) instanceof AirParticle) {
+                    this.set(new particle(x + i, y + j));
+
+                    // Increases particle tracking variables
+                    if (particle === WaterParticle) { this.water_added += 1; }
+                    if (particle === SoilParticle) { this.soil_added += 1; }
+                }
+            }
+        }
+    }
+
+    get water_added() {
+        return this.__water_added;
+    }
+
+    set water_added(_val) {
+        // Reloads page if added soil value is at or above max
+        if (_val >= this.max_water_added) { location.reload() }
+        this.__water_added = _val;
+    }
+
+    get soil_added() {
+        return this.__soil_added;
+    }
+
+    set soil_added(_val) {
+        // Reloads page if added soil value is at or above max
+        if (_val >= this.max_water_added) { location.reload() }
+        this.__soil_added = _val;
     }
 
     compute_rain() {

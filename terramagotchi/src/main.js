@@ -1,6 +1,7 @@
-import p5 from "p5"
-
-import { Application } from "./application"
+import p5 from "p5";
+import { Application } from "./application";
+import cryptoRandomString from "crypto-random-string";
+import { toCanvas as generate_QR } from "qrcode";
 import { FastRandom } from "./fast-random";
 
 // Testing code: Imports for testing particles by manually adding
@@ -14,6 +15,22 @@ import {
 } from "./particles";
 import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
+    authDomain: "terramagotchi.firebaseapp.com",
+    projectId: "terramagotchi",
+    storageBucket: "terramagotchi.appspot.com",
+    messagingSenderId: "983152859921",
+    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
+};
+
+// Check if URL param for id exists, if it does set the instance id to it
+const id_param = (new URL(document.location)).searchParams.get("id");
+const INSTANCE_ID = id_param ? id_param : "main"; // Constant instance id for debug
+//const INSTANCE_ID = id_param ? id_param : cryptoRandomString({ length: 6, type: "alphanumeric" });
+
+let show_qr = false;
+
 // cringe safety feature
 p5.disableFriendlyErrors = true
 
@@ -21,8 +38,8 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(180, 320)
-    let cell_size = 3 // Defines cell size in pixels.
+    const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
+    let cell_size = 3; // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic, organisms_graphic, deep_dark_overlay_graphic;
     let sky_day_color, sky_night_color;
@@ -188,4 +205,27 @@ export const sketch = (s) => {
     }
 }
 
-const sketchInstance = new p5(sketch)
+const sketchInstance = new p5(sketch);
+
+// Generate QR Code for the remote app
+const qr_code_canvas = document.getElementById("qr-code");
+const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
+generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
+document.getElementById("remote-url").innerText = remote_url;
+
+// If . is pressed, toggle QR code visibility
+document.addEventListener("keyup", (e) => {
+    if (e.key === ".") {
+        if (show_qr) {
+            sketchInstance.loop();
+            document.querySelector("main").style.display = "flex";
+            document.getElementById("qr-container").style.display = "none";
+            show_qr = false;
+        } else {
+            sketchInstance.noLoop();
+            document.querySelector("main").style.display = "none";
+            document.getElementById("qr-container").style.display = "flex";
+            show_qr = true;
+        }
+    }
+});
