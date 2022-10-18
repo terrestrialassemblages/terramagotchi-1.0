@@ -70,4 +70,26 @@ export class CompostParticle extends OrganicParticle {
             }
         }
     }
+
+    get_color(s) {
+        //if (this.nutrient_capacity != 0) {
+        //   s.push()
+        //   s.colorMode(s.RGB)
+        //   //this.color = s.color((this.water_level - 30) * 10)
+        //   this.color = s.color((this.water_level / this.water_capacity) * 255)
+        //   s.pop()
+        //   return this.color
+        //}
+        // Initialise colour if needed
+        if (this.color === "#FF00FF") {
+            super.get_color(s);
+        }
+
+        this.color = s.color(
+            s.hue(this.color),
+            s.saturation(this.base_color) * this.saturation_offset,
+            s.brightness(this.base_color) * this.brightness_offset
+        );
+        return this.color;
+    }
 }
