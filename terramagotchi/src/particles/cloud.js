@@ -6,8 +6,14 @@ import { WaterParticle } from "./water";
 export class CloudParticle extends InorganicParticle {
     constructor(x, y, water_level, environment) {
         super(x, y);
-        this.base_color = "#FFF";
-        //this.color_variance = 0;
+        
+        // Color of particle when not raining
+        this.clear_color = "#FFF";
+        // Color of particle when raining
+        this.rain_color = "#BBB";
+
+        this.base_color = this.clear_color;
+        this.color_variance = 0.03;
         this.moveable = true;
         this.weight = 0;
 
@@ -22,6 +28,14 @@ export class CloudParticle extends InorganicParticle {
         // When raining, how much water_level to transfer to new droplet
         this.rain_droplet_water_level = 50;
 
+        // Amount of brightness offset to apply when in shadow 
+        this.shadow_strength = 20;
+        // Whether this cloud particle is in shadow
+        this.in_shadow = false;
+
+        // Per-tick chance for this cloud particle to change color due to rain conditions or shadows
+        this.color_change_chance = 0.005;
+
         // Increment cloud particle count
         environment.cloud_particle_count++;
     }
@@ -30,7 +44,12 @@ export class CloudParticle extends InorganicParticle {
         this.lifetime++;
 
         this.compute_cloud_structure(environment);
-        this.compute_rain(environment)
+        this.compute_rain(environment);
+
+        if (FastRandom.random() < this.color_change_chance) {
+            this.compute_lighting(environment);
+            this.compute_color_by_rain(environment);
+        }
     }
 
     destroy(environment) {
@@ -60,8 +79,47 @@ export class CloudParticle extends InorganicParticle {
         }
     }
 
-    get_cloud_horizon(new_x, environment) {
-        return 5 * environment.noise2D(new_x / 64,0) + 280
+    compute_lighting(environment) {
+
+        if (environment.get(this.x, this.y + 3) instanceof AirParticle) {
+            if (this.in_shadow != 0) {
+
+                this.in_shadow = 0;
+                this.rerender = true;
+            }
+        }
+        else if (environment.get(this.x, this.y - 3) instanceof AirParticle) {
+            if (this.in_shadow != 1) {
+
+                this.in_shadow = 1;
+                this.rerender = true;
+            }
+        }
+    }
+
+    compute_color_by_rain(environment) {
+        
+        // Is currently raining
+        if (environment.is_raining) {
+
+            // Change color to grey 
+            if (this.base_color != this.rain_color) {
+
+                this.base_color = this.rain_color;
+                this.color = "#000000";
+                this.rerender = true;
+            }
+        }
+        // Is not currently raining
+        else {
+            // Change color to white 
+            if (this.base_color != this.clear_color) {
+
+                this.base_color = this.clear_color;
+                this.color = "#000000";
+                this.rerender = true;
+            }
+        }
     }
 
     // Move cloud particles to form cloud structures based on Noise2D
@@ -83,12 +141,24 @@ export class CloudParticle extends InorganicParticle {
                 environment.swap(this.x, this.y, new_x, new_y)
             }
         }
-    }
+    }4
 
     cloud_noise(new_x, new_y, environment) {
-        if (new_y >= this.get_cloud_horizon(new_x, environment)) {
-            return environment.noise2D((1000 + new_x / 128), (1000 + new_y) / 16)
+        return environment.noise2D(1000 + new_x / 128, 1000 + new_y / 16)
+    }
+
+    // Function to initalise random colour variation and update colour when needed
+    get_color(s) {
+        // Initialise colour if needed
+        if (this.color === "#000000") {
+            super.get_color(s);
         }
-        return new_y - this.get_cloud_horizon(new_x, environment)
+
+        this.color = s.color(
+            s.hue(this.color),
+            s.saturation(this.base_color) * this.saturation_offset,
+            s.brightness(this.base_color) * this.brightness_offset - this.in_shadow * this.shadow_strength
+        );
+        return this.color;
     }
 }

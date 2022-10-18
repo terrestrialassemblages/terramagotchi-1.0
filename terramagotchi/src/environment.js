@@ -90,9 +90,9 @@ export class Environment {
                     this.set(new WaterParticle(x, y));
                 }
                 // Set Cloud Particles
-                else if (y > this.height - 40 && y < this.height - 5 
+                else if (y > this.height - FastRandom.int_min_max(35, 45) && y < this.height - 5 
                         && x >= 1 && x < this.width
-                        && Math.random() < 0.5
+                        && FastRandom.random() < 0.5
                         ) {
                     this.set(new CloudParticle(x, y, 10, this));
                 } 
