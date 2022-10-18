@@ -13,9 +13,9 @@ import {
 const ORGANISM_UPDATE_INTERVAL = 15
 
 // The organisms body is at least this long.
-const MIN_LENGTH = 5
+const MIN_LENGTH = 10
 // How much water_level or nutrient_level per one extra body length.
-const RESOURCES_PER_BODY_LENGTH = 20
+const RESOURCES_PER_BODY_LENGTH = 200
 
 // The organism may move onto any of these particle types.
 const CAN_TRAVERSE = [
@@ -32,7 +32,7 @@ const CAN_TRAVERSE = [
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
-const MAX_SEEK_DEPTH = 10
+const MAX_SEEK_DEPTH = 100
 
 // The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
 const MIN_NUTRIENTS = 100
