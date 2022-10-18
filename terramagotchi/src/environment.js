@@ -288,6 +288,7 @@ export class Environment {
         // Reloads page if added soil value is at or above max
         if (_val >= this.max_water_added) { location.reload() }
         this.__soil_added = _val;
+    }
 
     compute_rain() {
 
