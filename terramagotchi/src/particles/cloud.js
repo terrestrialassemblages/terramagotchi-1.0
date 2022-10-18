@@ -81,7 +81,7 @@ export class CloudParticle extends InorganicParticle {
 
     compute_lighting(environment) {
 
-        if (environment.get(this.x, this.y + 3) instanceof AirParticle) {
+        if (!(environment.get(this.x, this.y + 3) instanceof CloudParticle)) {
             if (this.in_shadow != 0) {
 
                 this.in_shadow = 0;
