@@ -1,5 +1,6 @@
 import { FastRandom } from "./fast-random"
 import { AirParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
+import { LiquidParticle } from "./particles/liquid"
 import {
     BarkParticle,
     DeadPlantParticle,
