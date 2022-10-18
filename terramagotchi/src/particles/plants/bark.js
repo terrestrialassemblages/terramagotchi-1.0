@@ -17,8 +17,8 @@ export class BarkParticle extends ShootSystemParticle {
 
     update(environment) {        
         this.health_update(environment)
-        this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
-        this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
+        this.absorb_nutrients(environment)
+        this.absorb_water(environment)
         this.generate_energy()
 
         if (this.__current_length < this.__thickness && this.energy >= this.activation_level)

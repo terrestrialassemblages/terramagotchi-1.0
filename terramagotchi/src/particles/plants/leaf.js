@@ -21,15 +21,15 @@ export class LeafParticle extends ShootSystemParticle {
     }
 
     update(environment) {
-        this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
-        this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
+        this.absorb_nutrients(environment)
+        this.absorb_water(environment)
         this.generate_energy()
         this.health_update(environment)
         
         if (this.is_active &&
             this.energy >= this.activation_level &&
-            this.nutrient_level >= PlantParticleFamily.MIN_HEALTHY_NUTRIENTS &&
-            this.water_level >= PlantParticleFamily.MIN_HEALTHY_WATER)
+            this.nutrient_level >= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS &&
+            this.water_level >= PlantFamilyParticle.MIN_HEALTHY_WATER)
             this.grow_children(environment)
     }
 
