@@ -26,8 +26,7 @@ export class SeedParticle extends PlantParticleFamily {
         // Compute health before absorption in case plant dies
         this.health_update(environment)
 
-        this.absorb_nutrients(environment, this.__neighbours, [SoilParticle, CompostParticle])
-        this.absorb_water(environment, this.__neighbours, [SoilParticle, CompostParticle])
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle])
         
         this.generate_energy()
 
