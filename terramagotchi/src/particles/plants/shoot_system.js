@@ -1,7 +1,5 @@
-import {
-    DNANode,
-    PlantFamilyParticle
-} from ".";
+import { PlantFamilyParticle } from "./plant";
+import { DNANode } from "./plant_dna_node";
 
 import {
     Environment,

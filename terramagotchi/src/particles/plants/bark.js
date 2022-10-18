@@ -1,8 +1,10 @@
+import { ShootSystemParticle } from "./shoot_system";
+
 import { AirParticle } from "..";
-import { PlantParticleFamily } from "./plant";
+
 import { Environment } from "../../environment";
 
-export class BarkParticle extends PlantParticleFamily {
+export class BarkParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         /**
          * @param {Number}  x           (Integer) x-coordinate of particle to be constructed

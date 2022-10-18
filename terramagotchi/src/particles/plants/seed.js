@@ -1,17 +1,28 @@
-import { SoilParticle, CompostParticle, AirParticle } from "..";
-import { PlantParticleFamily } from "./plant";
-import { RootParticle } from "./root";
-import { StemParticle } from "./stem";
-import { Environment } from "../../environment";
-import { GrassParticle } from "../soil";
+import {
+    PlantFamilyParticle,
+    RootParticle,
+    StemParticle,
+} from ".";
 
-export class SeedParticle extends PlantParticleFamily {
+import {
+    AirParticle,
+    CompostParticle,
+    GrassParticle,
+    SoilParticle,
+} from "..";
+
+import {
+    Environment,
+    NUTRIENT_ENERGY_RATIO,
+    WATER_ENERGY_RATIO
+} from "../../environment";
+
+export class SeedParticle extends PlantFamilyParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
+
         this.moveable = true;
         this.weight = 2;
-
-        this.activation_level = this.dna.seed_activation_level
         this.base_color = this.dna.seed_color || "#FF80FF"
 
         this.germinated = false

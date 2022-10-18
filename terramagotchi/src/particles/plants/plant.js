@@ -1,22 +1,29 @@
-import { OrganicParticle } from "../organic";
-import generate_tree_dna from "./plant_generator"
-
 import {
-    LeafParticle,
-    FlowerParticle,
-    RootParticle,
-    StemParticle,
+    generate_tree_dna,
     BarkParticle,
     DeadPlantParticle,
+    DNANode,
+    FlowerParticle,
+    LeafParticle,
+    RootParticle,
+    StemParticle,
 } from ".";
 
-import { DNANode } from "./plant_dna_node";
-import { WATER_ENERGY_RATIO, NUTRIENT_ENERGY_RATIO, Environment } from "../../environment";
-import { SoilParticle } from "../soil";
+import {
+    OrganicParticle,
+    SoilParticle,
+} from "..";
+
+import {
+    Environment,
+    NUTRIENT_ENERGY_RATIO,
+    WATER_ENERGY_RATIO,
+} from "../../environment";
+
 import { FastRandom } from "../../fast-random";
 
 
-export class PlantParticleFamily extends OrganicParticle {
+export class PlantFamilyParticle extends OrganicParticle {
 
     static DEFAULT_MAX_HEALTH = 100     // Effectively how many frames a plant survives while "unhealthy" until dying
                                         // Can be set in DNA per-plant, else defaults to this value

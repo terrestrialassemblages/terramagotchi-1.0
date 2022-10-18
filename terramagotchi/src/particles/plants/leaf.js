@@ -1,10 +1,15 @@
 import { AirParticle } from "..";
+
 import {
     DeadPlantParticle,
-    PlantParticleFamily
+    PlantFamilyParticle,
 } from ".";
 
-export class LeafParticle extends PlantParticleFamily {
+import { ShootSystemParticle } from "./shoot_system"
+
+import { FastRandom } from "../../fast-random";
+
+export class LeafParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 

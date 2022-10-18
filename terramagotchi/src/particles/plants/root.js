@@ -1,9 +1,9 @@
-import { PlantParticleFamily } from "./plant";
+import { PlantFamilyParticle } from "./plant";
 import { SoilParticle } from "../soil";
 import { FastRandom } from "../../fast-random";
 
 
-export class RootParticle extends PlantParticleFamily {
+export class RootParticle extends PlantFamilyParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         this.base_color = "#6B3226"; // source: https://www.color-name.com/root-brown.color

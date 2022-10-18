@@ -1,12 +1,17 @@
-import { AirParticle } from "..";
-import { PlantParticleFamily } from "./plant";
-import { Environment } from "../../environment";
-import { DNANode } from "./plant_dna_node";
-import { BarkParticle } from "./bark";
-import { LeafParticle } from "./leaf";
-import { FlowerParticle } from "./flower";
+import {
+    BarkParticle,
+    DNANode,
+    FlowerParticle,
+    LeafParticle,
+    ShootSystemParticle,
+    PlantFamilyParticle,
+} from ".";
 
-export class StemParticle extends PlantParticleFamily {
+import { AirParticle } from "..";
+
+import { Environment, NUTRIENT_ENERGY_RATIO, WATER_ENERGY_RATIO } from "../../environment";
+
+export class StemParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         /**
          * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
