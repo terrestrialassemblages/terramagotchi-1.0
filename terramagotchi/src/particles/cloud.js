@@ -144,7 +144,7 @@ export class CloudParticle extends InorganicParticle {
     }4
 
     cloud_noise(new_x, new_y, environment) {
-        return environment.noise2D(1000 + new_x / 128, 1000 + new_y / 16)
+        return environment.noise2D(1000 + ((environment.cloud_noise_offset + new_x) / 128), 1000 + (new_y / 16))
     }
 
     // Function to initalise random colour variation and update colour when needed

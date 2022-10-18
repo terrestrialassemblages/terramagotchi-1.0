@@ -58,6 +58,8 @@ export class Environment {
         this.rain_until_cloud_count = 2000;
         // The number of cloud particles
         this.cloud_particle_count = 0;
+        // The noise offset which determines cloud shapes
+        this.cloud_noise_offset = 0; 
     }
 
     get_horizon(x) {
@@ -232,14 +234,17 @@ export class Environment {
 
         // Is currently raining
         if (this.is_raining) {
-            // Start raining when too many cloud particles exist
+            // Stop raining when too few cloud particles exist
             if (this.cloud_particle_count <= this.rain_until_cloud_count) {
                 this.is_raining = false;
+
+                // Randomise cloud shapes
+                this.cloud_noise_offset = FastRandom.int_max(1000)
             }
         }
         // Is not currently raining
         else {
-            // Stop raining when too few cloud particles exist
+            // Start raining when too many cloud particles exist
             if (this.cloud_particle_count >= this.rain_on_cloud_count) {
                 this.is_raining = true;
             }
