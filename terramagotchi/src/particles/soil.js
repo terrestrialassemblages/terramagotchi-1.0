@@ -21,8 +21,7 @@ export class SoilParticle extends OrganicParticle {
         this.compute_gravity(environment)
         this.compute_erosion(environment)
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
         this.grass_growth(environment);
     }
@@ -37,22 +36,6 @@ export class SoilParticle extends OrganicParticle {
             environment.set(new GrassParticle(this.x,this.y+1));
         }
     }
-
-    get_color(s) {
-
-        // Initialise colour if needed
-        if (this.color === "#000000" || this.change_color) {
-            super.get_color(s);
-        }
-
-        this.color = s.color(
-            s.hue(this.color),
-            s.saturation(this.base_color) * this.saturation_offset,
-            s.brightness(this.base_color) * this.brightness_offset -
-                this.water_level / 4
-        );
-        return this.color;
-    }
 }
 
 export class GrassParticle extends SoilParticle {
@@ -62,6 +45,9 @@ export class GrassParticle extends SoilParticle {
 
         this.water_level = 0;
         this.nutrient_level = 0;
+
+        this.water_capacity = 50;
+        this.nutrient_capacity = 50;
 
         // Chance for this Grass particle to grow extra grass above it
         this.stacked_grass_chance = 0.2;
@@ -74,8 +60,9 @@ export class GrassParticle extends SoilParticle {
     update(environment) {
         this.compute_gravity(environment);
 
-        this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
-        this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+        this.absorb_from_neighbours(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
+
+        this.compute_transpiration(environment);
 
         if (this.grow_stacked_grass) this.grass_growth(environment);
         this.grass_death(environment);
@@ -92,8 +79,8 @@ export class GrassParticle extends SoilParticle {
             FastRandom.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
             let new_compost = new CompostParticle(this.x,this.y);
-            new_compost.nutrient_content = this.nutrient_level;
-            new_compost.water_content = this.water_level;
+            new_compost.nutrient_level = this.nutrient_level;
+            new_compost.water_level = this.water_level;
             environment.set(new_compost);
         }
     }

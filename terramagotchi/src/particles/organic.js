@@ -1,5 +1,7 @@
 import { FastRandom } from "../fast-random";
+import { AirParticle } from "./air";
 import { BaseParticle } from "./base";
+import { SteamParticle } from "./steam";
 
 export class OrganicParticle extends BaseParticle {
     constructor(x, y) {
@@ -20,6 +22,9 @@ export class OrganicParticle extends BaseParticle {
 
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
+
+        // Per-tick chance for transpiration (evaporate water_level into steam)
+        this.transpiration_chance = 0.00001;
     }
 
     set water_level(level) {
@@ -54,7 +59,7 @@ export class OrganicParticle extends BaseParticle {
         this.__nutrient_transferred = false;
     }
 
-    absorb_water(environment, potential_neighbours, valid_neighbour_types) {
+    absorb_from_neighbours(environment, potential_neighbours, valid_neighbour_types) {
         // Choose random neighbour
         let [offset_x, offset_y] = FastRandom.choice(potential_neighbours)
         let random_neighbour = environment.get(
@@ -71,91 +76,84 @@ export class OrganicParticle extends BaseParticle {
             }
         }
 
-        // Method 1
-        //let transfer_amount = 5;
-        // Method 2
-        let transfer_amount = FastRandom.int_max(10);
-        // Method 3
-        //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + FastRandom.random()));
-
-        // Attempt to absorb water from random neighbour
-        if (
-            neighbour_valid_type &&
-            this.water_level + transfer_amount <= this.water_capacity &&
-            random_neighbour.water_level >= transfer_amount &&
-            this.water_level + transfer_amount < random_neighbour.water_level &&
-            !random_neighbour.__water_transferred &&
-            !this.__water_transferred
-        ) {
-            // Transfer water
-            this.water_level += Math.max(transfer_amount, 1);
-            random_neighbour.water_level -= Math.max(transfer_amount, 1);
-
-            // Ensure water is not transfered again this tick
-            this.__water_transferred = true;
-            random_neighbour.__water_transferred = true;
+        // Absorb water and nutrients from valid neighbour
+        if (neighbour_valid_type) {
+            this.absorb_water(random_neighbour)
+            this.absorb_nutrients(random_neighbour)
         }
     }
 
-    absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
-        // Choose random neighbour
-        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours);
-        let random_neighbour = environment.get(
-            this.x + offset_x,
-            this.y + offset_y
-        );
+    absorb_water(neighbour) {
+        
+        // How much water to transfer
+        // Absorb up to 10 water or up to the difference between levels if lower
+        let transfer_amount = Math.min(FastRandom.int_max(10), neighbour.water_level - this.water_level)
+        // Only absorb as much as the capacity will allow
+        transfer_amount = Math.min(transfer_amount, this.water_capacity - this.water_level)
 
-        // Check if random neighbour is a valid type (feel free to rewrite implementation)
-        let neighbour_valid_type = false;
-        for (const valid_type of valid_neighbour_types) {
-            if (random_neighbour instanceof valid_type) {
-                neighbour_valid_type = true;
-                break;
-            }
+        // Attempt to absorb water from random neighbour
+        if (transfer_amount > 0 &&
+            FastRandom.random() < (transfer_amount / 10) &&
+            !neighbour.__water_transferred &&
+            !this.__water_transferred
+        ) {
+            // Transfer water
+            this.water_level += transfer_amount;
+            neighbour.water_level -= transfer_amount;
+
+            // Ensure water is not transfered again this tick
+            this.__water_transferred = true;
+            neighbour.__water_transferred = true;
         }
+    }
 
-        // Method 1
-        //let transfer_amount = 5;
-        // Method 2
-        //let transfer_amount = FastRandom.int_max(1);
-        // Method 3
-        let transfer_amount = Math.floor(
-            (random_neighbour.nutrient_level - this.nutrient_level) /
-                (1.5 + FastRandom.random())
-        );
+    absorb_nutrients(neighbour) {
+        // How much nutrients to transfer
+        // Absorb half of the difference between levels, or as much as possible if the capacity is too low
+        let transfer_amount = Math.min((((neighbour.nutrient_level - this.nutrient_level) / 2) | 0), this.nutrient_capacity - this.nutrient_level);
 
-        // Attempt to absorb nutrient from random neighbour
-        if (
-            neighbour_valid_type &&
-            this.nutrient_level + transfer_amount <= this.nutrient_capacity &&
-            random_neighbour.nutrient_level >= transfer_amount &&
-            this.nutrient_level + transfer_amount <
-                random_neighbour.nutrient_level &&
-            !random_neighbour.__nutrient_transferred &&
+        // Attempt to absorb nutrients from random neighbour
+        if (transfer_amount > 0 &&
+            !neighbour.__nutrient_transferred &&
             !this.__nutrient_transferred
         ) {
-            // Transfer nutrient
-            this.nutrient_level += Math.max(transfer_amount, 1);
-            random_neighbour.nutrient_level -= Math.max(transfer_amount, 1);
+            // Transfer nutrients
+            this.nutrient_level += transfer_amount;
+            neighbour.nutrient_level -= transfer_amount;
 
-            // Ensure nutrient is not transfered again this tick
+            // Ensure nutrients is not transfered again this tick
             this.__nutrient_transferred = true;
-            random_neighbour.__nutrient_transferred = true;
+            neighbour.__nutrient_transferred = true;
+        }
+    }
+
+    compute_transpiration(environment) {
+        // Evaporate water_level into steam in correct conditions
+        if (FastRandom.random() < this.transpiration_chance &&
+            environment.get(this.x, this.y + 1) instanceof AirParticle &&
+            !environment.is_raining &&
+            this.water_level > 0 && 
+            environment.light_level == 100) {
+
+            // Create new steam particle
+            environment.set(new SteamParticle(this.x, this.y + 1, this.water_level))
+            // Remove water_level
+            this.water_level = 0
         }
     }
 
     get_color(s) {
-        // if (this.nutrient_capacity != 0) {
-        //    s.push()
-        //    s.colorMode(s.RGB)
-        //    //this.color = s.color((this.water_level - 30) * 10)
-        //    this.color = s.color((this.water_level - 30) * 10)
-        //    s.pop()
-        //    return this.color
-        // }
+        //if (this.nutrient_capacity != 0) {
+        //   s.push()
+        //   s.colorMode(s.RGB)
+        //   //this.color = s.color((this.water_level - 30) * 10)
+        //   this.color = s.color((this.water_level / this.water_capacity) * 255)
+        //   s.pop()
+        //   return this.color
+        //}
 
         // Initialise colour if needed
-        if (this.color === "#000000") {
+        if (this.color === "#FF00FF") {
             super.get_color(s);
         }
 
