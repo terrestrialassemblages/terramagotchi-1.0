@@ -28,7 +28,7 @@ const CAN_TRAVERSE = [
     SeedParticle,
     BarkParticle,
     StemParticle,
-    LeafParticle
+    LeafParticle,
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
@@ -84,13 +84,41 @@ export class Organism {
     update_timer = 0
 
     head_color = "#550000"
-    body_color = "#bc4b52"
+    body_colors = []
+    body_color = window.color || "#bc4b52"
 
     constructor(x, y, environment) {
         this.x = x
         this.y = y
         this.update_timer = FastRandom.int_max(ORGANISM_UPDATE_INTERVAL)
         this.seek(DeadPlantParticle, environment)
+        this.__generate_body_colors()
+    }
+
+    __generate_body_colors() {
+        /**
+         * Generate the head color and a list of colors for each particle/cell of the organism's body (at max length).
+         */
+
+        // Generate base color
+        const base_red = FastRandom.int_min_max(190, 220)
+        const base_green = FastRandom.int_min_max(75, 100)
+        const base_blue = FastRandom.int_min_max(85, 105)
+
+        // Generate each color
+        for (
+            let i = 0;
+            i < ((MIN_LENGTH + (this.water_capacity + this.nutrient_level) / RESOURCES_PER_BODY_LENGTH) | 0);
+            i++
+        ) {
+            const red = FastRandom.int_min_max(base_red, 220)
+            const green = FastRandom.int_min_max(base_green, 100)
+            const blue = FastRandom.int_min_max(base_blue, 105)
+
+            const hex = "#" + red.toString(16) + green.toString(16) + blue.toString(16)
+
+            this.body_colors.push(hex)
+        }
     }
 
     update(environment) {
@@ -510,9 +538,9 @@ export class Organism {
                 let new_compost_particle = new CompostParticle(x, y)
                 new_compost_particle.nutrient_content = Math.round(this.nutrient_level / valid_death_locations.length)
                 new_compost_particle.water_content = Math.round(this.water_level / valid_death_locations.length)
-    
+
                 new_compost_particle.decay_into = SoilParticle
-    
+
                 environment.set(new_compost_particle)
             }
 
