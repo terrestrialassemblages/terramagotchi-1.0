@@ -25,9 +25,12 @@ export class SeedParticle extends PlantFamilyParticle {
         this.weight = 2;
         this.base_color = this.dna.seed_color || "#FF80FF"
 
-        this.germinated = false
+        this.activation_level = (this.dna.seed_activation_level != null) ? this.dna.seed_activation_level : 10
 
+        // Minimum energy = 
         this.energy_capacity = Math.max(this.energy_capacity, this.activation_level)
+        
+        this.germinated = false
     }
 
     update(environment) {
@@ -36,13 +39,10 @@ export class SeedParticle extends PlantFamilyParticle {
          * @param {Environment} environment     The current game environment
          */
         this.compute_gravity(environment)
-
-        // Compute health before absorption in case plant dies
         this.health_update(environment)
-
+        
         this.absorb_nutrients(environment, this.__neighbours, [SoilParticle, CompostParticle])
         this.absorb_water(environment, this.__neighbours, [SoilParticle, CompostParticle])
-        
         this.generate_energy()
 
         if (!this.germinated)
@@ -61,10 +61,15 @@ export class SeedParticle extends PlantFamilyParticle {
         */
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
-            environment.set(new_stem_cell)
-
+            if (PlantFamilyParticle.IS_NET_ZERO){
+                new_stem_cell.nutrient_level += (this.activation_level + this.energy) * NUTRIENT_ENERGY_RATIO
+                new_stem_cell.water_level += (this.activation_level + this.energy) * WATER_ENERGY_RATIO
+            }
+            
             let new_root = new RootParticle(this.x, this.y - 1, this.dna)
             new_root.is_node = true;
+            
+            environment.set(new_stem_cell)
             environment.set(new_root)
         }
     }

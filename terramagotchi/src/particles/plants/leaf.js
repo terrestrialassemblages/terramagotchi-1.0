@@ -13,7 +13,7 @@ export class LeafParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
-        this.max_health = 1000
+        this.max_health = 2000 + FastRandom.int_min_max(0, 1000)
         this.health = this.max_health
 
         this.__leaf_children = null
@@ -60,7 +60,7 @@ export class LeafParticle extends ShootSystemParticle {
         for (let neighbour of this.__leaf_children) {
             let [offset_x, offset_y] = neighbour
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof AirParticle || (this.dna.growth_destructive && target_particle instanceof PlantParticleFamily && !target_particle.is_active)) {
+            if (target_particle instanceof AirParticle || (this.dna.growth_destructive && target_particle instanceof PlantFamilyParticle && !target_particle.is_active)) {
                 let new_leaf = new LeafParticle(this.x+offset_x, this.y+offset_y, this.dna)
                 new_leaf.__current_angle = this.convert_offset_to_base_angle(offset_x, offset_y)
                 new_leaf.__current_length = this.__current_length + 1

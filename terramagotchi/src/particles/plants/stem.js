@@ -14,18 +14,18 @@ import { Environment, NUTRIENT_ENERGY_RATIO, WATER_ENERGY_RATIO } from "../../en
 export class StemParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         /**
+         * StemParticles are the main plant structure, creating the shape/branches/curves of a tree
+         * All other types of plant particles spawn from these particle types (see below)
          * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
          * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
          * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
          */
         super(x, y, plant_dna);
 
-        this.__current_length = this.__current_length || 1
+        this.__current_length = 1
         this.__current_angle = this.dna.get_absolute_angle()
         this.__dx = 0
         this.__dy = 0
-        // __growth_direction of type Array(2) = [offset_x, offset_y]
-        this.__growth_direction = [0, 1]
     }
 
     update(environment) {
@@ -176,11 +176,11 @@ export class StemParticle extends ShootSystemParticle {
 
     grow_next_DNA_child(environment) {
         /**
-         * Handles sprouting children branches based on the current plant DNA nodes children
+         * Handles growing children branches based on the current plant DNA nodes children
          * @param {Environment} environment     The current game environment
          */
 
-        // keeping track of children to grow
+        // Keeping track of children to grow
         this.__unvisited_children = this.__unvisited_children || [...this.dna.children]
         if (this.__unvisited_children.length == 0) {
             this.is_active = false
@@ -191,19 +191,36 @@ export class StemParticle extends ShootSystemParticle {
             return;
 
         let next_child_dna = this.__unvisited_children.shift()
-        let child_growth_direction = this.convert_angle_to_offset(this.__current_angle + next_child_dna.stem_angle)
+        let child_growth_direction = this.convert_angle_to_offset(next_child_dna.get_absolute_angle())
         
-        // Maybe add weights
+        // Weighted-random selection of offsets from the base offset and its neighbours
         let [offset_x, offset_y] = child_growth_direction
-        let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
-        if (target_particle instanceof AirParticle || target_particle instanceof PlantParticleFamily && !target_particle.is_active || target_particle instanceof BarkParticle) {
-            let new_stem_particle = new StemParticle(this.x + offset_x, this.y + offset_y, next_child_dna)
-            new_stem_particle.__dx = offset_x
-            new_stem_particle.__dy = offset_y
-            new_stem_particle.__current_length = 1
+        if (next_child_dna.children_weight_growth_direction) {
+            let random_rotation = this.weighted_random([-2, -1, 0, 1, 2], [0, 5, 100, 5, 0]);
+            if (random_rotation != 0)
+                [offset_x, offset_y] = this.get_rotated_offset(offset_x, offset_y, random_rotation)
+        }
 
-            environment.set(new_stem_particle)
+        let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+        if (target_particle instanceof AirParticle || target_particle instanceof BarkParticle || target_particle instanceof PlantFamilyParticle && !target_particle.is_active) {
+            let ParticleType = StemParticle
+            if (next_child_dna.node_type == "leaf")
+                ParticleType = LeafParticle
+            else if (next_child_dna.node_type == "flower")
+                ParticleType = FlowerParticle
+
+            let new_child_particle = new ParticleType(this.x + offset_x, this.y + offset_y, next_child_dna)
+            new_child_particle.__dx = offset_x
+            new_child_particle.__dy = offset_y
+            new_child_particle.__current_length = 1
+
+            if (PlantFamilyParticle.IS_NET_ZERO) {
+                this.nutrient_level = this.activation_level * NUTRIENT_ENERGY_RATIO
+                this.water_level = this.activation_level * WATER_ENERGY_RATIO
+            }
             this.energy -= this.activation_level
+
+            environment.set(new_child_particle)
         } else {
             this.__unvisited_children.push(next_child_dna)
         }
