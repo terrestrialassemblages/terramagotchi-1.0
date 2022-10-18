@@ -9,7 +9,7 @@
     }
 
     body {
-        @apply bg-slate-50 h-full;
+        @apply bg-slate-50 h-full text-slate-800;
     }
 }
 

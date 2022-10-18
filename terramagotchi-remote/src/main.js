@@ -26,6 +26,9 @@ const loading_spin = document.getElementById("loading-spin");
 const hide_spin = () => { loading_spin.classList.add("visually-hidden") }
 const show_spin = () => { loading_spin.classList.remove("visually-hidden") }
 
+// Shows information modal on load
+document.getElementById("info-button").click();
+
 // Recaptcha verification setup
 status_text.innerText = "Authenticating..."
 loading_spin.classList.remove("visually-hidden");
