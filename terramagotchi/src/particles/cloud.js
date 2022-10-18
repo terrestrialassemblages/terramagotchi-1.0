@@ -81,16 +81,20 @@ export class CloudParticle extends InorganicParticle {
 
     compute_lighting(environment) {
 
+        // Arbitrary particle above is not a cloud
         if (!(environment.get(this.x, this.y + 3) instanceof CloudParticle)) {
             if (this.in_shadow != 0) {
 
+                // Rerender as normal cloud particle color (no shadow)
                 this.in_shadow = 0;
                 this.rerender = true;
             }
         }
+        // Arbitrary particle below is air
         else if (environment.get(this.x, this.y - 3) instanceof AirParticle) {
             if (this.in_shadow != 1) {
 
+                // Rerender as darker shadow particle
                 this.in_shadow = 1;
                 this.rerender = true;
             }
