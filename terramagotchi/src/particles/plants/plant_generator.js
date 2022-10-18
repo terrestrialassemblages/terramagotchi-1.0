@@ -5,7 +5,7 @@ const SUNFLOWER = "SUNFLOWER"
 const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
 
-export default function generate_tree_dna(TREE_TYPE=LAVENDER) {
+export default function generate_tree_dna(TREE_TYPE = KAURI) {
 let tree_direction, tree_scale, tree_angle_offset, tree_height, tree_color
 switch (TREE_TYPE) {
     case KAURI:
@@ -39,9 +39,9 @@ switch (TREE_TYPE) {
         let section_8 = section_factory(8, 2)
         
         section_1.stem_angle = 90
-        section_1.root_node_spawn_distance = 8
+        section_1.root_node_spawn_distance = 6
         section_1.root_length_max = 40
-        section_1.root_max_curve_length = 4
+        section_1.root_max_curve_length = 3
 
         section_1.children.push({
             seed_activation_level: 0,
