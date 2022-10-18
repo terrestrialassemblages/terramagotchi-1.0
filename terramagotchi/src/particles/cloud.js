@@ -106,7 +106,7 @@ export class CloudParticle extends InorganicParticle {
             if (this.base_color != this.rain_color) {
 
                 this.base_color = this.rain_color;
-                this.color = "#000000";
+                this.color = "#FF00FF";
                 this.rerender = true;
             }
         }
@@ -116,7 +116,7 @@ export class CloudParticle extends InorganicParticle {
             if (this.base_color != this.clear_color) {
 
                 this.base_color = this.clear_color;
-                this.color = "#000000";
+                this.color = "#FF00FF";
                 this.rerender = true;
             }
         }
@@ -150,7 +150,7 @@ export class CloudParticle extends InorganicParticle {
     // Function to initalise random colour variation and update colour when needed
     get_color(s) {
         // Initialise colour if needed
-        if (this.color === "#000000") {
+        if (this.color === "#FF00FF") {
             super.get_color(s);
         }
 
