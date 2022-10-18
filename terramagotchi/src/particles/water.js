@@ -2,14 +2,20 @@ import { FastRandom } from "../fast-random";
 import { AirParticle } from "./air";
 import { LiquidParticle } from "./liquid";
 import { OrganicParticle } from "./organic";
+import { SteamParticle } from "./steam";
 
 export class WaterParticle extends LiquidParticle {
-    constructor(x, y) {
+    constructor(x, y, water_level = 1000) {
         super(x, y);
         this.base_color = "#5080D0";
         this.moveable = true;
         this.weight = 1;
-        this.water_level = 1000;
+        this.water_level = water_level;
+        
+        // Per-tick chance to evaporate into steam
+        this.evaporation_chance = 0.0001;
+        // How much water_level to evaporate
+        this.evaporate_water_level = 50;
     }
 
     update(environment) {
@@ -18,6 +24,7 @@ export class WaterParticle extends LiquidParticle {
         this.compute_gravity(environment);
 
         this.disperse_water(environment)
+        this.compute_evaporate(environment)
     }
 
     disperse_water(environment) {
@@ -45,6 +52,29 @@ export class WaterParticle extends LiquidParticle {
                     environment.get(this.x, check_liquid_y).compute_gravity(environment);
                     check_liquid_y++;
                 }
+            }
+        }
+    }
+
+    compute_evaporate(environment) {
+        // Evaporate water into steam in correct conditions
+        if (FastRandom.random() < this.evaporation_chance &&
+            environment.get(this.x, this.y + 1) instanceof AirParticle &&
+            !environment.is_raining &&
+            this.water_content > 0 && 
+            environment.light_level == 100) {
+
+            // How much water_level to transfer to the new steam particle
+            let transfer_amount = Math.min(this.evaporate_water_level, this.water_content);
+            // Create new steam particle
+            environment.set(new SteamParticle(this.x, this.y + 1, transfer_amount))
+            // Remove water_content
+            this.water_content -= transfer_amount
+
+            // Has transferred all remaining water
+            if (this.water_content == 0) {
+                // Replace with air
+                environment.set(new AirParticle(this.x, this.y));
             }
         }
     }

@@ -9,6 +9,7 @@ import {
     WaterParticle,
     AirParticle,
     OrganicParticle,
+    CloudParticle,
 } from "./particles";
 
 import {
@@ -48,10 +49,21 @@ export class Environment {
         this.river_radius = 40;
         // How deep the river is
         this.river_depth = 25;
+
+        // Whether clouds are allowed to currently rain
+        this.is_raining = false;
+        // When there are this many or more cloud particles, start raining
+        this.rain_on_cloud_count = 3250;
+        // When there are this many or less cloud particles, stop raining
+        this.rain_until_cloud_count = 2000;
+        // The number of cloud particles
+        this.cloud_particle_count = 0;
+        // The noise offset which determines cloud shapes
+        this.cloud_noise_offset = 0; 
     }
 
     get_horizon(x) {
-        return 160 - this.river_depth - this.river_depth * 
+        return 150 - this.river_depth - this.river_depth * 
         (Math.sin((Math.min(this.river_radius, Math.abs(90 - x + this.river_offset)) + this.river_radius / 2)
          * Math.PI / this.river_radius)) 
         + 16 * this.noise2D((x) / 96, 0)
@@ -80,8 +92,15 @@ export class Environment {
                     this.set(new SoilParticle(x, y));
                 } 
                 // Set Water Particles
-                else if (y < 150 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
+                else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
+                }
+                // Set Cloud Particles
+                else if (y > this.height - FastRandom.int_min_max(35, 45) && y < this.height - 5 
+                        && x >= 1 && x < this.width
+                        && FastRandom.random() < 0.5
+                        ) {
+                    this.set(new CloudParticle(x, y, 10, this));
                 } 
                 // Set Air Particles
                 else {
@@ -114,9 +133,11 @@ export class Environment {
         this.__tick++;
 
         this.compute_day_night_cycle();
+        this.compute_rain();
     }
 
     refresh() {
+        
         for (let particle of this.__particle_grid) {
             particle.refresh();
         }
@@ -132,7 +153,7 @@ export class Environment {
     set(particle) {
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
-        if (destroyed_particle) destroyed_particle.destroyed = true;
+        if (destroyed_particle) destroyed_particle.destroy(this);
 
         if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
             particle.water_level += destroyed_particle.water_level
@@ -179,10 +200,8 @@ export class Environment {
             passing_particle.passing_through = true;
             // Move passing_particle to pass_through_layer
             this.__pass_through_layer.push(passing_particle)
-            // Remove from regular particle layer
-            this.set(new AirParticle(old_x,old_y));
-            // Unset destroyed
-            passing_particle.destroyed = false;
+            // Replace cell in regular layer with air
+            this.__particle_grid[old_x * old_y] = new AirParticle(old_x, old_y);
         }
 
         // Move to new position
@@ -222,6 +241,27 @@ export class Environment {
         let normalised_midday_difference = Math.abs((this.time_of_day / this.__length_of_day) - 0.5) * 2;
         this.light_level = (-5 * normalised_midday_difference) + 3.5;
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
+    }
+
+    compute_rain() {
+
+        // Is currently raining
+        if (this.is_raining) {
+            // Stop raining when too few cloud particles exist
+            if (this.cloud_particle_count <= this.rain_until_cloud_count) {
+                this.is_raining = false;
+
+                // Randomise cloud shapes
+                this.cloud_noise_offset = FastRandom.int_max(1000)
+            }
+        }
+        // Is not currently raining
+        else {
+            // Start raining when too many cloud particles exist
+            if (this.cloud_particle_count >= this.rain_on_cloud_count) {
+                this.is_raining = true;
+            }
+        }
     }
 
     get light_level() {

@@ -1,34 +1,47 @@
+import { FastRandom } from "../fast-random";
+import { CloudParticle } from "./cloud";
 import { GasParticle } from "./gas";
 import { WaterParticle } from "./water";
 
 export class SteamParticle extends GasParticle {
-    constructor(x, y) {
+
+
+
+    constructor(x, y, water_level = 50) {
         super(x, y);
-        this.base_color = "#DDDDDD";
+        this.base_color = "#DDD";
         this.moveable = true;
         this.weight = 0;
-        this.condensation_time = 600; // How many ticks until the steam turns into water
 
-        // Initial values used to slow down horizontal movement based on time
-        this.initial_condensation_time = this.condensation_time;
-        this.initial_x_movement_probability = this.x_movement_probability;
+        // How much water this particle contains
+        this.water_level = water_level;
+        // How many ticks the steam particle will take to turn into water
+        this.water_condensation_time = 1200;
+        // The Y level this steam will convert to a cloud particle
+        this.cloud_condensation_height = FastRandom.int_min_max(280, 310);
+
+
     }
 
     update(environment) {
-        // Count down condensation time.
-        this.condensation_time--;
-        // Slow down horizontal movement when closer to condensation.
-        this.x_movement_probability =
-            (this.condensation_time / this.initial_condensation_time) *
-            this.initial_x_movement_probability;
-
-        // Turn steam into water.
-        if (this.condensation_time <= 0) {
-            environment.set(new WaterParticle(this.x, this.y));
-            return;
-        }
-
-        // Rise steam as a gas particle.
         this.compute_rise(environment);
+        this.compute_water_condensation(environment);
+        this.compute_cloud_condensation(environment);
+    }
+
+    compute_water_condensation(environment) {
+        // Countdown timer
+        this.water_condensation_time--;
+        // Turn steam into water
+        if (this.water_condensation_time == 0) {
+            environment.set(new WaterParticle(this.x, this.y, this.water_level));
+        }
+    }
+
+    compute_cloud_condensation(environment) {
+        // Convert to cloud at correct height
+        if (this.y >= this.cloud_condensation_height) {
+            environment.set(new CloudParticle(this.x, this.y, this.water_level, environment));
+        }
     }
 }

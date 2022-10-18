@@ -1,5 +1,7 @@
 import { FastRandom } from "../fast-random";
+import { AirParticle } from "./air";
 import { BaseParticle } from "./base";
+import { SteamParticle } from "./steam";
 
 export class OrganicParticle extends BaseParticle {
     constructor(x, y) {
@@ -20,6 +22,9 @@ export class OrganicParticle extends BaseParticle {
 
         this.__water_transferred = false;
         this.__nutrient_transferred = false;
+
+        // Per-tick chance for transpiration (evaporate water_level into steam)
+        this.transpiration_chance = 0.00001;
     }
 
     set water_level(level) {
@@ -119,6 +124,21 @@ export class OrganicParticle extends BaseParticle {
             // Ensure nutrients is not transfered again this tick
             this.__nutrient_transferred = true;
             neighbour.__nutrient_transferred = true;
+        }
+    }
+
+    compute_transpiration(environment) {
+        // Evaporate water_level into steam in correct conditions
+        if (FastRandom.random() < this.transpiration_chance &&
+            environment.get(this.x, this.y + 1) instanceof AirParticle &&
+            !environment.is_raining &&
+            this.water_level > 0 && 
+            environment.light_level == 100) {
+
+            // Create new steam particle
+            environment.set(new SteamParticle(this.x, this.y + 1, this.water_level))
+            // Remove water_level
+            this.water_level = 0
         }
     }
 
