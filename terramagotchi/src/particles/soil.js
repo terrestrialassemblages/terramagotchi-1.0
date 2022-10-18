@@ -64,6 +64,8 @@ export class GrassParticle extends SoilParticle {
         this.absorb_water(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
         this.absorb_nutrients(environment, [[0, 1], [1, 0], [0, -1], [-1, 0]], [SoilParticle]);
 
+        this.compute_transpiration(environment);
+
         if (this.grow_stacked_grass) this.grass_growth(environment);
         this.grass_death(environment);
     }
