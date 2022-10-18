@@ -1,18 +1,38 @@
 import { FastRandom } from "./fast-random"
-import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
-import { DeadPlantParticle } from "./particles/plants"
+import { AirParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
+import {
+    BarkParticle,
+    DeadPlantParticle,
+    LeafParticle,
+    RootParticle,
+    SeedParticle,
+    StemParticle,
+} from "./particles/plants"
 
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
 const ORGANISM_UPDATE_INTERVAL = 15
 
 // The organisms body is at least this long.
 const MIN_LENGTH = 5
+// How much water_level or nutrient_level per one extra body length.
+const RESOURCES_PER_BODY_LENGTH = 20
 
 // The organism may move onto any of these particle types.
-const CAN_TRAVERSE = [AirParticle, WaterParticle, SoilParticle, DeadPlantParticle, CompostParticle]
+const CAN_TRAVERSE = [
+    AirParticle,
+    WaterParticle,
+    SoilParticle,
+    DeadPlantParticle,
+    CompostParticle,
+    RootParticle,
+    SeedParticle,
+    BarkParticle,
+    StemParticle,
+    LeafParticle
+]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
-const MAX_SEEK_DEPTH = 100
+const MAX_SEEK_DEPTH = 10
 
 // The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
 const MIN_NUTRIENTS = 100
@@ -80,7 +100,7 @@ export class Organism {
 
         this.location_history.length = Math.min(
             this.location_history.length,
-            (this.nutrient_level / 100 + MIN_LENGTH) | 0
+            ((this.nutrient_level + this.water_level) / RESOURCES_PER_BODY_LENGTH + MIN_LENGTH) | 0
         )
 
         const fell = this.compute_gravity(environment)
@@ -477,16 +497,30 @@ export class Organism {
          * Handles when the organism dies and turns to compost.
          */
 
+        let valid_death_locations = [] // A list of particles below the organism's body on which it can die.
+
         for (let [x, y] of this.location_history) {
-            let new_compost_particle = new CompostParticle(x, y)
-            new_compost_particle.nutrient_content = Math.round(this.nutrient_level / this.location_history.length)
-            new_compost_particle.water_content = Math.round(this.water_level / this.location_history.length)
-
-            if (environment.get(x, y) instanceof SoilParticle) new_compost_particle.decay_into = SoilParticle
-
-            environment.set(new_compost_particle)
+            if (environment.get(x, y) instanceof SoilParticle) {
+                valid_death_locations.push([x, y])
+            }
         }
-        // Remove the organism from the Environment.
-        environment.organisms.splice(environment.organisms.indexOf(this), 1)
+
+        if (valid_death_locations.length > 0) {
+            for (let [x, y] of valid_death_locations) {
+                let new_compost_particle = new CompostParticle(x, y)
+                new_compost_particle.nutrient_content = Math.round(this.nutrient_level / valid_death_locations.length)
+                new_compost_particle.water_content = Math.round(this.water_level / valid_death_locations.length)
+    
+                new_compost_particle.decay_into = SoilParticle
+    
+                environment.set(new_compost_particle)
+            }
+
+            // Remove the organism from the Environment.
+            environment.organisms.splice(environment.organisms.indexOf(this), 1)
+        } else {
+            // Let the organism wander for a little bit longer to find some soil where it can die.
+            this.energy += 60
+        }
     }
 }
