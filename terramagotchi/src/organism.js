@@ -430,7 +430,7 @@ export class Organism {
 
         // Consume water from the WaterParticle
         let transfer_water_amount = Math.min(
-            water_particle.water_content,
+            water_particle.water_level,
             this.water_capacity - this.water_level,
             MAX_EAT_AMOUNT
         )
@@ -441,7 +441,7 @@ export class Organism {
         this.energy += ENERGY_RATIO * transfer_water_amount
 
         // Water has transfered as much as it can
-        if (water_particle.water_content == 0) {
+        if (water_particle.water_level == 0) {
             let new_air_particle = new AirParticle(water_particle.x, water_particle.y)
             environment.set(new_air_particle)
 
@@ -464,9 +464,9 @@ export class Organism {
         const new_compost_particle = new CompostParticle(this.x, this.y)
         // new_compost_particle.decay_into = environment.get(this.x, this.y)
 
-        new_compost_particle.nutrient_content = this.nutrient_level - MIN_NUTRIENTS
+        new_compost_particle.nutrient_level = this.nutrient_level - MIN_NUTRIENTS
         this.nutrient_level = MIN_NUTRIENTS
-        new_compost_particle.water_content = this.water_level - MIN_WATER
+        new_compost_particle.water_level = this.water_level - MIN_WATER
         this.water_level = MIN_WATER
 
         environment.set(new_compost_particle)
@@ -479,8 +479,8 @@ export class Organism {
 
         for (let [x, y] of this.location_history) {
             let new_compost_particle = new CompostParticle(x, y)
-            new_compost_particle.nutrient_content = Math.round(this.nutrient_level / this.location_history.length)
-            new_compost_particle.water_content = Math.round(this.water_level / this.location_history.length)
+            new_compost_particle.nutrient_level = Math.round(this.nutrient_level / this.location_history.length)
+            new_compost_particle.water_level = Math.round(this.water_level / this.location_history.length)
 
             if (environment.get(x, y) instanceof SoilParticle) new_compost_particle.decay_into = SoilParticle
 

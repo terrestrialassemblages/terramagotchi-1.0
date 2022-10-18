@@ -10,6 +10,7 @@ export class DeadPlantParticle extends PlantParticleFamily {
     }
 
     update(environment) {
+        this.compute_erosion(environment)
         this.compute_gravity(environment)
     }
 
