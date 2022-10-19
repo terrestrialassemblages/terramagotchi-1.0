@@ -32,8 +32,8 @@ export class PlantFamilyParticle extends OrganicParticle {
     static MAX_ENERGY = 3                   // Maximum amount of energy a plant particle will contain
     static CREATE_ENERGY_PROBABILITY = 1    // Probability any given frame that energy will be produced in a plant containing sufficient water/nutrients
     
-    static MIN_HEALTHY_WATER = 0            // Minimum amount of water to be considered "healthy"; will not create energy to go below
-    static MIN_HEALTHY_NUTRIENTS = 0        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_WATER = 3            // Minimum amount of water to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_NUTRIENTS = 3        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
 
     static IS_NET_ZERO = true
 

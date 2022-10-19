@@ -22,6 +22,9 @@ export class ShootSystemParticle extends PlantFamilyParticle {
          *                                      particle and its children
          */
         super(x, y, plant_dna);
+
+        this.nutrient_capacity = 15
+        this.water_capacity = 15
     }
 
 

@@ -10,8 +10,8 @@ export class SoilParticle extends OrganicParticle {
 
         this.base_color = "#92745B";
 
-        this.water_level = this.water_capacity/2|0;
-        this.nutrient_level = this.nutrient_capacity/2|0;
+        this.water_level = this.water_capacity;
+        this.nutrient_level = this.nutrient_capacity;
 
         // Poisson distribution chance to grow grass
         this.grass_grow_chance = 0.001;
