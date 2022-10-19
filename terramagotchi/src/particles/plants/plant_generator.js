@@ -42,9 +42,9 @@ switch (TREE_TYPE) {
         let section_8 = section_factory(8, 2)
         
         section_1.stem_angle = 90
-        section_1.root_node_spawn_distance = 8
+        section_1.root_node_spawn_distance = 6
         section_1.root_length_max = 40
-        section_1.root_max_curve_length = 4
+        section_1.root_max_curve_length = 3
 
         section_1.children.push({
             seed_activation_level: 0,
