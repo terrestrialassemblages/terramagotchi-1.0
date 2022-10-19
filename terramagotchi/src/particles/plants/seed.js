@@ -27,7 +27,7 @@ export class SeedParticle extends PlantFamilyParticle {
 
         this.activation_level = (this.dna.seed_activation_level != null) ? this.dna.seed_activation_level : 0
 
-        // Minimum energy = 
+        // Minimum energy capacity = the particles activation level, to never not have it as an option
         this.energy_capacity = Math.max(this.energy_capacity, this.activation_level)
         
         this.germinated = false
