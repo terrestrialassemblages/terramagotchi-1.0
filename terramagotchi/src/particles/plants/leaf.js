@@ -17,6 +17,7 @@ export class LeafParticle extends ShootSystemParticle {
         this.health = this.max_health
 
         this.leaf_growth_probability = 1/10
+        this.cooldown_timer = -1
 
         this.is_leaf_node = true
         this.leaf_dead = false
@@ -55,7 +56,7 @@ export class LeafParticle extends ShootSystemParticle {
 
     grow_children(environment) {
 
-        if (FastRandom.random() > this.leaf_growth_probability)
+        if (FastRandom.random() > this.leaf_growth_probability || this.cooldown_timer >= 0)
             return
 
         if (this.__current_length >= this.dna.leaf_size) {
@@ -84,12 +85,25 @@ export class LeafParticle extends ShootSystemParticle {
     }
 
     health_update(environment) {
+        if (this.cooldown_timer == 0) {
+            this.cooldown_timer -= 1
+            this.is_active = true
+            this.leaf_dead = false
+            this.health = this.max_health
+            return
+        }
+        else if (this.cooldown_timer > 0) {
+            this.cooldown_timer -= 1
+            return
+        }
+
         if (this.dead) {
             this.die(environment)
         }
         this.health -= 1
         if (this.health <= 0)
             this.leaf_die(environment)
+    
     }
 
     leaf_die(environment) {
@@ -104,7 +118,8 @@ export class LeafParticle extends ShootSystemParticle {
                 target_particle.leaf_die(environment)
         }
         if (this.__current_length == 1) {
-            this.is_active = true
+            this.cooldown_timer = 300
+            this.leaf_dead = false
             return;
         }
         let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
