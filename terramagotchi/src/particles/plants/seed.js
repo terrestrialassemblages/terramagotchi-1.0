@@ -53,9 +53,9 @@ export class SeedParticle extends PlantParticleFamily {
             environment.set(new_stem_cell)
 
             let new_root = new RootParticle(this.x, this.y - 1, this.dna)
-            new_root.is_node = true; 
-            new_root.is_first_particle = true;
-            new_root.parent_root_particle = [this.x, this.y];
+            new_root.is_node = true; // makes the first particle a node, for special properties
+            new_root.is_first_particle = true; // makes that particle know its the first particle, same reason why
+            new_root.parent_root_particle = [this.x, this.y]; // set's it's parent particle as the stem particle spawned by the seed. Used for death code
             environment.set(new_root)
         }
     }
