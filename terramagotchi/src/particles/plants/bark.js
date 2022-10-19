@@ -26,8 +26,10 @@ export class BarkParticle extends ShootSystemParticle {
 
     update(environment) {        
         this.health_update(environment)
-        this.absorb_nutrients(environment)
-        this.absorb_water(environment)
+        this.health = this.max_health // Keep bark alive
+
+        // this.absorb_nutrients(environment)
+        // this.absorb_water(environment)
 
         if (this.dead || !this.is_active)
             return;
@@ -76,7 +78,7 @@ export class BarkParticle extends ShootSystemParticle {
             this.energy -= this.activation_level
         }
 
-        if (!(target_particle instanceof BarkParticle))
+        if (!(target_particle instanceof PlantFamilyParticle))
             this.__child_directions.push([offset_x, offset_y])
     }
 }

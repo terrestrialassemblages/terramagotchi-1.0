@@ -135,7 +135,10 @@ export class StemParticle extends ShootSystemParticle {
          * Handles growing continuous growing of stem particles from the current stem
          * @param {Environment} environment     The current game environment
          */
-        if (this.energy < this.activation_level)
+        if (this.energy < this.activation_level ||
+            this.water_level < 2*PlantFamilyParticle.MIN_HEALTHY_WATER ||
+            this.nutrient_level < 2*PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+            )
             return;
         
         // Chooses random-weighted neighbour of the growth_direction
@@ -151,6 +154,12 @@ export class StemParticle extends ShootSystemParticle {
             return;
         
         let new_particle = new StemParticle(this.x + offset_x, this.y + offset_y, this.dna)
+
+        new_particle.nutrient_level = PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+        new_particle.water_level = PlantFamilyParticle.MIN_HEALTHY_WATER
+        this.nutrient_level -= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+        this.water_level -= PlantFamilyParticle.MIN_HEALTHY_WATER
+
         new_particle.__dx = this.__dx + offset_x
         new_particle.__dy = this.__dy + offset_y
         new_particle.__current_length = this.__current_length + 1
@@ -158,8 +167,8 @@ export class StemParticle extends ShootSystemParticle {
         environment.set(new_particle)
 
         if (PlantFamilyParticle.IS_NET_ZERO) {
-            this.nutrient_level = this.activation_level * NUTRIENT_ENERGY_RATIO
-            this.water_level = this.activation_level * WATER_ENERGY_RATIO
+            this.nutrient_level += this.activation_level * NUTRIENT_ENERGY_RATIO
+            this.water_level += this.activation_level * WATER_ENERGY_RATIO
         }
         this.energy -= this.activation_level
         this.is_active = false
@@ -178,7 +187,10 @@ export class StemParticle extends ShootSystemParticle {
             return;
         }
         
-        if (this.energy < this.activation_level)
+        if (this.energy < this.activation_level ||
+            this.water_level < 2*PlantFamilyParticle.MIN_HEALTHY_WATER ||
+            this.nutrient_level < 2*PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+            )
             return;
 
         let next_child_dna = this.__unvisited_children.shift()
@@ -201,6 +213,12 @@ export class StemParticle extends ShootSystemParticle {
                 ParticleType = FlowerParticle
 
             let new_child_particle = new ParticleType(this.x + offset_x, this.y + offset_y, next_child_dna)
+
+            new_child_particle.nutrient_level = PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+            new_child_particle.water_level = PlantFamilyParticle.MIN_HEALTHY_WATER
+            this.nutrient_level -= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+            this.water_level -= PlantFamilyParticle.MIN_HEALTHY_WATER
+
             new_child_particle.__dx = offset_x
             new_child_particle.__dy = offset_y
             new_child_particle.__current_length = 1
