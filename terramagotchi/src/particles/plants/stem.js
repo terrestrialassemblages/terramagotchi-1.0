@@ -58,7 +58,6 @@ export class StemParticle extends ShootSystemParticle {
         // Represents the "offset" x/y pair of values which best fits to the growth curve
         this.__growth_direction = this.__growth_direction || this.calculate_growth_direction()
 
-
         if (this.__current_length == this.dna.stem_length)
             this.grow_next_DNA_child(environment)
         else
@@ -155,7 +154,7 @@ export class StemParticle extends ShootSystemParticle {
         new_particle.__dx = this.__dx + offset_x
         new_particle.__dy = this.__dy + offset_y
         new_particle.__current_length = this.__current_length + 1
-        
+
         environment.set(new_particle)
 
         if (PlantFamilyParticle.IS_NET_ZERO) {
@@ -246,10 +245,16 @@ export class StemParticle extends ShootSystemParticle {
                 best = direction
             }
         }
+        
         return best
     }
 
     create_vector_functions() {
+        /**
+         * Returns callback functions for a particle
+         * Implementation mimicks a Vector Field, where each point in the 2D grid corresponds to a vector
+         * The vector points in the direction which matches the curve-type of the stem
+         */
         switch (this.dna.stem_curve) {
             case "spherical":
                 let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2
@@ -270,6 +275,11 @@ export class StemParticle extends ShootSystemParticle {
     }
 
     create_error_calculation_function() {
+        /**
+         * Returns callback functions for calculating errors when deciding growth direction
+         * Error = relative measure of distance of a particle from matching it's "ideal path"
+         * For example, the spherical "error" is the distance of a particle from a circle's circumference
+         */
         switch (this.dna.stem_curve) {
             case "spherical":
                 let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2
@@ -282,8 +292,6 @@ export class StemParticle extends ShootSystemParticle {
                 return ((x, y) => {
                     let distance_from_centre = (centre_x - (this.x + x)) ** 2 + (centre_y - (this.y + y)) ** 2
                     let radius2 = (this.start_x - centre_x - 1) ** 2 + (this.start_y - centre_y) ** 2
-                    
-                    console.log(this.x, this.y, centre_x, centre_y, "|", this.__current_angle, "||", distance_from_centre, radius2)
                     
                     return Math.abs(radius2 - distance_from_centre)
                 })
