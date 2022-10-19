@@ -5,7 +5,7 @@ const SUNFLOWER = "SUNFLOWER"
 const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
 
-export function generate_tree_dna(TREE_TYPE=SUNFLOWER) {
+export function generate_tree_dna(TREE_TYPE=LAVENDER) {
     /**
      * Generates a DNA-Tree for which a particle can take
      */
@@ -533,7 +533,7 @@ switch (TREE_TYPE) {
                 node_activation_level: 0,
                 stem_angle: -2*((-1)**i)*tree_direction*tree_angle_offset,
                 color: "#E1DAE1",
-                leaf_shape: "flat-top",
+                leaf_shape: "lavender",
                 leaf_size: 3,
                 leaf_direction: ((-1)**i)*tree_direction,
                 secondary_color: "#FBF3FB",

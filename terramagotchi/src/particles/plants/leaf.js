@@ -13,11 +13,15 @@ export class LeafParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
-        this.max_health = 2000 + FastRandom.int_min_max(0, 1000)
+        this.max_health = 2000 + FastRandom.int_min_max(0, 2000)
         this.health = this.max_health
 
-        this.__leaf_children = null
+        this.leaf_growth_probability = 1/10
+
+        this.is_leaf_node = true
         this.leaf_dead = false
+
+        this.__leaf_children = null
     }
 
     update(environment) {
@@ -33,16 +37,16 @@ export class LeafParticle extends ShootSystemParticle {
             this.grow_children(environment)
     }
 
+
     select_leaf_children() {
         switch (this.dna.leaf_shape) {
-            case "lavender":
-                
             case "sunflower":
                 if (this.__current_length == 1)
                     this.__leaf_children = [[1, 1], [1, -1], [-1, 1], [-1, -1], [0, 1], [1, 0], [0, -1], [-1, 0]]
                 else
                     this.__leaf_children = [this.convert_angle_to_offset(this.__current_angle)]
                 break
+            case "lavender":
             case "flat-top":
             default:
                 this.__leaf_children = [[0, -1], [this.dna.leaf_direction, 0]]
@@ -50,6 +54,10 @@ export class LeafParticle extends ShootSystemParticle {
     }
 
     grow_children(environment) {
+
+        if (FastRandom.random() > this.leaf_growth_probability)
+            return
+
         if (this.__current_length >= this.dna.leaf_size) {
             this.is_active = false
             return;
