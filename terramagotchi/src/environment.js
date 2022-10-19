@@ -21,11 +21,11 @@ import {
     RootParticle,
     StemParticle,
     DNANode,
+    generate_tree_dna,
 } from "./particles/plants";
-import generate_tree_dna from "./particles/plants/plant_generator";
 
-export const WATER_ENERGY_RATIO = 1
 export const NUTRIENT_ENERGY_RATIO = 1
+export const WATER_ENERGY_RATIO = 1
 
 export class Environment {
     constructor(width, height) {

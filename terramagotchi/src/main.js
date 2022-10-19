@@ -14,7 +14,7 @@ import {
     OrganicParticle,
 } from "./particles";
 
-import { SeedParticle, DeadPlantParticle, PlantParticleFamily } from "./particles/plants";
+import { SeedParticle, DeadPlantParticle, PlantFamilyParticle } from "./particles/plants";
 
 // cringe safety feature
 p5.disableFriendlyErrors = true
@@ -66,7 +66,7 @@ export const sketch = (s) => {
                 console.log("Water/Nutrient capacitys: ", target_particle.water_capacity, target_particle.nutrient_capacity)
                 console.log("Water/Nutrient levels: ", target_particle.water_level, target_particle.nutrient_level)
             }
-            if (target_particle instanceof PlantParticleFamily) {
+            if (target_particle instanceof PlantFamilyParticle) {
                 console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
             }
             console.log("")

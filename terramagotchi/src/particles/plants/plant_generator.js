@@ -5,9 +5,21 @@ const SUNFLOWER = "SUNFLOWER"
 const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
 
-export default function generate_tree_dna(TREE_TYPE=LAVENDER) {
+export function generate_tree_dna(TREE_TYPE="test") {
 let tree_direction, tree_scale, tree_angle_offset, tree_height, tree_color
 switch (TREE_TYPE) {
+    case "test":
+        return {
+            node_activation_level: 0,
+            stem_curve: "spherical",
+            stem_length: 40,
+            color: "#000000",
+            stem_thickness: 1,
+            stem_end_thickness: 1,
+            stem_angle: 90,
+            curve_radius: 20,
+            RANDOM_WEIGHT_GROWWTH_DIRECTION: false,
+        }
     case KAURI:
         tree_direction = [-1, 1][FastRandom.int_max(1)]
         tree_angle_offset = FastRandom.int_min_max(15, 25)

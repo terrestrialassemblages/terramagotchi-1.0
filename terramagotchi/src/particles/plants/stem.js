@@ -29,49 +29,40 @@ export class StemParticle extends ShootSystemParticle {
     }
 
     update(environment) {
-        this.absorb_nutrients(environment, this.__neighbours, this.__living_plant_particle_types)
-        this.absorb_water(environment, this.__neighbours, this.__living_plant_particle_types)
-        this.generate_energy()
+        /**
+         * Handles update function for the seed particle
+         * @param {Environment} environment     The current game environment
+         */
         this.health_update(environment)
+
+        this.absorb_nutrients(environment)
+        this.absorb_water(environment)
+        this.generate_energy()
         
-        if (this.is_active) {
-            switch (this.dna.node_type) {
-                case "stem":
-                    this.stem_update(environment)
-                    break
-                case "flower":
-                    this.flower_update(environment)
-                    break
-                case "leaf":
-                    this.leaf_update(environment)
-                    break
-                default:
-                    break
-            }
-        } else {    // Else so bark only grows if next stem cell has been grown
-                    // this allows trees to prioritise growing vertically                                           
-            this.bark_update(environment)
-        }
+        if (this.is_active)
+            this.stem_update(environment)
+        else                                          
+            this.bark_update(environment) // Only grows bark if next children have been grown
     }
 
     stem_update(environment) {
         /**
-         * Handles update function if the current particles dna node_type is "stem"
+         * Handles updating the stem_particle while the particle is active
          * @param {Environment} environment     The current game environment
          */
-        this.start_x = this.x - this.__dx
-        this.start_y = this.y - this.__dy
-        this.end_x = (this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)) | 0
-        this.end_y = (this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)) | 0
+        this.start_x =  this.start_x || this.x - this.__dx
+        this.start_y =  this.start_u || this.y - this.__dy
+        this.end_x =    this.end_x || (this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)) | 0
+        this.end_y =    this.end_y || (this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)) | 0
 
-        this.__growth_direction = this.calculate_growth_direction()
+        // Represents the "offset" x/y pair of values which best fits to the growth curve
+        this.__growth_direction = this.__growth_direction || this.calculate_growth_direction()
 
-        if (this.__current_length == this.dna.stem_length) {
+
+        if (this.__current_length == this.dna.stem_length)
             this.grow_next_DNA_child(environment)
-            return;
-        }
-
-        this.grow(environment)
+        else
+            this.grow(environment)
     }
 
     bark_update(environment) {
@@ -140,36 +131,37 @@ export class StemParticle extends ShootSystemParticle {
         }
     }
 
-    flower_update(environment) {
-        let new_flower = new FlowerParticle(this.x, this.y, this.dna)
-        new_flower.__current_length = 1
-        environment.set(new_flower)
-    }
-
-    leaf_update(environment) {
-        let new_leaf = new LeafParticle(this.x, this.y, this.dna)
-        new_leaf.__current_length = 1
-        environment.set(new_leaf)
-    }
-
     grow(environment) {
+        /**
+         * Handles growing continuous growing of stem particles from the current stem
+         * @param {Environment} environment     The current game environment
+         */
         if (this.energy < this.activation_level)
             return;
+        
+        // Chooses random-weighted neighbour of the growth_direction
         let [offset_x, offset_y] = this.__growth_direction
         if (this.dna.RANDOM_WEIGHT_GROWWTH_DIRECTION) {
             let random_rotation = this.weighted_random([-2, -1, 0, 1, 2], [0, 5, 100, 5, 0]);
             if (random_rotation != 0)
                 [offset_x, offset_y] = this.get_rotated_offset(offset_x, offset_y, random_rotation)
         }
+
         let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-        if (!(target_particle instanceof AirParticle || target_particle instanceof BarkParticle || (target_particle instanceof PlantParticleFamily && !target_particle.is_active)))
+        if (!(target_particle instanceof AirParticle || target_particle instanceof BarkParticle || (target_particle instanceof PlantFamilyParticle && !target_particle.is_active)))
             return;
+        
         let new_particle = new StemParticle(this.x + offset_x, this.y + offset_y, this.dna)
         new_particle.__dx = this.__dx + offset_x
         new_particle.__dy = this.__dy + offset_y
         new_particle.__current_length = this.__current_length + 1
         
         environment.set(new_particle)
+
+        if (PlantFamilyParticle.IS_NET_ZERO) {
+            this.nutrient_level = this.activation_level * NUTRIENT_ENERGY_RATIO
+            this.water_level = this.activation_level * WATER_ENERGY_RATIO
+        }
         this.energy -= this.activation_level
         this.is_active = false
     }
@@ -233,20 +225,36 @@ export class StemParticle extends ShootSystemParticle {
          */
         let theta = this.__current_angle + angle_offset
         let [vector_x, vector_y] = this.create_vector_functions()
+        let calculate_error = this.create_error_calculation_function()
 
         if (this.__dx == 0 && this.__dy == 0)
             this.growth_angle = theta
         else
             this.growth_angle = Math.atan2(vector_y(this.__dy), vector_x(this.__dx))*180/Math.PI
+        
+        let base_direction = this.convert_angle_to_offset(this.growth_angle)
+        let potential_directions = [base_direction]
+        potential_directions.push(this.get_rotated_offset(potential_directions[0], potential_directions[1], 1))
+        potential_directions.push(this.get_rotated_offset(potential_directions[0], potential_directions[1], -1))
 
-        return this.convert_angle_to_offset(this.growth_angle)
+        let best = null
+        let best_error = Infinity
+        for (let direction of potential_directions) {
+            let temp_error = calculate_error(direction[0], direction[1])
+            if (temp_error < best_error) {
+                best_error = temp_error
+                best = direction
+            }
+        }
+        return best
     }
 
     create_vector_functions() {
         switch (this.dna.stem_curve) {
             case "spherical":
-                let [centre_x, centre_y] = [this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2,
-                                    this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)/2]
+                let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2
+                let centre_y = this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)/2
+
                 let rotated_angle = this.__current_angle - 90
                 centre_x += -this.dna.curve_direction * this.dna.curve_radius * Math.cos(rotated_angle*Math.PI/180)
                 centre_y += -this.dna.curve_direction * this.dna.curve_radius * Math.sin(rotated_angle*Math.PI/180)
@@ -258,6 +266,32 @@ export class StemParticle extends ShootSystemParticle {
             case "linear":
             default:
                 return [((x) => this.end_x - (this.start_x + x)), ((y) => this.end_y - (this.start_y + y))]
+        }
+    }
+
+    create_error_calculation_function() {
+        switch (this.dna.stem_curve) {
+            case "spherical":
+                let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2
+                let centre_y = this.start_y + this.dna.stem_length * Math.sin(this.__current_angle*Math.PI/180)/2
+
+                let rotated_angle = this.__current_angle - 90
+                centre_x += -this.dna.curve_direction * this.dna.curve_radius * Math.cos(rotated_angle*Math.PI/180)
+                centre_y += -this.dna.curve_direction * this.dna.curve_radius * Math.sin(rotated_angle*Math.PI/180)
+
+                return ((x, y) => {
+                    let distance_from_centre = (centre_x - (this.x + x)) ** 2 + (centre_y - (this.y + y)) ** 2
+                    let radius2 = (this.start_x - centre_x - 1) ** 2 + (this.start_y - centre_y) ** 2
+                    
+                    console.log(this.x, this.y, centre_x, centre_y, "|", this.__current_angle, "||", distance_from_centre, radius2)
+                    
+                    return Math.abs(radius2 - distance_from_centre)
+                })
+            case "linear":
+            default:
+                return (x, y) => (
+                    (this.end_x - (this.x + x)) ** 2 + (this.end_y - (this.y + y)) ** 2
+                )
         }
     }
 }

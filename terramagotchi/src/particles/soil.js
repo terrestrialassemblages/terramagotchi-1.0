@@ -30,7 +30,8 @@ export class SoilParticle extends OrganicParticle {
     grass_growth(environment) {
 
         // Has not moved, Particle above is Air and Poisson Distribution chance
-        if (this.moveable_x && this.moveable_y && 
+        if (this.moveable_x &&
+            this.moveable_y && 
             environment.get(this.x,this.y+1) instanceof AirParticle && 
             FastRandom.random() < this.grass_grow_chance) {
             // Grow grass
