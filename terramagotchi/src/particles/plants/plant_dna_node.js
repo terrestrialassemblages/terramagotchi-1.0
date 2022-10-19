@@ -12,7 +12,7 @@ export class DNANode {
          * Variables defining the seed behaviour
             ===================================== */
 
-        this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 5
+        this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 0
         this.seed_color =               dna_encoding.seed_color || "#FF80FF"
 
         /** =====================================

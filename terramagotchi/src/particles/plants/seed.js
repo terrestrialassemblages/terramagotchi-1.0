@@ -25,7 +25,7 @@ export class SeedParticle extends PlantFamilyParticle {
         this.weight = 2;
         this.base_color = this.dna.seed_color || "#FF80FF"
 
-        this.activation_level = (this.dna.seed_activation_level != null) ? this.dna.seed_activation_level : 10
+        this.activation_level = (this.dna.seed_activation_level != null) ? this.dna.seed_activation_level : 0
 
         // Minimum energy = 
         this.energy_capacity = Math.max(this.energy_capacity, this.activation_level)
