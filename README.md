@@ -11,10 +11,10 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 
 ### Languages
 
-- Node
-- JavaScript
-- CSS
-- HTML
+[![node](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/) 
+[![javascript](https://img.shields.io/badge/JavaScript-f7df1e?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en/JavaScript) 
+[![css](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en/CSS) [![postcss](https://img.shields.io/badge/PostCSS-DD3A0A?style=for-the-badge&logo=postcss&logoColor=white)](https://postcss.org/)
+[![html](https://img.shields.io/badge/HTML-e34c26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en/HTML)
 
 ### Libraries
 
@@ -26,6 +26,20 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 | webpack             | 5.74.0  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
 | webpack-cli         | 4.10.0  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
 | webpack-dev-server  | 4.10.1  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
+| crypto-random-string| 5.0.0   |             | &#x2611;      |                           |        |                    |          |                      |
+| firebase            | 9.12.1  |             | &#x2611;      |                           |&#x2611;|                    |&#x2611;  |                      |
+| qrcode              | 1.5.1   |             | &#x2611;      |                           |        |                    |          |                      |
+| css-loader          | 6.7.1   |             |               |                           |        | &#x2611;           |          |                      |
+| postcss             | 8.4.17  |             |               |                           |        | &#x2611;           |          |                      |
+| postcss-loader      | 7.0.1   |             |               |                           |        | &#x2611;           |          |                      |
+| postcss-preset-env  | 7.8.2   |             |               |                           |        | &#x2611;           |          |                      |
+| style-loader        | 3.3.1   |             |               |                           |        | &#x2611;           |          |                      |
+| tailwindcss         | 3.1.8   |             |               |                           |        | &#x2611;           |          |                      |
+| tw-elements         | 1.0.0-alpha12  |      |               |                           |&#x2611;|                    |          |                      |
+| firebase-admin      | 10.0.2  |             |               |                           |        |                    |&#x2611;  |                      |
+| firebase-functions  | 3.18.0  |             |               |                           |        |                    |&#x2611;  |                      |
+| firebase-functions-test | 0.2.0  |          |               |                           |        |                    |          |&#x2611;              |
+
 
 ## Usage - Instructions on How to Install and Setup the Project.
 
@@ -61,12 +75,21 @@ npm run build
 
 This will build the application. It can then be accessed in the `dist` folder. To run the application, open the `index.html` file (found in said `dist` folder) in your browser.
 
-### Terramagotchi-Firebase (Backend Database)
+### Terramagotchi-Firebase (Cloud functions)
+To deploy this code, a new Firebase project must be created prior to deployment. This can be done by following [Firebase Docs](https://firebase.google.com/docs/web/setup).
 
+Firebase tools is required to be installed globally using npm before deploying to the Firebase project.
 ```
-cd terramagotchi-firebase
+npm install -g firebase-tools
+firebase login
+```
+Once logged in to an authorised Google account, you can install dependencies and deploy to the Firebase.
+```
+cd terramagotchi-firebase/functions
 npm install
-firebase deploy --only functions
+cd ..
+npm install
+firebase deploy
 ```
 
 ### Terramagotchi-Remote (User Remote)
