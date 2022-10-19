@@ -140,8 +140,10 @@ export const sketch = (s) => {
         // Render organisms
         organisms_graphic.clear();
         for (let organism of application.environment.organisms) {
-            for (let [prev_x, prev_y] of organism.location_history) {
-                organisms_graphic.fill(organism.body_color);
+            for (let i = 0; i < organism.location_history.length; i++) {
+                const [prev_x, prev_y] = organism.location_history[i]
+                const color = organism.body_colors[i]
+                organisms_graphic.fill(color);
                 organisms_graphic.rect(
                     cell_size * prev_x,
                     cell_size * (application.height - 1 - prev_y),
