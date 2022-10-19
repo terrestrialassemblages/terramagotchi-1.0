@@ -169,9 +169,10 @@ export class RootParticle extends PlantFamilyParticle {
             let soil_replacement_particle = new SoilParticle(this.x, this.y);
             environment.set(soil_replacement_particle);
         }
+    }
 
     // checks to see if a root is as isolated as we want it to be. Mainly made so roots don't touch each other and form loops
-
+    root_isolated(environment){
         let all_directions = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]];
         let root_particle_count = 0;
         for (let i = 0; i < 8; i++) {
