@@ -3,12 +3,14 @@ import { AirParticle } from "./air";
 import { CompostParticle } from "./compost";
 import { WaterParticle } from "./water";
 import { FastRandom } from "../fast-random";
+import { ShootSystemParticle } from "./plants";
 
 export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
         super(x, y);
 
         this.base_color = "#92745B";
+        this.pass_through_types = [ ShootSystemParticle ];
 
         this.water_level = this.water_capacity;
         this.nutrient_level = this.nutrient_capacity;

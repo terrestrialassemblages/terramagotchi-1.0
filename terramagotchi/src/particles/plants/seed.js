@@ -1,6 +1,7 @@
 import {
     PlantFamilyParticle,
     RootParticle,
+    ShootSystemParticle,
     StemParticle,
 } from ".";
 
@@ -27,6 +28,7 @@ export class SeedParticle extends PlantFamilyParticle {
         this.moveable = true;
         this.weight = 2;
         this.base_color = this.dna.seed_color || "#FF80FF"
+        this.pass_through_types = [ ShootSystemParticle ];
 
         this.activation_level = (this.dna.seed_activation_level != null) ? this.dna.seed_activation_level : 0
 

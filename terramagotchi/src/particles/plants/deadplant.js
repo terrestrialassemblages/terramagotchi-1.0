@@ -6,7 +6,7 @@ export class DeadPlantParticle extends OrganicParticle {
         super(x, y, plant_dna);
         
         this.base_color = "#8D5D4F";
-        this.pass_through_types = [ ShootSystemParticle ]; //[ BarkParticle, StemParticle, LeafParticle ];
+        this.pass_through_types = [ ShootSystemParticle ];
     }
 
     update(environment) {
