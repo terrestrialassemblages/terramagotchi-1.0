@@ -3,7 +3,7 @@ Terramagotchi is a web app which aims to educate people about the nature cycles 
 This includes a simulation of nutrient and water transfer between soil, plants and organisms, as well as water evaporation and weather.
 It is separated into 3 parts: The main application where the environment is simulated, the remote which sends signals to the main application to spawn in particles by anyone, and the Firebase database which acts as the conduit to allow communication between the main application and any connected remotes.
 
-## Project Management Tool.
+## Project Management Tool
 
 https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shared=&atlOrigin=eyJpIjoiZjY3OGU1NWM5OGM5NDJkZWJhNzcwYjM0MjFmNGQ0NWIiLCJwIjoiaiJ9
 
@@ -43,9 +43,9 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 
 ## Usage - Instructions on How to Install and Setup the Project.
 
-All dependencies have been listed above. See [Libraries](###Libraries)
+All dependencies have been listed above. See [Libraries](#libraries)
 
-Prior to using these applications, you must have Node installed on your machine.
+Prior to using these applications, you must have Node.js (with npm) installed on your machine.
 
 As there are three sub-packages, each one must be installed/used separately.
 
@@ -124,13 +124,14 @@ This project is an application which is made to be shown in an art gallery setti
 
 ## URL of the Website Where the Project Has Been Deployed
 
-https://terramagotchi.web.app
+https://terramagotchi.web.app  
+https://terramagotchi.web.app/remote
 
 ## Future Plan (Ideas for Future releases)
 
-- Temperature and Oxygen levels.
-- Larger diversity of plants and organisms.
+- Temperature and oxygen levels which affect the water and nutrient cycles. A high temperature would result in more transpiration. Oxygen levels would imply an additional carbon cycle system.
+- Larger diversity of plants and organisms. Currently we have 3 plants, (lavendar, dandelion and kauri tree,) and one organism, (a worm).
 
 ## Acknowledgements (if any) - You Can List Tutorials Used, Projects Referred To, People Consulted Etc.
 
-- CodingTrain
+- [The Coding Train on YouTube](https://www.youtube.com/c/TheCodingTrain)
