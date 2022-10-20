@@ -97,7 +97,10 @@ export class Environment {
                 }
                 // Set Soil Particles
                 else if (y < this.get_horizon(x)) {
-                    this.set(new SoilParticle(x, y));
+                    let new_soil = new SoilParticle(x, y)
+                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
+                    new_soil.nutrient_level = (new_soil.nutrient_capacity / 2) | 0
+                    this.set(new_soil);
                 } 
                 // Set Water Particles
                 else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
