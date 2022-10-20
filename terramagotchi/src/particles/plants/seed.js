@@ -66,6 +66,8 @@ export class SeedParticle extends PlantFamilyParticle {
                 new_stem_cell.nutrient_level += (this.activation_level + this.energy) * NUTRIENT_ENERGY_RATIO
                 new_stem_cell.water_level += (this.activation_level + this.energy) * WATER_ENERGY_RATIO
             }
+
+            environment.set(new_stem_cell)
             
             let new_root = new RootParticle(this.x, this.y - 1, this.dna)
             new_root.is_node = true; // makes the first particle a node, for special properties
