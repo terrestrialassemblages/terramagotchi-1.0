@@ -12,7 +12,6 @@ export class DeadPlantParticle extends OrganicParticle {
     update(environment) {
         this.compute_erosion(environment)
         this.compute_gravity(environment)
-        this.compute_erosion(environment)
     }
 
 }
