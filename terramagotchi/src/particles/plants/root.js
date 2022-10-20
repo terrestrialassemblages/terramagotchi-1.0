@@ -25,32 +25,34 @@ export class RootParticle extends PlantFamilyParticle {
         this.root_length_max = this.dna.root_length_max || 20 // controls how long each walk can be. The algorithm attempts to meet this limit, but cannot always do so if there are objects blocking it. Measured in particles
         this.root_max_curve_length = this.dna.root_max_curve_length || 3 // controls how curvy a root can randomly curve. Measured in particles
         
-        this.root_max_straight_length = 8 // controls how many particles can be in a straight line At Most. For aesthetic purposes. Measured in particles
+        this.root_max_straight_length = 5 // controls how many particles can be in a straight line At Most. For aesthetic purposes. Measured in particles
         this.root_straight_length = 0 // counts how many particles has been straight in a row so far. Measured in particles
-        this.can_be_straight = true // checks if it can go straight or not
+        this.can_be_straight = false // checks if it can go straight or not
         
         this.current_curve_length = 0 // counts how much the current curve is. Measured in particles
 
         this.parent_root_particle = [0,0]; // holds what its parent particle's coordinates it. Its coordinates as it can dynamically check if its still a plant/root or it was turned into soil
         this.is_first_particle = false; // checks if its the first root particle for a plant, as there are special properties for it
         this.has_checked_surroundings = false; // checks if a surrounding check has been done before. needs to be done at least once, details on it below
-        this.minimum_distance = 5; // the minimum distance a root needs to go before its randomness kicks in.
-        this.max_root_neighbours = 5; // how many neighbours of a root particle can be root particles. Made to prevent loops.
+        this.minimum_distance = this.dna.root_minimum_distance || 5; // the minimum distance a root needs to go before its randomness kicks in.
+        this.max_root_neighbours = 7; // how many neighbours of a root particle can be root particles. Made to prevent loops.
     }
     
     update(environment) {
         this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle]);
         let particle_to_check = environment.get(this.parent_root_particle[0], this.parent_root_particle[1])
+
         if (particle_to_check.dead == true || particle_to_check instanceof SoilParticle) { // if the parent particle is dead, which is also checked by seeing if its soil, it runs to kill the rest of the root particles.
             this.root_random_genocide(environment);
         }
+        if (this.is_active == false &&
+            this.has_checked_surroundings == false &&
+            this.__current_length > this.minimum_distance)  // checks if a root is as isolated as you want to. only runs when its 'settled down'
+        { this.root_isolated(environment); }
+
         if (this.is_active == true) {
             this.check_growth_conditions(environment);
         }
-        if (this.is_active == false && this.has_checked_surroundings == false && this.__current_length > this.minimum_distance) { // checks if a root is as isolated as you want to. only runs when its 'settled down'
-            this.root_isolated(environment);
-        }
-        this.check_growth_conditions(environment);
     }
 
     check_growth_conditions(environment) {
@@ -58,8 +60,8 @@ export class RootParticle extends PlantFamilyParticle {
             && this.water_level >= this.activation_level
             && this.__current_length <= this.root_length_max) // checks to make sure the roots are only as long as we want it to be
         {
-            if (this.root_straight_length >= this.root_max_straight_length) { // if a root has been growing straight for longer than you want it to, it makes it curve
-                this.can_be_straight = false;
+            if (this.root_straight_length < this.root_max_straight_length) { // if a root has been growing straight for longer than you want it to, it makes it curve
+                this.can_be_straight = true;
             }
             this.grow_child_root(environment);
             let direction_hold = this.direction;
@@ -98,18 +100,26 @@ export class RootParticle extends PlantFamilyParticle {
         if (this.can_be_straight == false && curve_direction == 0) { // if it cannot be straight, then it forces a random curve, once it curves, it can be straight again
             curve_direction = FastRandom.int_max(1);
             curve_direction++;
-            this.root_straight_length = 0;
-            this.can_be_straight = true;
         }
         // the curve algorithm only curves if a few criteria are met. such as Below its max curve length and it meeting the minium distance from the first root particle
-        if (this.current_curve_length < this.root_max_curve_length && this.current_curve_length > (this.root_max_curve_length * -1) && curve_direction != 0 && this.__current_length > this.minimum_distance) {
+        if (this.current_curve_length < this.root_max_curve_length &&
+            this.current_curve_length > (this.root_max_curve_length * -1) &&
+            curve_direction != 0 &&
+            this.__current_length > this.minimum_distance) {
+
             if (curve_direction == 1) { 
                 [offset_x, offset_y] = [[-1, 1], [-1, -1], [1, -1], [-1, 0], [0, -1]][this.direction]
                 this.current_curve_length++; // it adds 1 if its clockwise and subtracts 1 if its anti
+                if (this.root_straight_length > 0) {
+                    this.root_straight_length--;
+                }
             }
             else {
                 [offset_x, offset_y] = [[-1, -1], [1, -1], [1, 1], [0, -1], [1, 0]][this.direction]
                 this.current_curve_length--;
+                if (this.root_straight_length > 0) {
+                    this.root_straight_length--;
+                }
             }
         }
         else if (curve_direction == 0) {
@@ -138,11 +148,13 @@ export class RootParticle extends PlantFamilyParticle {
                 }
             }
             if (check == true) {
-                new_root = new RootParticle(this.x + offset_x, this.y + offset_y, { ...this.plant_dna })
+                if (environment.get(this.x + offset_x, this.y + offset_y) instanceof SoilParticle) {
+                    new_root = new RootParticle(this.x + offset_x, this.y + offset_y, this.plant_dna);
+                }
             }
         } else { // if its the first particle then it just grows normally in all 5 directions for a minimum distance. No checks except a soil check is done, so it only grows into soil
             if (environment.get(this.x + offset_x, this.y + offset_y) instanceof SoilParticle) {
-                new_root = new RootParticle(this.x + offset_x, this.y + offset_y, { ...this.plant_dna });
+                new_root = new RootParticle(this.x + offset_x, this.y + offset_y, this.plant_dna);
             }
         }
 
@@ -154,6 +166,7 @@ export class RootParticle extends PlantFamilyParticle {
             new_root.root_node_spawn_distance = this.root_node_spawn_distance;
             new_root.root_max_curve_length = this.root_max_curve_length;
             new_root.root_straight_length = this.root_straight_length;
+            new_root.minimum_distance = this.minimum_distance;
             new_root.parent_root_particle = [this.x, this.y]
 
             environment.set(new_root);
@@ -164,7 +177,7 @@ export class RootParticle extends PlantFamilyParticle {
 
     root_random_genocide(environment) { // when a root's parent dies, it sets itself to dead and then randomly changes into soil. The next root particle sees this and does the same.
         this.dead = true;
-        let die_chance = FastRandom.int_max(100) // this chance controls how fast the entire system will fade out.
+        let die_chance = FastRandom.int_max(300) // this chance controls how fast the entire system will fade out.
         if (die_chance == 1) {
             let soil_replacement_particle = new SoilParticle(this.x, this.y);
             environment.set(soil_replacement_particle);

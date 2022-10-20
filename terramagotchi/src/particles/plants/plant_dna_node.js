@@ -21,7 +21,8 @@ export class DNANode {
 
         this.root_node_spawn_distance = dna_encoding.root_node_spawn_distance || 5
         this.root_length_max =          dna_encoding.root_length_max || 20
-        this.root_max_curve_length =    dna_encoding.root_max_curve_length || 3
+        this.root_max_curve_length = dna_encoding.root_max_curve_length || 4
+        this.root_minimum_distance = dna_encoding.root_minimum_distance || 0
 
         /** ====================================
          * Variables defining the particle type

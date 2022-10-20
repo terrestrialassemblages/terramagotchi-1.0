@@ -15,7 +15,7 @@ import {
     OrganicParticle,
 } from "./particles";
 
-import { SeedParticle, DeadPlantParticle, PlantFamilyParticle } from "./particles/plants";
+import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle } from "./particles/plants";
 
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
@@ -82,9 +82,16 @@ export const sketch = (s) => {
             if (target_particle instanceof OrganicParticle) {
                 console.log("Water/Nutrient capacitys: ", target_particle.water_capacity, target_particle.nutrient_capacity)
                 console.log("Water/Nutrient levels: ", target_particle.water_level, target_particle.nutrient_level)
+                console.log("This location: ", [target_particle.x, target_particle.y])
             }
             if (target_particle instanceof PlantFamilyParticle) {
                 console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
+                console.log("is dead:", target_particle.dead)
+            }
+            if (target_particle instanceof RootParticle) {
+                console.log("Is node: " + target_particle.is_node)
+                console.log("Is active: " + target_particle.is_active)
+                console.log("Parent location: " + target_particle.parent_root_particle)
             }
             console.log("")
         })
