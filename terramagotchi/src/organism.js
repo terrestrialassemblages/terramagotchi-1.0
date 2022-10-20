@@ -86,7 +86,6 @@ export class Organism {
 
     head_color = "#550000"
     body_colors = []
-    body_color = window.color || "#bc4b52"
 
     constructor(x, y, environment) {
         this.x = x
@@ -109,14 +108,14 @@ export class Organism {
         // Generate each color
         for (
             let i = 0;
-            i < ((MIN_LENGTH + (this.water_capacity + this.nutrient_level) / RESOURCES_PER_BODY_LENGTH) | 0);
+            i <= (((this.nutrient_capacity + this.water_capacity) / RESOURCES_PER_BODY_LENGTH + MIN_LENGTH) | 0);
             i++
         ) {
             const red = FastRandom.int_min_max(base_red, 220)
             const green = FastRandom.int_min_max(base_green, 100)
             const blue = FastRandom.int_min_max(base_blue, 105)
 
-            const hex = "#" + red.toString(16) + green.toString(16) + blue.toString(16)
+            const hex = "#" + red.toString(16).padStart(2, "0") + green.toString(16).padStart(2, "0") + blue.toString(16).padStart(2, "0")
 
             this.body_colors.push(hex)
         }
