@@ -56,7 +56,7 @@ export class LeafParticle extends ShootSystemParticle {
 
     grow_children(environment) {
 
-        if (FastRandom.random() > this.leaf_growth_probability || this.cooldown_timer >= 0)
+        if (FastRandom.random() > this.leaf_growth_probability || this.cooldown_timer >= 0 || this.dead || this.leaf_dead)
             return
 
         if (this.__current_length >= this.dna.leaf_size) {

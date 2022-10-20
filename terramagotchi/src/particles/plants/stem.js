@@ -3,9 +3,10 @@ import {
     DNANode,
     FlowerParticle,
     LeafParticle,
-    ShootSystemParticle,
     PlantFamilyParticle,
 } from ".";
+
+import { ShootSystemParticle } from "./shoot_system";
 
 import { AirParticle } from "..";
 
@@ -69,7 +70,7 @@ export class StemParticle extends ShootSystemParticle {
          * Handles growing of bark
          * @param {Environment} environment     The current game environment
          */
-        if (this.energy < this.activation_level)
+        if (this.energy < this.activation_level || this.dead)
             return;
             
         let current_stem_thickness = this.dna.stem_thickness -

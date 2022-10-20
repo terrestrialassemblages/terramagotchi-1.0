@@ -7,6 +7,7 @@ import {
     WATER_ENERGY_RATIO,
 } from "../../environment";
 import { RootParticle } from "./root";
+import { FastRandom } from "../../fast-random";
 
 // import { FastRandom } from "../../fast-random";
 
@@ -25,6 +26,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
 
         this.nutrient_capacity = 15
         this.water_capacity = 15
+        this.__transfer_smoothing_constant = 3/4
     }
 
 
@@ -40,10 +42,13 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
-                target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER
+                target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER ||
+                FastRandom.random() > this.__transfer_smoothing_constant
                 )
                 continue
             
+            if (target_particle instanceof RootParticle)
+                target_amount = Math.min(target_particle.water_level, this.water_capacity - this.water_level)
 
             if ((target_particle.water_level > this.water_level || target_particle instanceof RootParticle) && target_particle.water_level >= target_amount) {
 
@@ -70,13 +75,16 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
-                target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
+                target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS ||
+                FastRandom.random() > this.__transfer_smoothing_constant
                 )
                 continue
             
+                if (target_particle instanceof RootParticle)
+                    target_amount = Math.min(target_particle.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+            
 
             if ((target_particle.nutrient_level > this.nutrient_level || target_particle instanceof RootParticle) && target_particle.nutrient_level >= target_amount) {
-
                 this.nutrient_level += target_amount
                 target_particle.nutrient_level -= target_amount
                 // Setting these to true slows absorption down to an unallowable level
