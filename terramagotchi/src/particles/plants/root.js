@@ -39,8 +39,7 @@ export class RootParticle extends PlantFamilyParticle {
     }
     
     update(environment) {
-        this.absorb_water(environment, this.__neighbours, [RootParticle, SoilParticle]);
-        this.absorb_nutrients(environment, this.__neighbours, [RootParticle, SoilParticle]);
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle]);
         let particle_to_check = environment.get(this.parent_root_particle[0], this.parent_root_particle[1])
         if (particle_to_check.dead == true || particle_to_check instanceof SoilParticle) { // if the parent particle is dead, which is also checked by seeing if its soil, it runs to kill the rest of the root particles.
             this.root_random_genocide(environment);
@@ -51,6 +50,7 @@ export class RootParticle extends PlantFamilyParticle {
         if (this.is_active == false && this.has_checked_surroundings == false && this.__current_length > this.minimum_distance) { // checks if a root is as isolated as you want to. only runs when its 'settled down'
             this.root_isolated(environment);
         }
+        this.check_growth_conditions(environment);
     }
 
     check_growth_conditions(environment) {
@@ -187,116 +187,5 @@ export class RootParticle extends PlantFamilyParticle {
             }
         }
         this.has_checked_surroundings = true;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    absorb_water(environment, potential_neighbours, valid_neighbour_types) {
-        // Choose random neighbour
-        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours)
-        let random_neighbour = environment.get(
-            this.x + offset_x,
-            this.y + offset_y
-        );
-
-        // Check if random neighbour is a valid type (feel free to rewrite implementation)
-        let neighbour_valid_type = false;
-        for (const valid_type of valid_neighbour_types) {
-            if (random_neighbour instanceof valid_type) {
-                neighbour_valid_type = true;
-                break;
-            }
-        }
-
-        // Method 1
-        // let transfer_amount = 5;
-        // Method 2
-        let transfer_amount = FastRandom.int_max(10);
-        // Method 3
-        //let transfer_amount = Math.floor((random_neighbour.water_level - this.water_level) / (1.5 + FastRandom.random()));
-
-        // Attempt to absorb water from random neighbour
-        if (
-            neighbour_valid_type &&
-            this.water_level + transfer_amount <= this.water_capacity &&
-            random_neighbour.water_level >= transfer_amount &&
-            this.water_level + transfer_amount < random_neighbour.water_level &&
-            !random_neighbour.__water_transferred &&
-            !this.__water_transferred
-        ) {
-            // Transfer water
-            this.water_level += Math.max(transfer_amount, 1);
-            random_neighbour.water_level -= Math.max(transfer_amount, 1);
-
-            // Ensure water is not transfered again this tick
-            this.__water_transferred = true;
-            random_neighbour.__water_transferred = true;
-        }
-    }
-
-    absorb_nutrients(environment, potential_neighbours, valid_neighbour_types) {
-        // Choose random neighbour
-        let [offset_x, offset_y] = FastRandom.choice(potential_neighbours);
-        let random_neighbour = environment.get(
-            this.x + offset_x,
-            this.y + offset_y
-        );
-
-        // Check if random neighbour is a valid type (feel free to rewrite implementation)
-        let neighbour_valid_type = false;
-        for (const valid_type of valid_neighbour_types) {
-            if (random_neighbour instanceof valid_type) {
-                neighbour_valid_type = true;
-                break;
-            }
-        }
-
-        // Method 1
-        // let transfer_amount = 5;
-        // Method 2
-        //let transfer_amount = FastRandom.int_max(1);
-        // Method 3
-        let transfer_amount = Math.floor(
-            (random_neighbour.nutrient_level - this.nutrient_level) /
-                (1.5 + FastRandom.random())
-        );
-
-        // Attempt to absorb nutrient from random neighbour
-        if (
-            neighbour_valid_type &&
-            this.nutrient_level + transfer_amount <= this.nutrient_capacity &&
-            random_neighbour.nutrient_level >= transfer_amount &&
-            this.nutrient_level + transfer_amount <
-                random_neighbour.nutrient_level &&
-            !random_neighbour.__nutrient_transferred &&
-            !this.__nutrient_transferred
-        ) {
-            // Transfer nutrient
-            this.nutrient_level += Math.max(transfer_amount, 1);
-            random_neighbour.nutrient_level -= Math.max(transfer_amount, 1);
-
-            // Ensure nutrient is not transfered again this tick
-            this.__nutrient_transferred = true;
-            random_neighbour.__nutrient_transferred = true;
-        }
     }
 }

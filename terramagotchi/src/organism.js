@@ -1,15 +1,36 @@
 import { FastRandom } from "./fast-random"
-import { AirParticle, BoundaryParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
-import { DeadPlantParticle } from "./particles/plants"
+import { AirParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
+import { LiquidParticle } from "./particles/liquid"
+import {
+    BarkParticle,
+    DeadPlantParticle,
+    LeafParticle,
+    RootParticle,
+    SeedParticle,
+    StemParticle,
+} from "./particles/plants"
 
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
 const ORGANISM_UPDATE_INTERVAL = 15
 
 // The organisms body is at least this long.
-const MIN_LENGTH = 5
+const MIN_LENGTH = 10
+// How much water_level or nutrient_level per one extra body length.
+const RESOURCES_PER_BODY_LENGTH = 200
 
 // The organism may move onto any of these particle types.
-const CAN_TRAVERSE = [AirParticle, WaterParticle, SoilParticle, DeadPlantParticle, CompostParticle]
+const CAN_TRAVERSE = [
+    AirParticle,
+    WaterParticle,
+    SoilParticle,
+    DeadPlantParticle,
+    CompostParticle,
+    RootParticle,
+    SeedParticle,
+    BarkParticle,
+    StemParticle,
+    LeafParticle,
+]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
 const MAX_SEEK_DEPTH = 100
@@ -64,13 +85,41 @@ export class Organism {
     update_timer = 0
 
     head_color = "#550000"
-    body_color = "#bc4b52"
+    body_colors = []
+    body_color = window.color || "#bc4b52"
 
     constructor(x, y, environment) {
         this.x = x
         this.y = y
         this.update_timer = FastRandom.int_max(ORGANISM_UPDATE_INTERVAL)
         this.seek(DeadPlantParticle, environment)
+        this.__generate_body_colors()
+    }
+
+    __generate_body_colors() {
+        /**
+         * Generate the head color and a list of colors for each particle/cell of the organism's body (at max length).
+         */
+
+        // Generate base color
+        const base_red = FastRandom.int_min_max(190, 220)
+        const base_green = FastRandom.int_min_max(75, 100)
+        const base_blue = FastRandom.int_min_max(85, 105)
+
+        // Generate each color
+        for (
+            let i = 0;
+            i < ((MIN_LENGTH + (this.water_capacity + this.nutrient_level) / RESOURCES_PER_BODY_LENGTH) | 0);
+            i++
+        ) {
+            const red = FastRandom.int_min_max(base_red, 220)
+            const green = FastRandom.int_min_max(base_green, 100)
+            const blue = FastRandom.int_min_max(base_blue, 105)
+
+            const hex = "#" + red.toString(16) + green.toString(16) + blue.toString(16)
+
+            this.body_colors.push(hex)
+        }
     }
 
     update(environment) {
@@ -80,7 +129,7 @@ export class Organism {
 
         this.location_history.length = Math.min(
             this.location_history.length,
-            (this.nutrient_level / 100 + MIN_LENGTH) | 0
+            ((this.nutrient_level + this.water_level) / RESOURCES_PER_BODY_LENGTH + MIN_LENGTH) | 0
         )
 
         const fell = this.compute_gravity(environment)
@@ -430,7 +479,7 @@ export class Organism {
 
         // Consume water from the WaterParticle
         let transfer_water_amount = Math.min(
-            water_particle.water_content,
+            water_particle.water_level,
             this.water_capacity - this.water_level,
             MAX_EAT_AMOUNT
         )
@@ -441,7 +490,7 @@ export class Organism {
         this.energy += ENERGY_RATIO * transfer_water_amount
 
         // Water has transfered as much as it can
-        if (water_particle.water_content == 0) {
+        if (water_particle.water_level == 0) {
             let new_air_particle = new AirParticle(water_particle.x, water_particle.y)
             environment.set(new_air_particle)
 
@@ -464,9 +513,9 @@ export class Organism {
         const new_compost_particle = new CompostParticle(this.x, this.y)
         // new_compost_particle.decay_into = environment.get(this.x, this.y)
 
-        new_compost_particle.nutrient_content = this.nutrient_level - MIN_NUTRIENTS
+        new_compost_particle.nutrient_level = this.nutrient_level - MIN_NUTRIENTS
         this.nutrient_level = MIN_NUTRIENTS
-        new_compost_particle.water_content = this.water_level - MIN_WATER
+        new_compost_particle.water_level = this.water_level - MIN_WATER
         this.water_level = MIN_WATER
 
         environment.set(new_compost_particle)
@@ -477,16 +526,30 @@ export class Organism {
          * Handles when the organism dies and turns to compost.
          */
 
+        let valid_death_locations = [] // A list of particles below the organism's body on which it can die.
+
         for (let [x, y] of this.location_history) {
-            let new_compost_particle = new CompostParticle(x, y)
-            new_compost_particle.nutrient_content = Math.round(this.nutrient_level / this.location_history.length)
-            new_compost_particle.water_content = Math.round(this.water_level / this.location_history.length)
-
-            if (environment.get(x, y) instanceof SoilParticle) new_compost_particle.decay_into = SoilParticle
-
-            environment.set(new_compost_particle)
+            if (environment.get(x, y) instanceof SoilParticle) {
+                valid_death_locations.push([x, y])
+            }
         }
-        // Remove the organism from the Environment.
-        environment.organisms.splice(environment.organisms.indexOf(this), 1)
+
+        if (valid_death_locations.length > 0) {
+            for (let [x, y] of valid_death_locations) {
+                let new_compost_particle = new CompostParticle(x, y)
+                new_compost_particle.nutrient_content = Math.round(this.nutrient_level / valid_death_locations.length)
+                new_compost_particle.water_content = Math.round(this.water_level / valid_death_locations.length)
+
+                new_compost_particle.decay_into = SoilParticle
+
+                environment.set(new_compost_particle)
+            }
+
+            // Remove the organism from the Environment.
+            environment.organisms.splice(environment.organisms.indexOf(this), 1)
+        } else {
+            // Let the organism wander for a little bit longer to find some soil where it can die.
+            this.energy += 60
+        }
     }
 }

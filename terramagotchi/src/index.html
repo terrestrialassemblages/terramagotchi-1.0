@@ -5,7 +5,11 @@
   <title>Terramagotchi</title>
 </head>
 <body>
-  <!-- <style>
+  <div id="qr-container" style="display: none">
+    <canvas id="qr-code"></canvas>
+    <p id="remote-url"></p>
+  </div>
+  <style>
     body {
       margin: 0;
     }
@@ -22,6 +26,16 @@
       max-height: 100%;
       max-width: 100%;
     }
-    </style> -->
+
+    #qr-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: sans-serif;
+      font-size: 36px;
+      flex-direction: column;
+    }
+    </style>
 </body>
 </html>

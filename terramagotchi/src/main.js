@@ -1,6 +1,7 @@
-import p5 from "p5"
-
-import { Application } from "./application"
+import p5 from "p5";
+import { Application } from "./application";
+import cryptoRandomString from "crypto-random-string";
+import { toCanvas as generate_QR } from "qrcode";
 import { FastRandom } from "./fast-random";
 
 // Testing code: Imports for testing particles by manually adding
@@ -16,6 +17,22 @@ import {
 
 import { SeedParticle, DeadPlantParticle, PlantFamilyParticle } from "./particles/plants";
 
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
+    authDomain: "terramagotchi.firebaseapp.com",
+    projectId: "terramagotchi",
+    storageBucket: "terramagotchi.appspot.com",
+    messagingSenderId: "983152859921",
+    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
+};
+
+// Check if URL param for id exists, if it does set the instance id to it
+const id_param = (new URL(document.location)).searchParams.get("id");
+const INSTANCE_ID = id_param ? id_param : "main"; // Constant instance id for debug
+//const INSTANCE_ID = id_param ? id_param : cryptoRandomString({ length: 6, type: "alphanumeric" });
+
+let show_qr = false;
+
 // cringe safety feature
 p5.disableFriendlyErrors = true
 
@@ -23,10 +40,10 @@ export const sketch = (s) => {
     /**
      * Function class for constructing a p5.js object
      */
-    const application = new Application(180, 320)
-    let cell_size = 3 // Defines cell size in pixels.
+    const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
+    let cell_size = 3; // Defines cell size in pixels.
 
-    let night_overlay_graphic, main_graphic, organisms_graphic;
+    let night_overlay_graphic, main_graphic, organisms_graphic, deep_dark_overlay_graphic;
     let sky_day_color, sky_night_color;
 
     let night_overlay_opacity;
@@ -72,9 +89,41 @@ export const sketch = (s) => {
             console.log("")
         })
 
+        deep_dark_overlay_graphic = s.createGraphics(s.width, s.height);
+        deep_dark_overlay_graphic.noStroke();
+
         smooth_darkness_intensity = 0.9;
         darkness_banding = 5;
         banded_darkness_intensity = 0.7;
+
+        s.paint_deep_dark_overlay()
+    }
+
+    s.paint_deep_dark_overlay = () => {
+        // Iterates through all particles in the application's environment to
+        // draw the deep dark overlay
+        for (let particle of application.environment.particle_grid) {
+            // Darken cell of grid if it is below the terrain horizon
+            if (particle.y < application.environment.get_horizon(particle.x)) {
+                let smooth_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 20;
+                let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + FastRandom.random() * 0.05), 1, (1-smooth_darkness_intensity));
+
+                let banded_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 60;
+                let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + FastRandom.random() * 0.02), 1, (1-banded_darkness_intensity)) 
+                    * darkness_banding) | 0) / darkness_banding;
+
+                // Set the fill colour to black with the appropriate opacity 
+                deep_dark_overlay_graphic.fill(0, (1 - s.lerp(banded_brightness, smooth_brightness, 0.85)) * 255)
+
+                // Paint square on grid
+                deep_dark_overlay_graphic.rect(
+                    cell_size * particle.x,
+                    cell_size * (application.height - 1 - particle.y),
+                    cell_size,
+                    cell_size
+                );
+            }
+        }
     }
 
     // The update function. Fires every frame
@@ -92,28 +141,7 @@ export const sketch = (s) => {
                 // Particle is not empty, paint over with full color
                 else {
                     main_graphic.noErase()
-
-                    particle.rerender = false
-
-                    let particle_color = particle.get_color(s)
-
-                    // Darken particle appropriately if under the horizon
-                    if (particle.y < application.environment.get_horizon(particle.x)) {
-                        let smooth_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 20;
-                        let smooth_brightness = s.lerp(Math.min(1, (particle.y / smooth_darkness_height) + FastRandom.random() * 0.05), 1, (1-smooth_darkness_intensity));
-
-                        let banded_darkness_height = s.lerp(application.environment.get_horizon(particle.x), 150, 0.6) - 60;
-                        let banded_brightness = ((s.lerp(Math.min(1, (particle.y / banded_darkness_height) + FastRandom.random() * 0.02), 1, (1-banded_darkness_intensity)) 
-                            * darkness_banding) | 0) / darkness_banding;
-
-                        particle_color = s.color(
-                            s.hue(particle_color),
-                            s.saturation(particle_color),
-                            s.brightness(particle_color) * s.lerp(banded_brightness, smooth_brightness, 0.85)
-                        )
-                    }
-
-                    main_graphic.fill(particle_color);
+                    main_graphic.fill(particle.get_color(s));
                 }
 
                 // Paint square on grid
@@ -130,8 +158,10 @@ export const sketch = (s) => {
         // Render organisms
         organisms_graphic.clear();
         for (let organism of application.environment.organisms) {
-            for (let [prev_x, prev_y] of organism.location_history) {
-                organisms_graphic.fill(organism.body_color);
+            for (let i = 0; i < organism.location_history.length; i++) {
+                const [prev_x, prev_y] = organism.location_history[i]
+                const color = organism.body_colors[i]
+                organisms_graphic.fill(color);
                 organisms_graphic.rect(
                     cell_size * prev_x,
                     cell_size * (application.height - 1 - prev_y),
@@ -156,11 +186,14 @@ export const sketch = (s) => {
         // Display organisms
         s.image(organisms_graphic, 0, 0);
 
+        // Display deep dark overlay
+        s.image(deep_dark_overlay_graphic, 0, 0);
+
         // Render night-time darkening overlay
         night_overlay_graphic.clear();
         night_overlay_graphic.background(0, 0, 10, s.lerp(night_overlay_opacity, 0, application.environment.light_level / 100));
         s.image(night_overlay_graphic, 0, 0);
-    };       
+    };
 
     // Debug code for drawing
     let current_material = 1 // Default to stone
@@ -192,4 +225,27 @@ export const sketch = (s) => {
     }
 }
 
-const sketchInstance = new p5(sketch)
+const sketchInstance = new p5(sketch);
+
+// Generate QR Code for the remote app
+const qr_code_canvas = document.getElementById("qr-code");
+const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
+generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
+document.getElementById("remote-url").innerText = remote_url;
+
+// If . is pressed, toggle QR code visibility
+document.addEventListener("keyup", (e) => {
+    if (e.key === ".") {
+        if (show_qr) {
+            sketchInstance.loop();
+            document.querySelector("main").style.display = "flex";
+            document.getElementById("qr-container").style.display = "none";
+            show_qr = false;
+        } else {
+            sketchInstance.noLoop();
+            document.querySelector("main").style.display = "none";
+            document.getElementById("qr-container").style.display = "flex";
+            show_qr = true;
+        }
+    }
+});

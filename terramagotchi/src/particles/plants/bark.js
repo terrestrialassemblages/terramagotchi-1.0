@@ -28,9 +28,6 @@ export class BarkParticle extends ShootSystemParticle {
         this.health_update(environment)
         this.health = this.max_health // Keep bark alive
 
-        // this.absorb_nutrients(environment)
-        // this.absorb_water(environment)
-
         if (this.dead || !this.is_active)
             return;
         

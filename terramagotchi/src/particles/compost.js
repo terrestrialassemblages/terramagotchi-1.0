@@ -11,8 +11,8 @@ export class CompostParticle extends OrganicParticle {
         this.water_capacity = 0;
         this.nutrient_capacity = 0;
 
-        this.nutrient_content = 1000;
-        this.water_content = 100;
+        this.nutrient_level = 1000;
+        this.water_level = 100;
 
         this.decay_into = AirParticle;
     }
@@ -44,30 +44,52 @@ export class CompostParticle extends OrganicParticle {
             if (random_neighbour.nutrient_level < random_neighbour.nutrient_capacity) {
                 // Transfer as much nutrient as possible to neighbour
                 let transfer_amount = Math.min(
-                    this.nutrient_content,
+                    this.nutrient_level,
                     random_neighbour.nutrient_capacity -
                         random_neighbour.nutrient_level
                 );
                 random_neighbour.nutrient_level += transfer_amount;
-                this.nutrient_content -= transfer_amount;
+                this.nutrient_level -= transfer_amount;
             }
 
             // Attempt water dispersion
             if (random_neighbour.water_level < random_neighbour.water_capacity) {
                 // Transfer as much water as possible to neighbour
                 let transfer_amount = Math.min(
-                    this.water_content,
+                    this.water_level,
                     random_neighbour.water_capacity -
                         random_neighbour.water_level
                 );
                 random_neighbour.water_level += transfer_amount;
-                this.water_content -= transfer_amount;
+                this.water_level -= transfer_amount;
             }
 
             // Has transfered all nutrients and water contents
-            if (this.nutrient_content == 0 && this.water_content == 0) {
+            if (this.nutrient_level == 0 && this.water_level == 0) {
                 environment.set(new this.decay_into(this.x, this.y));
             }
         }
+    }
+
+    get_color(s) {
+        //if (this.nutrient_capacity != 0) {
+        //   s.push()
+        //   s.colorMode(s.RGB)
+        //   //this.color = s.color((this.water_level - 30) * 10)
+        //   this.color = s.color((this.water_level / this.water_capacity) * 255)
+        //   s.pop()
+        //   return this.color
+        //}
+        // Initialise colour if needed
+        if (this.color === "#FF00FF") {
+            super.get_color(s);
+        }
+
+        this.color = s.color(
+            s.hue(this.color),
+            s.saturation(this.base_color) * this.saturation_offset,
+            s.brightness(this.base_color) * this.brightness_offset
+        );
+        return this.color;
     }
 }

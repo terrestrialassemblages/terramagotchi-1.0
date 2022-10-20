@@ -25,7 +25,10 @@
     "webpack-dev-server": "^4.10.1"
   },
   "dependencies": {
+    "crypto-random-string": "^5.0.0",
+    "firebase": "^9.12.1",
     "p5": "^1.4.2",
+    "qrcode": "^1.5.1",
     "simplex-noise": "^4.0.0"
   }
 }
