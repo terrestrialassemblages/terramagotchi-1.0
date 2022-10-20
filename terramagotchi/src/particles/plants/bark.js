@@ -1,6 +1,9 @@
 import { ShootSystemParticle } from "./shoot_system";
 
-import { AirParticle } from "..";
+import {
+    AirParticle,
+    SoilParticle,
+} from "..";
 
 import {
     Environment,
@@ -9,6 +12,7 @@ import {
 } from "../../environment";
 
 import { PlantFamilyParticle } from "./plant";
+import { RootParticle } from "./root";
 
 export class BarkParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
@@ -22,20 +26,41 @@ export class BarkParticle extends ShootSystemParticle {
 
         this.is_active = true
         this.__child_directions = null
+        this.__try_populate_roots = (this.dna == this.dna.get_root())
     }
 
     update(environment) {        
         this.health_update(environment)
         this.health = this.max_health // Keep bark alive
 
+        this.populate_roots(environment)
+
         if (this.dead || !this.is_active)
             return;
         
-        this.generate_energy()
+        this.absorb_nutrients(environment)
+        this.absorb_water(environment)
 
         if (this.__current_length < this.__thickness && this.energy >= this.activation_level)
             this.grow(environment)
     }
+
+    populate_roots(environment) {
+        /**
+         * Creates new root systems in soil if underneath, only if current bark is part from the root trunk.
+         * Will only attempt to add roots once; if soil is added underneath bark after the function is run once,
+         * no roots will be spawned underneath
+         * @param {Environment} environment     The current environment of the application
+         */
+        if (!this.__try_populate_roots)
+            return
+        
+        let target_particle = environment.get(this.x, this.y - 1)
+        if (target_particle instanceof SoilParticle)
+            environment.set(new RootParticle(this.x, this.y - 1, this.dna))
+        this.__try_populate_roots = false
+    }
+
 
     grow(environment) {
         /**
@@ -75,7 +100,7 @@ export class BarkParticle extends ShootSystemParticle {
             this.energy -= this.activation_level
         }
 
-        if (!(target_particle instanceof PlantFamilyParticle))
-            this.__child_directions.push([offset_x, offset_y])
+        // if (!(target_particle instanceof PlantFamilyParticle))
+        //     this.__child_directions.push([offset_x, offset_y])
     }
 }
