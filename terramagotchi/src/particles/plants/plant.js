@@ -194,7 +194,8 @@ export class PlantFamilyParticle extends OrganicParticle {
     convert_offset_to_base_angle(offset_x, offset_y) {
         /**
          * Converts a given x, y directional offset ([-1 ... 1, -1 ... 1]) to the middle angle
-         * required to produce that offset
+         * required to produce that offset.
+         * For example, the offset [0, 1] representing the particle above corresponds to the angle 90 degrees
          * @param {Number} offset_x     Integer in range [-1, 1]
          * @param {Number} offset_y     Integer in range [-1, 1]
          */

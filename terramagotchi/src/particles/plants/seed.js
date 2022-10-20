@@ -18,6 +18,9 @@ import {
 } from "../../environment";
 
 export class SeedParticle extends PlantFamilyParticle {
+
+    static SEED_MAX_HEALTH = 1650 // Seeds will use a unique max-health so they don't die immediately
+
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
@@ -29,6 +32,7 @@ export class SeedParticle extends PlantFamilyParticle {
 
         // Minimum energy capacity = the particles activation level, to never not have it as an option
         this.energy_capacity = Math.max(this.energy_capacity, this.activation_level)
+        this.max_health = SeedParticle.SEED_MAX_HEALTH
         
         this.germinated = false
     }

@@ -31,6 +31,10 @@ export class ShootSystemParticle extends PlantFamilyParticle {
 
 
     absorb_water(environment) {
+        /**
+         * Handles how ShootSystemParticles absorb water from neighbouring particles
+         * @param {Environment} environment     The current environment in the application
+         */
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour
@@ -64,6 +68,10 @@ export class ShootSystemParticle extends PlantFamilyParticle {
 
 
     absorb_nutrients(environment) {
+        /**
+         * Handles how ShootSystemParticles absorb nutrients from neighbouring particles
+         * @param {Environment} environment     The current environment in the application
+         */
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour
@@ -94,40 +102,4 @@ export class ShootSystemParticle extends PlantFamilyParticle {
                 
         }
     }
-
-    // absorb_water(environment) {
-    //     /** 
-    //      * Overriding the existing water absorption code to increase water transfer between plant particles
-    //      * Forces a transfer between neighbouring plant particles if possible
-    //      * @param {Environment}     environment     The current game environment
-    //      */
-    //     let target_amount = 5
-
-    //     for (let row = 1; row > -2; row--) {
-    //         for (let col = 1; col > -2; col--) {
-                
-    //             // Skip check when row = col = 0
-    //             if (row | col == 0)
-    //                 continue;
-                
-    //             // Prevent plant from transferring 
-    //             if (this.__water_transferred || this.water_level + target_amount > this.water_capacity)
-    //                 return;
-
-    //             let target_particle = environment.get(this.x+col, this.y+row)
-
-    //             // Check __water_transferred condition
-    //             if (target_particle.__water_transferred)
-    //                 continue
-                
-    //             if (!(target_particle instanceof PlantFamilyParticle))
-    //                 continue
-
-    //             if ((target_particle.water_level > this.water_level || target_particle instanceof RootParticle) && target_particle.water_level >= target_amount) {
-    //                 this.water_level += target_amount
-    //                 target_particle.water_level -= target_amount
-    //             }
-    //         }
-    //     }
-    // }
 }
