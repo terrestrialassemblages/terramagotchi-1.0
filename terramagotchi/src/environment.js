@@ -11,6 +11,7 @@ import {
     OrganicParticle,
     BaseParticle,
     CloudParticle,
+    SteamParticle,
 } from "./particles";
 
 import {
@@ -83,7 +84,6 @@ export class Environment {
     }
 
     generate() {
-
         /**
          * Populates the application environment with particles
          */
@@ -254,19 +254,49 @@ export class Environment {
         this.time_of_day += this.__length_of_day / time;
     }
 
-    // Creates a 4x4 with of the given particle at x,y (for user interaction purposes)
-    user_add_particle(particle, x, y) {
+    // Creates a 4x4 with of the given particle at a random valid position (for user interaction purposes)
+    user_add_particle(particle) {
+        // x, y position is random within bounds and above land
+        const [x, y] = [FastRandom.int_min_max(1, this.width - 5), FastRandom.int_min_max(160, this.height - 5)];
+        let added_particles = 0
+
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
-                // Checks that the particle being replaced is Air
-                if (this.get(x + i, y + j) instanceof AirParticle) {
+                // Checks that the particle being replaced is Air, Cloud or Steam
+                if (this.get(x + i, y + j) instanceof (AirParticle || CloudParticle || SteamParticle)) {
                     this.set(new particle(x + i, y + j));
+                    added_particles++;
 
                     // Increases particle tracking variables
                     if (particle === WaterParticle) { this.water_added += 1; }
                     if (particle === SoilParticle) { this.soil_added += 1; }
                 }
             }
+        }
+        // If no particles were added, try again in a new location
+        if (added_particles === 0) {
+            this.user_add_particle(particle);
+        }
+    }
+
+    // Creates a seed with of the given plant at a random valid position (for user interaction purposes)
+    user_add_seed(plant) {
+        // x, y position is random within bounds and above land
+        const y = FastRandom.int_min_max(160, this.height - 1);
+        let x = 0;
+        // Generates an x value which is on likely to be on either side of the river.
+        if (FastRandom.random() >= 0.5) {
+            x = FastRandom.int_min_max(Math.ceil(this.width / 2 + this.river_offset + this.river_radius - 10), this.width - 1);
+        } else {
+            x = FastRandom.int_min_max(1, Math.floor(this.width / 2 + this.river_offset - this.river_radius + 10));
+        }
+        
+        // Checks that the particle being replaced is Air, Cloud or Steam
+        if (this.get(x, y) instanceof (AirParticle || CloudParticle || SteamParticle)) {
+            this.set(new SeedParticle(x, y));
+        } else {
+            // If no particles were added, try again in a new location
+            this.user_add_seed(plant);
         }
     }
 
