@@ -13,7 +13,7 @@ export class LeafParticle extends ShootSystemParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
-        this.max_health = 2000 + FastRandom.int_min_max(0, 2000)
+        this.max_health = 300 + FastRandom.int_min_max(0, 1)
         this.health = this.max_health
 
         this.leaf_growth_probability = 1/10
@@ -21,11 +21,13 @@ export class LeafParticle extends ShootSystemParticle {
 
         this.is_leaf_node = true
         this.leaf_dead = false
+        this.leaf_death_tick = -1
 
         this.__leaf_children = null
     }
 
     update(environment) {
+        this.rerender = true
         this.absorb_nutrients(environment)
         this.absorb_water(environment)
         this.generate_energy()
@@ -75,7 +77,9 @@ export class LeafParticle extends ShootSystemParticle {
                 new_leaf.__current_length = this.__current_length + 1
                 if (new_leaf.__current_length >= this.dna.secondary_color_length)
                     new_leaf.base_color = this.dna.secondary_color
-
+                
+                new_leaf.is_leaf_node = false
+                new_leaf.absorb_tier = this.absorb_tier + 100
                 environment.set(new_leaf)
                 
                 this.energy -= this.activation_level
@@ -85,14 +89,12 @@ export class LeafParticle extends ShootSystemParticle {
     }
 
     health_update(environment) {
+        this.rerender = true
         if (this.cooldown_timer == 0) {
             this.cooldown_timer -= 1
-            this.is_active = true
-            this.leaf_dead = false
             this.health = this.max_health
             return
-        }
-        else if (this.cooldown_timer > 0) {
+        } else if (this.cooldown_timer > 0) {
             this.cooldown_timer -= 1
             return
         }
@@ -100,30 +102,42 @@ export class LeafParticle extends ShootSystemParticle {
         if (this.dead) {
             this.die(environment)
         }
+
         this.health -= 1
+
         if (this.health <= 0)
             this.leaf_die(environment)
     
     }
 
     leaf_die(environment) {
+
         this.leaf_dead = true
-        if (this.death_tick == -1)
-            this.death_tick = environment.tick
-        if (this.death_tick == environment.tick)
+        
+        if (this.leaf_death_tick == -1)
+            this.leaf_death_tick = environment.tick
+        if (this.leaf_death_tick == environment.tick)
             return
-        for (let [offset_x, offset_y] of this.__neighbours) {
-            let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-            if (target_particle instanceof LeafParticle && !target_particle.leaf_dead && this.dna.get_root() == target_particle.dna.get_root())
-                target_particle.leaf_die(environment)
+
+        if (this.is_leaf_node || this.leaf_death_tick < environment.tick) {
+            for (let [offset_x, offset_y] of this.__neighbours) {
+                let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
+                if (target_particle instanceof LeafParticle && !target_particle.leaf_dead && this.dna.get_root() == target_particle.dna.get_root())
+                    target_particle.leaf_die(environment)
+            }
+
+            
+
+            if (this.is_leaf_node) {
+                this.cooldown_timer = 300
+                this.is_active = true
+                this.leaf_dead = false
+                this.death_tick = -1
+                return;
+            }
+
+            let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
+            environment.set(new_dead_plant)
         }
-        if (this.__current_length == 1) {
-            this.cooldown_timer = 300
-            this.leaf_dead = false
-            return;
-        }
-        let new_dead_plant = new DeadPlantParticle(this.x, this.y, this.dna)
-        // let new_dead_plant = new AirParticle(this.x, this.y, this.dna)
-        environment.set(new_dead_plant)
     }
 }

@@ -100,6 +100,7 @@ export class StemParticle extends ShootSystemParticle {
                     new_bark_particle.growth_angle = left_bark_angle
                     new_bark_particle.__current_length = 1
                     new_bark_particle.__thickness = this.left_bark_thickness
+                    new_bark_particle.absorb_tier = this.absorb_tier - 2
 
                     environment.set(new_bark_particle)
                     this.energy -= this.activation_level
@@ -123,6 +124,7 @@ export class StemParticle extends ShootSystemParticle {
                     new_bark_particle.growth_angle = right_bark_angle
                     new_bark_particle.__current_length = 1
                     new_bark_particle.__thickness = this.right_bark_thickness
+                    new_bark_particle.absorb_tier = this.absorb_tier - 2
 
                     environment.set(new_bark_particle)
                     this.energy -= this.activation_level
@@ -164,6 +166,7 @@ export class StemParticle extends ShootSystemParticle {
         new_particle.__dx = this.__dx + offset_x
         new_particle.__dy = this.__dy + offset_y
         new_particle.__current_length = this.__current_length + 1
+        new_particle.absorb_tier = this.absorb_tier + 1
 
         environment.set(new_particle)
 
@@ -219,10 +222,11 @@ export class StemParticle extends ShootSystemParticle {
             new_child_particle.water_level = PlantFamilyParticle.MIN_HEALTHY_WATER
             this.nutrient_level -= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
             this.water_level -= PlantFamilyParticle.MIN_HEALTHY_WATER
-
+            
             new_child_particle.__dx = offset_x
             new_child_particle.__dy = offset_y
             new_child_particle.__current_length = 1
+            new_child_particle.absorb_tier = this.absorb_tier + 1
 
             if (PlantFamilyParticle.IS_NET_ZERO) {
                 this.nutrient_level = this.activation_level * NUTRIENT_ENERGY_RATIO

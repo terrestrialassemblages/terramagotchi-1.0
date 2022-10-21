@@ -67,6 +67,7 @@ export class SeedParticle extends PlantFamilyParticle {
         */
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
+            new_stem_cell.absorb_tier = 1
             
             if (PlantFamilyParticle.IS_NET_ZERO){
                 new_stem_cell.nutrient_level += (this.activation_level + this.energy) * NUTRIENT_ENERGY_RATIO

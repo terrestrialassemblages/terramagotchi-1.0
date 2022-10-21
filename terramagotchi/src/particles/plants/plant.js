@@ -32,8 +32,8 @@ export class PlantFamilyParticle extends OrganicParticle {
     static MAX_ENERGY = 3                   // Maximum amount of energy a plant particle will contain
     static CREATE_ENERGY_PROBABILITY = 1    // Probability any given frame that energy will be produced in a plant containing sufficient water/nutrients
     
-    static MIN_HEALTHY_WATER = 3            // Minimum amount of water to be considered "healthy"; will not create energy to go below
-    static MIN_HEALTHY_NUTRIENTS = 3        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_WATER = 0            // Minimum amount of water to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_NUTRIENTS = 0        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
 
     static IS_NET_ZERO = true
 
@@ -72,6 +72,7 @@ export class PlantFamilyParticle extends OrganicParticle {
         this.health =           (this.dna.max_health != null) ? this.dna.max_health : PlantFamilyParticle.DEFAULT_MAX_HEALTH
         this.energy = 0
         this.death_tick = -1
+        this.absorb_tier = -1024 // = -(1 << 10)
 
         this.is_active = true
         this.dead = false
@@ -108,6 +109,7 @@ export class PlantFamilyParticle extends OrganicParticle {
          * when plant is healthy. Plant is unhealthy when below the "healthy" level of water/nutrients
          * @param {Environment} environment     Contains the current state of the application
          */
+        this.rerender = true
         if (this.dead)
             return this.die(environment)
         
@@ -269,30 +271,30 @@ export class PlantFamilyParticle extends OrganicParticle {
 
     
     // Debug colouring code
-    // get_color(s) {
-    //     if (this.nutrient_capacity != 0) {
-    //         s.push()
-    //         s.colorMode(s.RGB)
-    //     //    this.color = s.color((this.water_level - 30) * 10)
-    //         let red = 255*(this.nutrient_level/this.nutrient_capacity)
-    //         let blue = 255*(this.water_level/this.water_capacity)
-    //         this.color = s.color(red, 0, blue)
+    get_color(s) {
+        if (this.nutrient_capacity != 0) {
+            s.push()
+            s.colorMode(s.RGB)
+        //    this.color = s.color((this.water_level - 30) * 10)
+            let red = 255*(this.nutrient_level/this.nutrient_capacity)
+            let blue = 255*(this.water_level/this.water_capacity)
+            this.color = s.color(red, 0, blue)
             
-    //         s.pop()
-    //         return this.color
-    //     }
+            s.pop()
+            return this.color
+        }
 
-    //     // Initialise colour if needed
-    //     if (this.color === "#000000") {
-    //         super.get_color(s);
-    //     }
+        // Initialise colour if needed
+        if (this.color === "#000000") {
+            super.get_color(s);
+        }
 
-    //     this.color = s.color(
-    //         s.hue(this.color),
-    //         s.saturation(this.base_color) * this.saturation_offset,
-    //         s.brightness(this.base_color) * this.brightness_offset -
-    //             this.water_level / 4
-    //     );
-    //     return this.color;
-    // }
+        this.color = s.color(
+            s.hue(this.color),
+            s.saturation(this.base_color) * this.saturation_offset,
+            s.brightness(this.base_color) * this.brightness_offset -
+                this.water_level / 4
+        );
+        return this.color;
+    }
 }

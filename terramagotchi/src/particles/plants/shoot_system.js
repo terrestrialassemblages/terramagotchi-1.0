@@ -30,7 +30,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
     }
 
 
-    absorb_water(environment) {
+    absorb_water(environment, is_safe=true) {
         /**
          * Handles how ShootSystemParticles absorb water from neighbouring particles
          * @param {Environment} environment     The current environment in the application
@@ -46,6 +46,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
+                target_particle.absorb_tier > this.absorb_tier ||
                 target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER ||
                 FastRandom.random() > this.__transfer_smoothing_constant
                 )
@@ -55,7 +56,6 @@ export class ShootSystemParticle extends PlantFamilyParticle {
                 target_amount = Math.min(target_particle.water_level, this.water_capacity - this.water_level)
 
             if ((target_particle.water_level > this.water_level || target_particle instanceof RootParticle) && target_particle.water_level >= target_amount) {
-
                 this.water_level += target_amount
                 target_particle.water_level -= target_amount
                 // Setting these to true slows absorption down to an unallowable level
@@ -67,7 +67,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
     }
 
 
-    absorb_nutrients(environment) {
+    absorb_nutrients(environment, is_safe=true) {
         /**
          * Handles how ShootSystemParticles absorb nutrients from neighbouring particles
          * @param {Environment} environment     The current environment in the application
@@ -83,6 +83,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
+                target_particle.absorb_tier > this.absorb_tier ||
                 target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS ||
                 FastRandom.random() > this.__transfer_smoothing_constant
                 )

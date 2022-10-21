@@ -97,6 +97,7 @@ export class BarkParticle extends ShootSystemParticle {
             new_bark_particle.__current_length = this.__current_length + 1
             new_bark_particle.__thickness = this.__thickness
             new_bark_particle.growth_angle = this.growth_angle
+            new_bark_particle.absorb_tier = this.absorb_tier - 2
 
             if (PlantFamilyParticle.IS_NET_ZERO) {
                 new_bark_particle.nutrient_level += this.activation_level * NUTRIENT_ENERGY_RATIO
