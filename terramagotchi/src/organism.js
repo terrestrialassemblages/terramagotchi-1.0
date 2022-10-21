@@ -47,7 +47,7 @@ const MAX_EAT_AMOUNT = 100
 const MAX_DRINK_AMOUNT = 100
 
 // The ratio for how much energy 1 nutrient/water is worth.
-const ENERGY_RATIO = 1
+const ENERGY_RATIO = 5
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -73,7 +73,7 @@ export class Organism {
     water_capacity = 1000
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
-    energy = 200
+    energy = 500
 
     x = 120
     y = 120
