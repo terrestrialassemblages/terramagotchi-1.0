@@ -58,9 +58,6 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if ((target_particle.water_level > this.water_level || target_particle instanceof RootParticle) && target_particle.water_level >= target_amount) {
                 this.water_level += target_amount
                 target_particle.water_level -= target_amount
-                // Setting these to true slows absorption down to an unallowable level
-                // this.__water_transferred = true
-                // target_particle.__water_transferred = true
             }
                 
         }
@@ -96,9 +93,6 @@ export class ShootSystemParticle extends PlantFamilyParticle {
             if ((target_particle.nutrient_level > this.nutrient_level || target_particle instanceof RootParticle) && target_particle.nutrient_level >= target_amount) {
                 this.nutrient_level += target_amount
                 target_particle.nutrient_level -= target_amount
-                // Setting these to true slows absorption down to an unallowable level
-                // this.__nutrient_transferred = true
-                // target_particle.__nutrient_transferred = true
             }
                 
         }
