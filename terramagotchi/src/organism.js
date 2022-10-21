@@ -536,8 +536,8 @@ export class Organism {
         if (valid_death_locations.length > 0) {
             for (let [x, y] of valid_death_locations) {
                 let new_compost_particle = new CompostParticle(x, y)
-                new_compost_particle.nutrient_content = Math.round(this.nutrient_level / valid_death_locations.length)
-                new_compost_particle.water_content = Math.round(this.water_level / valid_death_locations.length)
+                new_compost_particle.nutrient_level = Math.round(this.nutrient_level / valid_death_locations.length)
+                new_compost_particle.water_level = Math.round(this.water_level / valid_death_locations.length)
 
                 new_compost_particle.decay_into = SoilParticle
 

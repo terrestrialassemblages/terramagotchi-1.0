@@ -61,18 +61,18 @@ export class WaterParticle extends LiquidParticle {
         if (FastRandom.random() < this.evaporation_chance &&
             environment.get(this.x, this.y + 1) instanceof AirParticle &&
             !environment.is_raining &&
-            this.water_content > 0 && 
+            this.water_level > 0 && 
             environment.light_level == 100) {
 
             // How much water_level to transfer to the new steam particle
-            let transfer_amount = Math.min(this.evaporate_water_level, this.water_content);
+            let transfer_amount = Math.min(this.evaporate_water_level, this.water_level);
             // Create new steam particle
             environment.set(new SteamParticle(this.x, this.y + 1, transfer_amount))
-            // Remove water_content
-            this.water_content -= transfer_amount
+            // Remove water_level
+            this.water_level -= transfer_amount
 
             // Has transferred all remaining water
-            if (this.water_content == 0) {
+            if (this.water_level == 0) {
                 // Replace with air
                 environment.set(new AirParticle(this.x, this.y));
             }
