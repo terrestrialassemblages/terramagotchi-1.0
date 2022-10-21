@@ -17,6 +17,10 @@ import {
 
 import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle } from "./particles/plants";
 
+/**
+ * Firebase Config, This is specific to the Terramagotchi Firebase project
+ * To use a different firebase project you will need to use a new config found in project settings
+ */
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
     authDomain: "terramagotchi.firebaseapp.com",

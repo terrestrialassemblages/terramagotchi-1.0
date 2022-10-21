@@ -42,23 +42,22 @@ export class Application {
     }
 
     start_db_listener() {
-        // Checks if database was updated
+        // Checks for a new snapshot in the Firestore (a snapshot is created whenever a change occurs in the database)
         onSnapshot(this.db_collection, (snapshot) => {
-            // Checks each change in the document and changes environment as required
+            // Checks each change in the database snapshot and changes environment as required
             snapshot.docChanges().forEach((change) => {
-                const [x, y] = [FastRandom.int_min_max(10, 170), FastRandom.int_min_max(160, 310)];
                 if (change.doc.data().value != 0) {
                     if (change.doc.id == "water") {
-                        this.environment.user_add_particle(WaterParticle, x, y);
+                        this.environment.user_add_particle(WaterParticle);
                     }
                     if (change.doc.id == "soil") {
-                        this.environment.user_add_particle(SoilParticle, x, y);
+                        this.environment.user_add_particle(SoilParticle);
                     }
                     if (change.doc.id == "seed") {
-                        this.environment.set(new SeedParticle(x, y));
+                        this.environment.user_add_seed(FastRandom.choice(["LAVENDER", "SUNFLOWER", "KAURI"]));
                     }
                     if (change.doc.id == "worm") {
-                        this.environment.spawn_organism(x, y);
+                        this.environment.spawn_organism(FastRandom.int_min_max(5, this.width - 5), FastRandom.int_min_max(160, this.height - 5));
                     }
                     if (change.doc.id == "time") {
                         this.environment.change_time(4);

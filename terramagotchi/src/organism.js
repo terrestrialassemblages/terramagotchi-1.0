@@ -47,7 +47,7 @@ const MAX_EAT_AMOUNT = 100
 const MAX_DRINK_AMOUNT = 100
 
 // The ratio for how much energy 1 nutrient/water is worth.
-const ENERGY_RATIO = 1
+const ENERGY_RATIO = 5
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -73,7 +73,7 @@ export class Organism {
     water_capacity = 1000
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
-    energy = 200
+    energy = 500
 
     x = 120
     y = 120
@@ -86,7 +86,6 @@ export class Organism {
 
     head_color = "#550000"
     body_colors = []
-    body_color = window.color || "#bc4b52"
 
     constructor(x, y, environment) {
         this.x = x
@@ -109,14 +108,14 @@ export class Organism {
         // Generate each color
         for (
             let i = 0;
-            i < ((MIN_LENGTH + (this.water_capacity + this.nutrient_level) / RESOURCES_PER_BODY_LENGTH) | 0);
+            i <= (((this.nutrient_capacity + this.water_capacity) / RESOURCES_PER_BODY_LENGTH + MIN_LENGTH) | 0);
             i++
         ) {
             const red = FastRandom.int_min_max(base_red, 220)
             const green = FastRandom.int_min_max(base_green, 100)
             const blue = FastRandom.int_min_max(base_blue, 105)
 
-            const hex = "#" + red.toString(16) + green.toString(16) + blue.toString(16)
+            const hex = "#" + red.toString(16).padStart(2, "0") + green.toString(16).padStart(2, "0") + blue.toString(16).padStart(2, "0")
 
             this.body_colors.push(hex)
         }
@@ -537,8 +536,8 @@ export class Organism {
         if (valid_death_locations.length > 0) {
             for (let [x, y] of valid_death_locations) {
                 let new_compost_particle = new CompostParticle(x, y)
-                new_compost_particle.nutrient_content = Math.round(this.nutrient_level / valid_death_locations.length)
-                new_compost_particle.water_content = Math.round(this.water_level / valid_death_locations.length)
+                new_compost_particle.nutrient_level = Math.round(this.nutrient_level / valid_death_locations.length)
+                new_compost_particle.water_level = Math.round(this.water_level / valid_death_locations.length)
 
                 new_compost_particle.decay_into = SoilParticle
 

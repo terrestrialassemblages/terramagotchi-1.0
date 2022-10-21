@@ -3,7 +3,7 @@ Terramagotchi is a web app which aims to educate people about the nature cycles 
 This includes a simulation of nutrient and water transfer between soil, plants and organisms, as well as water evaporation and weather.
 It is separated into 3 parts: The main application where the environment is simulated, the remote which sends signals to the main application to spawn in particles by anyone, and the Firebase database which acts as the conduit to allow communication between the main application and any connected remotes.
 
-## Project Management Tool.
+## Project Management Tool
 
 https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shared=&atlOrigin=eyJpIjoiZjY3OGU1NWM5OGM5NDJkZWJhNzcwYjM0MjFmNGQ0NWIiLCJwIjoiaiJ9
 
@@ -11,12 +11,15 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 
 ### Languages
 
-[![node](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/) 
 [![javascript](https://img.shields.io/badge/JavaScript-f7df1e?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en/JavaScript) 
 [![css](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en/CSS) [![postcss](https://img.shields.io/badge/PostCSS-DD3A0A?style=for-the-badge&logo=postcss&logoColor=white)](https://postcss.org/)
 [![html](https://img.shields.io/badge/HTML-e34c26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en/HTML)
 
 ### Libraries
+
+[![p5](https://img.shields.io/badge/p5.js-ED225D?style=for-the-badge&logo=p5.js&logoColor=white)](https://p5js.org/)
+[![tailwind](https://img.shields.io/badge/tailwind_css-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![firebase](https://img.shields.io/badge/firebase-F57C00?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 
 | Name                | version | description | terramagotchi | terramagotchi development | remote | remote development | firebase | firebase development |
 |---------------------|---------|-------------|---------------|---------------------------|--------|--------------------|----------|----------------------|
@@ -43,9 +46,9 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 
 ## Usage - Instructions on How to Install and Setup the Project.
 
-All dependencies have been listed above. See [Libraries](###Libraries)
+All dependencies have been listed above. See [Libraries](#libraries)
 
-Prior to using these applications, you must have Node installed on your machine.
+Prior to using these applications, you must have Node.js (with npm) installed on your machine.
 
 As there are three sub-packages, each one must be installed/used separately.
 
@@ -91,6 +94,7 @@ cd ..
 npm install
 firebase deploy
 ```
+Global function variables within Firestore can be created in `!global/variables`, currently only `user_cooldown` is supported.
 
 ### Terramagotchi-Remote (User Remote)
 
@@ -124,13 +128,14 @@ This project is an application which is made to be shown in an art gallery setti
 
 ## URL of the Website Where the Project Has Been Deployed
 
-https://terramagotchi.web.app
+https://terramagotchi.web.app  
+https://terramagotchi.web.app/remote
 
 ## Future Plan (Ideas for Future releases)
 
-- Temperature and Oxygen levels.
-- Larger diversity of plants and organisms.
+- Temperature and oxygen levels which affect the water and nutrient cycles. A high temperature would result in more transpiration. Oxygen levels would imply an additional carbon cycle system.
+- Larger diversity of plants and organisms. Currently we have 3 plants, (lavendar, dandelion and kauri tree,) and one organism, (a worm).
 
 ## Acknowledgements (if any) - You Can List Tutorials Used, Projects Referred To, People Consulted Etc.
 
-- CodingTrain
+- [The Coding Train on YouTube](https://www.youtube.com/c/TheCodingTrain)

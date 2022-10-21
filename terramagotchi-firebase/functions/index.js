@@ -2,9 +2,16 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 
+// Fallback user cooldown length in ms if no Firestore global variable is set
 const DEFAULT_COOLDOWN_LENGTH = 1000;
 
-// Singular cloud function for user interaction, parses document and instance_id as the parameter
+/**
+ * Firestore cloud function for handling all user interaction.
+ * Requires a POST containing a json object that specifies a document and instance id.
+ * Use "init" as the document to create an instance of given id.
+ * 
+ * Global Variables can be set in !global/variables/ within the Firestore client.
+ */
 exports.userInteract = functions
     .runWith({
         // Reduces cold starts by keeping 5 instances of the function "warm"
