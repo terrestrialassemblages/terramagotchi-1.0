@@ -11,12 +11,15 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 
 ### Languages
 
-[![node](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/) 
 [![javascript](https://img.shields.io/badge/JavaScript-f7df1e?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en/JavaScript) 
 [![css](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en/CSS) [![postcss](https://img.shields.io/badge/PostCSS-DD3A0A?style=for-the-badge&logo=postcss&logoColor=white)](https://postcss.org/)
 [![html](https://img.shields.io/badge/HTML-e34c26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en/HTML)
 
 ### Libraries
+
+[![p5](https://img.shields.io/badge/p5.js-ED225D?style=for-the-badge&logo=p5.js&logoColor=white)](https://p5js.org/)
+[![tailwind](https://img.shields.io/badge/tailwind_css-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![firebase](https://img.shields.io/badge/firebase-F57C00?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 
 | Name                | version | description | terramagotchi | terramagotchi development | remote | remote development | firebase | firebase development |
 |---------------------|---------|-------------|---------------|---------------------------|--------|--------------------|----------|----------------------|
@@ -91,6 +94,7 @@ cd ..
 npm install
 firebase deploy
 ```
+Global function variables within Firestore can be created in `!global/variables`, currently only `user_cooldown` is supported.
 
 ### Terramagotchi-Remote (User Remote)
 
