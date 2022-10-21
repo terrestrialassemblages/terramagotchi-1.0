@@ -207,7 +207,7 @@ export class Environment {
             // Move passing_particle to pass_through_layer
             this.__pass_through_layer.push(passing_particle)
             // Replace cell in regular layer with air
-            this.__particle_grid[old_x * old_y] = new AirParticle(old_x, old_y);
+            this.__particle_grid[old_y * this.width + old_x] = new AirParticle(old_x, old_y);
         }
 
         // Move to new position
