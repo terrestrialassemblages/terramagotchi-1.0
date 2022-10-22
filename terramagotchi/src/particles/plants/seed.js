@@ -47,8 +47,7 @@ export class SeedParticle extends PlantFamilyParticle {
         this.compute_gravity(environment)
         this.health_update(environment)
         
-        this.absorb_nutrients(environment, this.__neighbours, [SoilParticle, CompostParticle])
-        this.absorb_water(environment, this.__neighbours, [SoilParticle, CompostParticle])
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle, CompostParticle])
         this.generate_energy()
 
         if (!this.germinated)

@@ -30,6 +30,7 @@ export class BarkParticle extends ShootSystemParticle {
     }
 
     update(environment) {        
+        this.rerender = true
         this.health_update(environment)
         this.health = this.max_health // Keep bark alive
 
@@ -39,8 +40,8 @@ export class BarkParticle extends ShootSystemParticle {
         if (this.dead || !this.is_active)
             return;
         
-        this.absorb_nutrients(environment)
-        this.absorb_water(environment)
+        // this.absorb_nutrients(environment)
+        // this.absorb_water(environment)
 
         if (this.__current_length < this.__thickness && this.energy >= this.activation_level)
             this.grow(environment)
@@ -97,7 +98,7 @@ export class BarkParticle extends ShootSystemParticle {
             new_bark_particle.__current_length = this.__current_length + 1
             new_bark_particle.__thickness = this.__thickness
             new_bark_particle.growth_angle = this.growth_angle
-            new_bark_particle.absorb_tier = this.absorb_tier - 2
+            new_bark_particle.absorb_tier = -(this.__current_length + 1)
 
             if (PlantFamilyParticle.IS_NET_ZERO) {
                 new_bark_particle.nutrient_level += this.activation_level * NUTRIENT_ENERGY_RATIO
@@ -108,7 +109,7 @@ export class BarkParticle extends ShootSystemParticle {
             this.energy -= this.activation_level
         }
 
-        // if (!(target_particle instanceof PlantFamilyParticle))
-        //     this.__child_directions.push([offset_x, offset_y])
+        if (!(target_particle instanceof PlantFamilyParticle))
+            this.__child_directions.push([offset_x, offset_y])
     }
 }

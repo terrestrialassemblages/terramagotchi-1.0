@@ -47,7 +47,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
                 target_particle.absorb_tier > this.absorb_tier ||
-                target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER ||
+                (target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER && is_safe) ||
                 FastRandom.random() > this.__transfer_smoothing_constant
                 )
                 continue
@@ -81,7 +81,7 @@ export class ShootSystemParticle extends PlantFamilyParticle {
                 !(target_particle instanceof PlantFamilyParticle) ||
                 target_particle.__nutrient_transferred ||
                 target_particle.absorb_tier > this.absorb_tier ||
-                target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS ||
+                (target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS && is_safe) ||
                 FastRandom.random() > this.__transfer_smoothing_constant
                 )
                 continue

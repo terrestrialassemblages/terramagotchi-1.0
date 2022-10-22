@@ -61,6 +61,7 @@ export class DNANode {
          * Variables defining leaf behaviour
             ================================= */
         
+        this.leaf_max_health = dna_encoding.leaf_max_health || 1200
         this.leaf_shape = dna_encoding.leaf_shape || "flat-top"
         this.leaf_direction = dna_encoding.leaf_direction || 1
         this.leaf_size = dna_encoding.leaf_size || 2

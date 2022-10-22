@@ -10,11 +10,18 @@ import { ShootSystemParticle } from "./shoot_system"
 import { FastRandom } from "../../fast-random";
 
 export class LeafParticle extends ShootSystemParticle {
+
+    static REGROWTH_COOLDOWN_CONST = 10*60 // 5 seconds at 60fps
+
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
-        this.max_health = 3050 + FastRandom.int_min_max(0, 2400)
+        this.activation_level = 0
+        this.max_health = this.dna.leaf_max_health || 1200 + FastRandom.int_min_max(-300, 300)
         this.health = this.max_health
+
+        this.nutrient_capacity = 100
+        this.water_capacity = 100
 
         this.leaf_growth_probability = 1/10
         this.cooldown_timer = -1
@@ -27,8 +34,8 @@ export class LeafParticle extends ShootSystemParticle {
     }
 
     update(environment) {
-        this.absorb_nutrients(environment)
-        this.absorb_water(environment)
+        this.absorb_nutrients(environment, false)
+        this.absorb_water(environment, false)
         this.generate_energy()
         this.health_update(environment)
         
@@ -82,7 +89,7 @@ export class LeafParticle extends ShootSystemParticle {
                 environment.set(new_leaf)
                 
                 this.energy -= this.activation_level
-                break //necessary
+                // break //necessary
             }
         }
     }
@@ -96,6 +103,7 @@ export class LeafParticle extends ShootSystemParticle {
         if (this.is_leaf_root) {
             if (this.cooldown_timer == 0) {
                 this.cooldown_timer -= 1
+                this.is_active = true
                 return
             } else if (this.cooldown_timer > 0) {
                 this.cooldown_timer -= 1
@@ -111,7 +119,7 @@ export class LeafParticle extends ShootSystemParticle {
     leaf_die(environment) {
 
         if (this.is_leaf_root) {
-            this.cooldown_timer = 300
+            this.cooldown_timer = LeafParticle.REGROWTH_COOLDOWN_CONST
             this.is_active = false
             return;
         }

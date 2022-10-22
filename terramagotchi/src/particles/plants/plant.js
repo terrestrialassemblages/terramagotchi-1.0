@@ -26,14 +26,15 @@ import { FastRandom } from "../../fast-random";
 export class PlantFamilyParticle extends OrganicParticle {
 
     static DEFAULT_ACTIVATION_ENERGY = 0    // Default amount of energy required for a plant particle to grow
-    static DEFAULT_MAX_HEALTH = 7300         // Effectively how many frames a plant survives while "unhealthy" until dying
+    static DEFAULT_MAX_HEALTH = 30*60*2     // Effectively how many frames (*2) a plant survives while "unhealthy" until dying
                                             // Can be set in DNA per-plant, else defaults to this value
+                                            // *2 because health decrements for each condition of being too low in water and nutrients
                                         
     static MAX_ENERGY = 3                   // Maximum amount of energy a plant particle will contain
-    static CREATE_ENERGY_PROBABILITY = 1    // Probability any given frame that energy will be produced in a plant containing sufficient water/nutrients
+    static CREATE_ENERGY_PROBABILITY = 1/2    // Probability any given frame that energy will be produced in a plant containing sufficient water/nutrients
     
-    static MIN_HEALTHY_WATER = 5            // Minimum amount of water to be considered "healthy"; will not create energy to go below
-    static MIN_HEALTHY_NUTRIENTS = 5        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_WATER = 3            // Minimum amount of water to be considered "healthy"; will not create energy to go below
+    static MIN_HEALTHY_NUTRIENTS = 3        // Minimum amount of nutrients to be considered "healthy"; will not create energy to go below
 
     static IS_NET_ZERO = true
 
@@ -84,6 +85,7 @@ export class PlantFamilyParticle extends OrganicParticle {
 
     // Below are some common functions for plant-type particles
     generate_energy() {
+        this.rerender = true
         /**
          * Handles conversion between water/nutrient levels to particle usable "energy"
          * Energy is what a plant consumes to "grow", not the water/nutrients themselves
@@ -269,7 +271,7 @@ export class PlantFamilyParticle extends OrganicParticle {
     //     if (this.nutrient_capacity != 0) {
     //         s.push()
     //         s.colorMode(s.RGB)
-    //     //    this.color = s.color((this.water_level - 30) * 10)
+    //         this.color = s.color((this.water_level - 30) * 10)
     //         let red = 255*(this.nutrient_level/this.nutrient_capacity)
     //         let blue = 255*(this.water_level/this.water_capacity)
     //         this.color = s.color(red, 0, blue)
@@ -278,7 +280,7 @@ export class PlantFamilyParticle extends OrganicParticle {
     //         return this.color
     //     }
 
-    //     Initialise colour if needed
+    //     // Initialise colour if needed
     //     if (this.color === "#000000") {
     //         super.get_color(s);
     //     }
