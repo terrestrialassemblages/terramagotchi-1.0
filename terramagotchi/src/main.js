@@ -12,15 +12,9 @@ import {
     WaterParticle,
     SteamParticle,
     CompostParticle,
-    OrganicParticle,
 } from "./particles";
+import { SeedParticle, DeadPlantParticle } from "./particles/plants";
 
-import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle } from "./particles/plants";
-
-/**
- * Firebase Config, This is specific to the Terramagotchi Firebase project
- * To use a different firebase project you will need to use a new config found in project settings
- */
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
     authDomain: "terramagotchi.firebaseapp.com",
@@ -75,30 +69,7 @@ export const sketch = (s) => {
 
         s.colorMode(s.HSB);
         // s.frameRate(20);
-        s.background("#000000");
-
-        canvas.mouseClicked(() => {
-            let x_pos = s.mouseX / cell_size | 0
-            let y_pos = (application.height - (s.mouseY / cell_size)) | 0
-            let target_particle = application.environment.get(x_pos, y_pos)
-            
-            console.log(target_particle.constructor.name, "| moveable: " + target_particle.moveable, "| weight: " + target_particle.weight)
-            if (target_particle instanceof OrganicParticle) {
-                console.log("Water/Nutrient capacitys: ", target_particle.water_capacity, target_particle.nutrient_capacity)
-                console.log("Water/Nutrient levels: ", target_particle.water_level, target_particle.nutrient_level)
-                console.log("This location: ", [target_particle.x, target_particle.y])
-            }
-            if (target_particle instanceof PlantFamilyParticle) {
-                console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
-                console.log("is dead:", target_particle.dead)
-            }
-            if (target_particle instanceof RootParticle) {
-                console.log("Is node: " + target_particle.is_node)
-                console.log("Is active: " + target_particle.is_active)
-                console.log("Parent location: " + target_particle.parent_root_particle)
-            }
-            console.log("")
-        })
+        s.background("#000")
 
         deep_dark_overlay_graphic = s.createGraphics(s.width, s.height);
         deep_dark_overlay_graphic.noStroke();

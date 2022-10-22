@@ -1,4 +1,3 @@
-import { Environment } from "../environment";
 import { FastRandom } from "../fast-random";
 import { AirParticle } from "./air";
 import { BaseParticle } from "./base";
@@ -12,7 +11,7 @@ export class OrganicParticle extends BaseParticle {
         this.weight = 2;
 
         this.__nutrient_level = 0;
-        this.nutrient_capacity = 100
+        this.nutrient_capacity = 100;
         this.__nutrient_render_step = 100;
         this.__last_rendered_nutrient_level = 0;
 
@@ -38,10 +37,10 @@ export class OrganicParticle extends BaseParticle {
     }
 
     set nutrient_level(level) {
-        if (Math.abs(this.nutrient_level - this.__last_rendered_nutrient_level) >= this.__nutrient_render_step) {
-           this.rerender = true;
-           this.__last_rendered_nutrient_level = this.nutrient_level;
-        }
+        //if (Math.abs(this.nutrient_level - this.__last_rendered_nutrient_level) >= this.__nutrient_render_step) {
+        //    this.rerender = true;
+        //    this.__last_rendered_nutrient_level = this.nutrient_level;
+        //}
 
         this.__nutrient_level = level;
     }
@@ -61,15 +60,6 @@ export class OrganicParticle extends BaseParticle {
     }
 
     absorb_from_neighbours(environment, potential_neighbours, valid_neighbour_types) {
-        /**
-         * Handles how organic particles absorb water/nutrients from neighbouring particles
-         * Selects random neighbour from list of potential_neighbours and checks if the neighbours "type" is valid
-         * If valid, attempts water & nutrient absorption
-         * @param {Environment}                 environment             The current environment-state of the application
-         * @param {Array<Array<Number>>}        potential_neighbours    Array of neighbours to check for absorption
-         * @param {Array<Array<BaseParticle>>}  valid_neighbour_types   Array of valid particle-types of neighbours to absorb fromn
-         */
-
         // Choose random neighbour
         let [offset_x, offset_y] = FastRandom.choice(potential_neighbours)
         let random_neighbour = environment.get(
@@ -94,15 +84,10 @@ export class OrganicParticle extends BaseParticle {
     }
 
     absorb_water(neighbour) {
-        /**
-         * Handles default water-absorption behaviour of organic particles
-         * @param {BaseParticle}    neighbour   A neighbouring particle of a valid particle-type to absorb from
-         */
         
         // How much water to transfer
         // Absorb up to 10 water or up to the difference between levels if lower
         let transfer_amount = Math.min(FastRandom.int_max(10), neighbour.water_level - this.water_level)
-
         // Only absorb as much as the capacity will allow
         transfer_amount = Math.min(transfer_amount, this.water_capacity - this.water_level)
 
@@ -123,11 +108,6 @@ export class OrganicParticle extends BaseParticle {
     }
 
     absorb_nutrients(neighbour) {
-        /**
-         * Handles default nutrient-absorption behaviour of organic particles
-         * @param {BaseParticle}    neighbour   A neighbouring particle of a valid particle-type to absorb from
-         */
-
         // How much nutrients to transfer
         // Absorb half of the difference between levels, or as much as possible if the capacity is too low
         let transfer_amount = Math.min((((neighbour.nutrient_level - this.nutrient_level) / 2) | 0), this.nutrient_capacity - this.nutrient_level);

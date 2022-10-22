@@ -94,11 +94,7 @@ export class BaseParticle {
             if (free_neighbours.length > 1) {
                 let offset = FastRandom.choice(free_neighbours)
                 if (offset != 0) {
-
-                    this.attempt_pass_through(this.x + offset, this.y, environment);
-                    if (this.moveable_x) {
-                        environment.swap(this.x, this.y, this.x + offset, this.y);
-                    }
+                    environment.swap(this.x, this.y, this.x + offset, this.y);
                 }
             }
         }

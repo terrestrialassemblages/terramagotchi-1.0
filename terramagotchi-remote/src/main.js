@@ -4,10 +4,6 @@ import { getAuth, signInAnonymously, RecaptchaVerifier, onAuthStateChanged } fro
 import './main.css';
 import 'tw-elements';
 
-/**
- * Firebase Config, This is specific to the Terramagotchi Firebase project
- * To use a different firebase project you will need to use a new config found in project settings
- */
 const firebaseConfig = {
     apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
     authDomain: "terramagotchi.firebaseapp.com",
@@ -27,7 +23,6 @@ const userInteract = httpsCallable(functions, "userInteract");
 const status_text = document.getElementById("status-text");
 const loading_spin = document.getElementById("loading-spin");
 
-// Functions for showing and hiding loading spin
 const hide_spin = () => { loading_spin.classList.add("visually-hidden") }
 const show_spin = () => { loading_spin.classList.remove("visually-hidden") }
 
@@ -41,7 +36,7 @@ window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
     "size": "invisible",
     "callback": (response) => {
         signInAnonymously(auth).then(() => {
-            // Do something on sign in if needed, this is instead handled in onAuthStateChanged()
+            // Do something on sign in
         }).catch((err) => {
             console.error(err);
             status_text.innerText = "Error Authenticating, Please Refresh"
@@ -73,22 +68,19 @@ onAuthStateChanged(auth, (user) => {
 const id_param = (new URL(document.location)).searchParams.get("id");
 const instance = id_param ? id_param : "main"; // Constant instance id for debug
 
-// Setting Instance display text
-document.getElementById("instance-text").innerText = instance;
 // Boolean for waiting on server requests
 let awaiting_response = false;
 
-// Function for every button to call, envokes the Firebase cloud function for user interaction
+// Setting Instance display text
+document.getElementById("instance-text").innerText = instance;
+
 const particle_button_click = (type) => {
-    // Checks that an auth user exists and is not waiting on a response
     if (uid !== null && !awaiting_response) {
         awaiting_response = true;
         status_text.innerText = "Waiting...";
         show_spin();
-        // Cloud function POST request, takes document and instance_id as arguments
         userInteract({ document: type, instance_id: instance }).then((result) => {
             let message = result.data.message;
-            // Checks if a cooldown or successful response is returned
             if (typeof message == "string") {
                 status_text.innerText = message.includes("time") ? "Successfully Changed Time" : message;
                 hide_spin();
@@ -98,7 +90,6 @@ const particle_button_click = (type) => {
             awaiting_response = false;
         });
     } else {
-        // If no user exists, try to verify again
         window.recaptchaVerifier.verify();
     }
 }
@@ -119,7 +110,7 @@ time_button.addEventListener('click', () => particle_button_click("time"));
 const worm_button = document.getElementById("worm-button");
 worm_button.addEventListener('click', () => particle_button_click("worm"));
 
-// Visual cooldown display, uses time in ms
+// Visual cooldown display
 const start_cooldown = (time) => {
     water_button.disabled = true;
     soil_button.disabled = true;

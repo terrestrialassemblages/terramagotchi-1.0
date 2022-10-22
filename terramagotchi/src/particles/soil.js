@@ -3,14 +3,15 @@ import { AirParticle } from "./air";
 import { CompostParticle } from "./compost";
 import { WaterParticle } from "./water";
 import { FastRandom } from "../fast-random";
-import { ShootSystemParticle } from "./plants";
 
 export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
         super(x, y);
 
         this.base_color = "#92745B";
-        this.pass_through_types = [ ShootSystemParticle ];
+
+        this.water_level = 30;
+        this.nutrient_level = 30;
 
         // Poisson distribution chance to grow grass
         this.grass_grow_chance = 0.001;
@@ -28,8 +29,7 @@ export class SoilParticle extends OrganicParticle {
     grass_growth(environment) {
 
         // Has not moved, Particle above is Air and Poisson Distribution chance
-        if (this.moveable_x &&
-            this.moveable_y && 
+        if (this.moveable_x && this.moveable_y && 
             environment.get(this.x,this.y+1) instanceof AirParticle && 
             FastRandom.random() < this.grass_grow_chance) {
             // Grow grass
