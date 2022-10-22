@@ -1,4 +1,4 @@
-// import { PlantParticleFamily } from "./plant";
+// import { PlantFamilyParticle } from "./plant";
 import { LeafParticle } from "./leaf";
 
 export class FlowerParticle extends LeafParticle {

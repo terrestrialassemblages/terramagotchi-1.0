@@ -11,8 +11,13 @@ export class AirParticle extends InorganicParticle {
         this.empty = true;
     }
 
-    set moveable_x(_val) {}
-    set moveable_y(_val) {}
+    set moveable_x(_val) {
+        /** Overriding particle setter function so AirParticle moveable is never set to false */
+    }
+    
+    set moveable_y(_val) {
+        /** Overriding particle setter function so AirParticle moveable is never set to false */
+    }
 
     get moveable_x() {return true}
     get moveable_y() {return true}
