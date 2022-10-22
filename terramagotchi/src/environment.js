@@ -3,29 +3,31 @@ import { Organism } from "./organism";
 import { createNoise2D } from 'simplex-noise';
 
 import {
-    BoundaryParticle,
-    StoneParticle,
-    SoilParticle,
-    WaterParticle,
     AirParticle,
-    OrganicParticle,
     BaseParticle,
+    BoundaryParticle,
     CloudParticle,
+    OrganicParticle,
+    SoilParticle,
+    StoneParticle,
+    WaterParticle,
     SteamParticle,
 } from "./particles";
 
 import {
-    PlantParticle,
-    SeedParticle,
+    DNANode,
     DeadPlantParticle,
-    LeafParticle,
     FlowerParticle,
+    LeafParticle,
+    PlantParticle,
     RootParticle,
+    SeedParticle,
     StemParticle,
+    generate_tree_dna,
 } from "./particles/plants";
 
-export const WATER_ENERGY_RATIO = 1
 export const NUTRIENT_ENERGY_RATIO = 1
+export const WATER_ENERGY_RATIO = 1
 
 export class Environment {
     constructor(width, height) {
@@ -95,7 +97,10 @@ export class Environment {
                 }
                 // Set Soil Particles
                 else if (y < this.get_horizon(x)) {
-                    this.set(new SoilParticle(x, y));
+                    let new_soil = new SoilParticle(x, y)
+                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
+                    new_soil.nutrient_level = (new_soil.nutrient_capacity / 2) | 0
+                    this.set(new_soil);
                 } 
                 // Set Water Particles
                 else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
@@ -115,6 +120,7 @@ export class Environment {
             }
         }
 
+        this.set(new SeedParticle(160, 180, new DNANode(null, generate_tree_dna("KAURI"))))
         this.refresh()
     }
 
@@ -157,6 +163,11 @@ export class Environment {
     }
 
     set(particle) {
+        /**
+         * Replaces a particle in the particle grid with a new particle, while handling W/N conservation and the destruction of the old particle
+         * @param {BaseParticle} particle   The new particle to be inserted into the particle grid
+         *                                  Destroyed particle determined by the new particles x/y coordinates
+         */
         // Set old particle to destroyed so it doesn't get updated.
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroy(this);
