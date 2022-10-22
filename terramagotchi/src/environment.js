@@ -304,7 +304,7 @@ export class Environment {
         
         // Checks that the particle being replaced is Air, Cloud or Steam
         if (this.get(x, y) instanceof (AirParticle || CloudParticle || SteamParticle)) {
-            this.set(new SeedParticle(x, y));
+            this.set(new SeedParticle(x, y, new DNANode(null, generate_tree_dna(plant))))
         } else {
             // If no particles were added, try again in a new location
             this.user_add_seed(plant);
