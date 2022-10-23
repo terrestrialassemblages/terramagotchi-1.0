@@ -11,6 +11,7 @@ import { ShootSystemParticle } from "./shoot_system";
 import { AirParticle } from "..";
 
 import { Environment, NUTRIENT_ENERGY_RATIO, WATER_ENERGY_RATIO } from "../../environment";
+import { FastRandom } from "../../fast-random";
 
 export class StemParticle extends ShootSystemParticle {
     /**
@@ -34,6 +35,7 @@ export class StemParticle extends ShootSystemParticle {
      * @param {Environment} environment     The current game environment
      */
     update(environment) {
+        this.death_consistency(environment)
         this.health_update(environment)
 
         if (this.dead) {
@@ -329,6 +331,30 @@ export class StemParticle extends ShootSystemParticle {
                 return (x, y) => (
                     (this.end_x - (this.x + x)) ** 2 + (this.end_y - (this.y + y)) ** 2
                 )
+        }
+    }
+
+
+    
+
+    /**
+     * 
+     * @param {Environment} environment The current state of the application's environment
+     */
+     death_consistency(environment) {
+        this.tick_check_offset = this.tick_check_offset  || FastRandom.int_max(120)
+        if ((environment.tick + this.tick_check_offset) % 120 != 0)
+            return;
+        
+        let count = 0
+        for (let neighbour of this.__neighbours) {
+            let [offset_x, offset_y] = neighbour
+            let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+            if (target_particle instanceof StemParticle && target_particle.dna.get_root() == this.dna.get_root)
+                count++;
+        }
+        if (count == 1) {
+            this.die(environment)
         }
     }
 }

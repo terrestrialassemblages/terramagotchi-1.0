@@ -3,6 +3,7 @@ import { AirParticle } from "..";
 import {
     DeadPlantParticle,
     PlantFamilyParticle,
+    StemParticle,
 } from ".";
 
 import { ShootSystemParticle } from "./shoot_system"
@@ -49,6 +50,11 @@ export class LeafParticle extends ShootSystemParticle {
             this.die(environment)
             return;
         };
+
+        if (this.is_leaf_root) {
+            this.death_consistency(environment)
+        }
+
         this.absorb_nutrients(environment, false)
         this.absorb_water(environment, false)
         this.generate_energy()
@@ -165,6 +171,32 @@ export class LeafParticle extends ShootSystemParticle {
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
             if (target_particle instanceof LeafParticle && target_particle.leaf_death_tick < environment.tick && this.dna.get_root() == target_particle.dna.get_root())
                 target_particle.leaf_die(environment)
+        }
+    }
+
+
+
+
+    
+
+    /**
+     * 
+     * @param {Environment} environment The current state of the application's environment
+     */
+     death_consistency(environment) {
+        this.tick_check_offset = this.tick_check_offset  || FastRandom.int_max(120)
+        if ((environment.tick + this.tick_check_offset) % 120 != 0)
+            return;
+        
+        let count = 0
+        for (let neighbour of this.__neighbours) {
+            let [offset_x, offset_y] = neighbour
+            let target_particle = environment.get(this.x + offset_x, this.y + offset_y)
+            if (target_particle instanceof StemParticle && target_particle.dna.get_root() == this.dna.get_root)
+                count++;
+        }
+        if (count == 1) {
+            this.die(environment)
         }
     }
 }
