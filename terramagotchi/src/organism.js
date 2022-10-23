@@ -12,7 +12,7 @@ import {
 const DISABLE_DRINKING = true;
 
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
-const ORGANISM_UPDATE_INTERVAL = 15
+const ORGANISM_UPDATE_INTERVAL = 8
 
 // The organisms body is at least this long.
 const MIN_LENGTH = 4
