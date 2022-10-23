@@ -16,7 +16,7 @@ export class DeadPlantParticle extends OrganicParticle {
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
         
-        this.base_color = "#8D5D4F";
+        this.base_color = "#d6741e";
         this.pass_through_types = [ StemParticle, BarkParticle, LeafParticle ];
 
         this.can_erode = true;
