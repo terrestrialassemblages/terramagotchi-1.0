@@ -1,9 +1,9 @@
 import { FastRandom } from "../../fast-random"
 
-const PALM_TREE = "PALM"
-const SUNFLOWER = "SUNFLOWER"
-const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
+const LAVENDER = "LAVENDER"
+const PUMPKIN = "PUMPKIN"
+const SUNFLOWER = "SUNFLOWER"
 
 export function generate_tree_dna(TREE_TYPE=LAVENDER) {
     /**
