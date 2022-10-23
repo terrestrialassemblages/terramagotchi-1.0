@@ -120,7 +120,25 @@ export class Environment {
             }
         }
 
-        this.set(new SeedParticle(160, 180, new DNANode(null, generate_tree_dna("KAURI"))))
+        for (let i = 0; i < 2; i++) {
+            this.user_add_seed("KAURI")
+        }
+        
+        for (let i = 0; i < 2; i++) {
+            this.user_add_seed("LAVENDER")
+        }
+
+        for (let i = 0; i < 2; i++) {
+            this.user_add_seed("SUNFLOWER")
+        }
+
+        for (let i = 0; i < 15; i++) {
+            const x = FastRandom.int_min_max(5, this.width - 5)
+            const y = FastRandom.int_max(this.get_horizon(x) - 5)
+            this.spawn_organism(x, y)
+        }
+
+
         this.refresh()
     }
 
@@ -304,7 +322,7 @@ export class Environment {
         
         // Checks that the particle being replaced is Air, Cloud or Steam
         if (this.get(x, y) instanceof (AirParticle || CloudParticle || SteamParticle)) {
-            this.set(new SeedParticle(x, y));
+            this.set(new SeedParticle(x, y, new DNANode(null, generate_tree_dna(plant))))
         } else {
             // If no particles were added, try again in a new location
             this.user_add_seed(plant);

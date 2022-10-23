@@ -35,7 +35,7 @@ export class BarkParticle extends ShootSystemParticle {
         this.health = this.max_health // Keep bark alive
 
         // Uncomment to grow roots below all particles
-        this.populate_roots(environment)
+        //this.populate_roots(environment)
 
         if (this.dead || !this.is_active)
             return;
@@ -63,7 +63,6 @@ export class BarkParticle extends ShootSystemParticle {
             new_root_particle.parent_root_particle = [this.x, this.y]
             new_root_particle.is_node = true;
             new_root_particle.is_first_particle = true;
-            console.log("Yeah")
             environment.set(new_root_particle)
         }
         this.__try_populate_roots = false

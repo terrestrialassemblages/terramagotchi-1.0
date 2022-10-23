@@ -10,13 +10,16 @@ import {
     StemParticle,
 } from "./particles/plants"
 
+// Disabled due to lack of time.
+const DISABLE_DRINKING = true;
+
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
 const ORGANISM_UPDATE_INTERVAL = 15
 
 // The organisms body is at least this long.
-const MIN_LENGTH = 10
+const MIN_LENGTH = 4
 // How much water_level or nutrient_level per one extra body length.
-const RESOURCES_PER_BODY_LENGTH = 200
+const RESOURCES_PER_BODY_LENGTH = 20
 
 // The organism may move onto any of these particle types.
 const CAN_TRAVERSE = [
@@ -33,21 +36,23 @@ const CAN_TRAVERSE = [
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
-const MAX_SEEK_DEPTH = 100
+const MAX_SEEK_DEPTH = 50
+// The organism will seek a further depth the lower it is. MAX_SEEK_DEPTH is the lower bound of this.
+const ADJUST_SEEK_BY_CURRENT_Y = true
 
 // The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
-const MIN_NUTRIENTS = 100
-const MIN_WATER = 100
+const MIN_NUTRIENTS = 10
+const MIN_WATER = 10
 
 // The organism should only drink water while water_level <= nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
 const MAX_WATER_NUTRIENT_LEVEL_RATIO = 2
 
 // The organism can only eat/drink this much at a time.
-const MAX_EAT_AMOUNT = 100
-const MAX_DRINK_AMOUNT = 100
+const MAX_EAT_AMOUNT = 20
+const MAX_DRINK_AMOUNT = 20
 
 // The ratio for how much energy 1 nutrient/water is worth.
-const ENERGY_RATIO = 5
+const ENERGY_RATIO = 20
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -58,7 +63,7 @@ const RANDOM_MOVEMENT_FACTOR = 2
 const CHANGE_WANDER_DIRECTION_CHANCE = 0.2 // [0, 1]
 
 // The organism will sleep for (RESEEK_TIME_AFTER_CONSUME + update_timer) frames before reseeking.
-const RESEEK_TIME_AFTER_CONSUME = 30
+const RESEEK_TIME_AFTER_CONSUME = 0
 
 // The organism will reseek (RESEEK_TIMER_AFTER_FOUND_NEW_TARGET + update_timer) frames
 // after successfully finding a target.
@@ -69,8 +74,8 @@ const RESEEK_TIMER_AFTER_FOUND_NEW_TARGET = 600
 const RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET = 60
 
 export class Organism {
-    nutrient_capacity = 1000
-    water_capacity = 1000
+    nutrient_capacity = 100
+    water_capacity = 100
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
     energy = 500
@@ -238,13 +243,14 @@ export class Organism {
             } else {
                 this.current_objective = "EAT"
                 this.seek(DeadPlantParticle, environment)
-                if (this.target_location === null) {
+                if (!DISABLE_DRINKING && this.target_location === null) {
                     // If organism cannot find a DeadPlantParticle to eat, it should try to drink instead.
                     this.current_objective = "DRINK"
                     this.seek(WaterParticle, environment)
                 }
             }
         } else if (
+            !DISABLE_DRINKING &&
             this.water_level < this.water_capacity &&
             this.water_level <= this.nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
         ) {
@@ -271,8 +277,13 @@ export class Organism {
          * At each depth, it searches in a circular order, starting on the right of itself.
          */
 
+        let max_depth = MAX_SEEK_DEPTH
+        // We adjust to seek further if the organism is lower. 
+        // This means organisms deep in the soil don't just never eat because they're too far away.
+        if (ADJUST_SEEK_BY_CURRENT_Y) max_depth += Math.floor(environment.height / 2 - this.y)
+
         let y = 0
-        for (let depth = 1; depth <= MAX_SEEK_DEPTH; depth++) {
+        for (let depth = 1; depth <= max_depth; depth++) {
             for (let x = depth; x >= -depth; x--) {
                 y = Math.abs(x) - depth
                 if (
@@ -417,10 +428,10 @@ export class Organism {
                 if (neighbour_direction_x == this.facing[0] && neighbour_direction_y == this.facing[1]) distance -= 2
             }
 
-            // Discourage the organism from walking on itself.
-            distance += this.location_history.filter(
-                ([previous_x, previous_y]) => previous_x == neighbour[0] && previous_y == neighbour[1]
-            ).length
+            // Discourage the organism from walking on itself. 
+            // distance += Math.floor(this.location_history.filter(
+            //     ([previous_x, previous_y]) => previous_x == neighbour[0] && previous_y == neighbour[1]
+            // ).length / 5)
 
             if (distance < best_distance) {
                 best_neighbours = [neighbour]
