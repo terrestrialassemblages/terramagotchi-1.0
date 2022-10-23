@@ -36,7 +36,10 @@ export class StemParticle extends ShootSystemParticle {
     update(environment) {
         this.health_update(environment)
 
-        if (this.dead) return;
+        if (this.dead) {
+            this.die(environment)
+            return
+        };
         
         this.absorb_nutrients(environment)
         this.absorb_water(environment)
