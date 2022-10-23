@@ -59,7 +59,7 @@ const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
 
 // Integer value. At about 4 it will generally result in just a random walk.
 // Does not affect wandering, use CHANGE_WANDER_DIRECTION_CHANCE.
-const RANDOM_MOVEMENT_FACTOR = 2
+const RANDOM_MOVEMENT_FACTOR = 1
 const CHANGE_WANDER_DIRECTION_CHANCE = 0.2 // [0, 1]
 
 // The organism will sleep for (RESEEK_TIME_AFTER_CONSUME + update_timer) frames before reseeking.
