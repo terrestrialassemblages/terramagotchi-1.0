@@ -45,7 +45,10 @@ export class LeafParticle extends ShootSystemParticle {
      * @param {Environment} environment     The current game environment
      */
     update(environment) {
-        if (this.dead) return;
+        if (this.dead) {
+            this.die()
+            return;
+        };
         this.absorb_nutrients(environment, false)
         this.absorb_water(environment, false)
         this.generate_energy()
