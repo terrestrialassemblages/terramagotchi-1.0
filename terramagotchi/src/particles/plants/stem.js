@@ -13,14 +13,14 @@ import { AirParticle } from "..";
 import { Environment, NUTRIENT_ENERGY_RATIO, WATER_ENERGY_RATIO } from "../../environment";
 
 export class StemParticle extends ShootSystemParticle {
+    /**
+     * StemParticles are the main plant structure, creating the shape/branches/curves of a tree
+     * All other types of plant particles spawn from these particle types (see below)
+     * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
+     * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
+     * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
+     */
     constructor(x, y, plant_dna=null) {
-        /**
-         * StemParticles are the main plant structure, creating the shape/branches/curves of a tree
-         * All other types of plant particles spawn from these particle types (see below)
-         * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
-         * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
-         * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
-         */
         super(x, y, plant_dna);
 
         this.__current_length = 1
@@ -29,14 +29,17 @@ export class StemParticle extends ShootSystemParticle {
         this.__dy = 0
     }
 
+    /**
+     * Handles update function for the seed particle
+     * @param {Environment} environment     The current game environment
+     */
     update(environment) {
-        /**
-         * Handles update function for the seed particle
-         * @param {Environment} environment     The current game environment
-         */
         this.health_update(environment)
 
-        if (this.dead) return;
+        if (this.dead) {
+            this.die(environment)
+            return
+        };
         
         this.absorb_nutrients(environment)
         this.absorb_water(environment)
@@ -48,11 +51,11 @@ export class StemParticle extends ShootSystemParticle {
             this.bark_update(environment) // Only grows bark if next children have been grown
     }
 
+    /**
+     * Handles updating the stem_particle while the particle is active
+     * @param {Environment} environment     The current game environment
+     */
     stem_update(environment) {
-        /**
-         * Handles updating the stem_particle while the particle is active
-         * @param {Environment} environment     The current game environment
-         */
         this.start_x =  this.start_x || this.x - this.__dx
         this.start_y =  this.start_u || this.y - this.__dy
         this.end_x =    this.end_x || (this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)) | 0
@@ -67,11 +70,11 @@ export class StemParticle extends ShootSystemParticle {
             this.grow(environment)
     }
 
+    /**
+     * Handles growing of bark
+     * @param {Environment} environment     The current game environment
+     */
     bark_update(environment) {
-        /**
-         * Handles growing of bark
-         * @param {Environment} environment     The current game environment
-         */
         if (this.energy < this.activation_level || this.dead)
             return;
             
@@ -135,11 +138,11 @@ export class StemParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Handles growing continuous growing of stem particles from the current stem
+     * @param {Environment} environment     The current game environment
+     */
     grow(environment) {
-        /**
-         * Handles growing continuous growing of stem particles from the current stem
-         * @param {Environment} environment     The current game environment
-         */
         if (this.energy < this.activation_level ||
             this.water_level < 2*PlantFamilyParticle.MIN_HEALTHY_WATER ||
             this.nutrient_level < 2*PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS
@@ -180,12 +183,11 @@ export class StemParticle extends ShootSystemParticle {
         this.is_active = false
     }
 
+    /**
+     * Handles growing children branches based on the current plant DNA nodes children
+     * @param {Environment} environment     The current game environment
+     */
     grow_next_DNA_child(environment) {
-        /**
-         * Handles growing children branches based on the current plant DNA nodes children
-         * @param {Environment} environment     The current game environment
-         */
-
         // Keeping track of children to grow
         this.__unvisited_children = this.__unvisited_children || [...this.dna.children]
         if (this.__unvisited_children.length == 0) {
@@ -242,11 +244,11 @@ export class StemParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Returns which neighbour cell the stem will grow into
+     * @param {Number}  angle_offset    (Optional) anlge offset from the current stem particle
+     */
     calculate_growth_direction(angle_offset=0) {
-        /**
-         * Returns which neighbour cell the stem will grow into
-         * @param {Number}  angle_offset    (Optional) anlge offset from the current stem particle
-         */
         let theta = this.__current_angle + angle_offset
         let [vector_x, vector_y] = this.create_vector_functions()
         let calculate_error = this.create_error_calculation_function()
@@ -274,12 +276,13 @@ export class StemParticle extends ShootSystemParticle {
         return best
     }
 
+    /**
+     * Returns callback functions for a particle
+     * Implementation mimicks a Vector Field, where each point in the 2D grid corresponds to a vector
+     * The vector points in the direction which matches the curve-type of the stem
+     * @returns {Array<Function>}   Array of callback functions which define a vector field
+     */
     create_vector_functions() {
-        /**
-         * Returns callback functions for a particle
-         * Implementation mimicks a Vector Field, where each point in the 2D grid corresponds to a vector
-         * The vector points in the direction which matches the curve-type of the stem
-         */
         switch (this.dna.stem_curve) {
             case "spherical":
                 let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2
@@ -299,12 +302,13 @@ export class StemParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Returns callback functions for calculating errors when deciding growth direction
+     * Error = relative measure of distance of a particle from matching it's "ideal path"
+     * For example, the spherical "error" is the distance of a particle from a circle's circumference
+     * @returns {Function}   Callback function which define an error calculation function
+     */
     create_error_calculation_function() {
-        /**
-         * Returns callback functions for calculating errors when deciding growth direction
-         * Error = relative measure of distance of a particle from matching it's "ideal path"
-         * For example, the spherical "error" is the distance of a particle from a circle's circumference
-         */
         switch (this.dna.stem_curve) {
             case "spherical":
                 let centre_x = this.start_x + this.dna.stem_length * Math.cos(this.__current_angle*Math.PI/180)/2

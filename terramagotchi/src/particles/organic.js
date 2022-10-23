@@ -181,7 +181,7 @@ export class OrganicParticle extends BaseParticle {
             s.hue(this.color),
             s.saturation(this.base_color) * this.saturation_offset,
             s.brightness(this.base_color) * this.brightness_offset -
-                this.water_level / 4
+                Math.min(this.water_level, this.water_capacity) / 4
         );
         return this.color;
     }

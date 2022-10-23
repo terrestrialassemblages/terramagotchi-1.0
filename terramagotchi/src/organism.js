@@ -2,24 +2,22 @@ import { FastRandom } from "./fast-random"
 import { AirParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
 import { LiquidParticle } from "./particles/liquid"
 import {
-    BarkParticle,
     DeadPlantParticle,
-    LeafParticle,
     RootParticle,
     SeedParticle,
-    StemParticle,
+    ShootSystemParticle,
 } from "./particles/plants"
 
 // Disabled due to lack of time.
 const DISABLE_DRINKING = true;
 
 // The organism will only update every ORGANISM_UPDATE_INTERVAL frames. This does thus affect movement speed.
-const ORGANISM_UPDATE_INTERVAL = 15
+const ORGANISM_UPDATE_INTERVAL = 8
 
 // The organisms body is at least this long.
 const MIN_LENGTH = 4
 // How much water_level or nutrient_level per one extra body length.
-const RESOURCES_PER_BODY_LENGTH = 20
+const RESOURCES_PER_BODY_LENGTH = 50
 
 // The organism may move onto any of these particle types.
 const CAN_TRAVERSE = [
@@ -30,29 +28,27 @@ const CAN_TRAVERSE = [
     CompostParticle,
     RootParticle,
     SeedParticle,
-    BarkParticle,
-    StemParticle,
-    LeafParticle,
+    ShootSystemParticle
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
-const MAX_SEEK_DEPTH = 50
+const MAX_SEEK_DEPTH = 20
 // The organism will seek a further depth the lower it is. MAX_SEEK_DEPTH is the lower bound of this.
 const ADJUST_SEEK_BY_CURRENT_Y = true
 
 // The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
-const MIN_NUTRIENTS = 10
-const MIN_WATER = 10
+const MIN_NUTRIENTS = 50
+const MIN_WATER = 50
 
 // The organism should only drink water while water_level <= nutrient_level * MAX_WATER_NUTRIENT_LEVEL_RATIO
 const MAX_WATER_NUTRIENT_LEVEL_RATIO = 2
 
 // The organism can only eat/drink this much at a time.
-const MAX_EAT_AMOUNT = 20
-const MAX_DRINK_AMOUNT = 20
+const MAX_EAT_AMOUNT = 100
+const MAX_DRINK_AMOUNT = 100
 
 // The ratio for how much energy 1 nutrient/water is worth.
-const ENERGY_RATIO = 20
+const ENERGY_RATIO = 5
 
 // This will cause it to sleep for (30 + update_timer) frames
 const FALL_ASLEEP_WANDERING_CHANCE = 0.5 // [0, 1]
@@ -74,8 +70,8 @@ const RESEEK_TIMER_AFTER_FOUND_NEW_TARGET = 600
 const RESEEK_TIMER_AFTER_FAILED_TO_FIND_NEW_TARGET = 60
 
 export class Organism {
-    nutrient_capacity = 100
-    water_capacity = 100
+    nutrient_capacity = 300
+    water_capacity = 300
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
     energy = 500
@@ -227,8 +223,12 @@ export class Organism {
          * Decide what the organism's current objective should be.
          */
 
-        if (
+        if (this.nutrient_level == this.nutrient_capacity || this.water_level == this.water_capacity) {
+            this.current_objective = "DEFECATE"
+            this.seek(AirParticle, environment)
+        } else if (
             this.nutrient_level < this.nutrient_capacity &&
+            this.water_level < this.water_capacity &&
             // We check that the object is not current DRINK to ensure that the organism
             // will not just always be trying to eat, even when it cannot find DeadPlantParticles.
             this.current_objective != "DRINK"
@@ -261,9 +261,6 @@ export class Organism {
                 this.current_objective = "DRINK"
                 this.seek(WaterParticle, environment)
             }
-        } else if (this.nutrient_level == this.nutrient_capacity || this.water_level == this.water_capacity) {
-            this.current_objective = "DEFECATE"
-            this.seek(AirParticle, environment)
         } else {
             this.current_objective = "WANDER"
             this.target_location = null

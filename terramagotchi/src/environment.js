@@ -278,9 +278,21 @@ export class Environment {
         this.light_level = Math.min(1,Math.max(0,this.light_level)) * 100;
     }
 
-    // Changes time_of_day by + length_of_day/time (for user interaction purposes)
-    change_time(time) {
-        this.time_of_day += this.__length_of_day / time;
+    // Changes time_of_day to next visual light change
+    change_time() {
+        // Night, change to Dawn
+        if (this.time_of_day < (0.15 * this.__length_of_day) || this.time_of_day > (0.85 * this.__length_of_day)) {
+            this.time_of_day = 0.20 * this.__length_of_day;
+        // Dawn, change to Day
+        } else if (this.time_of_day >= (0.15 * this.__length_of_day) && this.time_of_day < (0.25 * this.__length_of_day)) {
+            this.time_of_day = 0.25 * this.__length_of_day;
+        // Day, change to Dusk
+        } else if (this.time_of_day >= (0.25 * this.__length_of_day) && this.time_of_day < (0.75 * this.__length_of_day)) {
+            this.time_of_day = 0.80 * this.__length_of_day;
+        // Dusk, change to Night
+        } else if (this.time_of_day >= (0.75 * this.__length_of_day) && this.time_of_day < (0.85 * this.__length_of_day)) {
+            this.time_of_day = 0.85 * this.__length_of_day;
+        }
     }
 
     // Creates a 4x4 with of the given particle at a random valid position (for user interaction purposes)
@@ -293,11 +305,16 @@ export class Environment {
             for (let j = 0; j < 4; j++) {
                 // Checks that the particle being replaced is Air, Cloud or Steam
                 if (this.get(x + i, y + j) instanceof (AirParticle || CloudParticle || SteamParticle)) {
-                    this.set(new particle(x + i, y + j));
+                    if (particle === WaterParticle) {
+                        // Create water particle with water_level = 100
+                        this.set(new particle(x + i, y + j, 100));
+                        this.water_added += 1;
+                    } else {
+                        this.set(new particle(x + i, y + j)); 
+                    }
                     added_particles++;
 
-                    // Increases particle tracking variables
-                    if (particle === WaterParticle) { this.water_added += 1; }
+                    // Increases soil tracking variable
                     if (particle === SoilParticle) { this.soil_added += 1; }
                 }
             }
@@ -313,7 +330,7 @@ export class Environment {
         // x, y position is random within bounds and above land
         const y = FastRandom.int_min_max(160, this.height - 1);
         let x = 0;
-        // Generates an x value which is on likely to be on either side of the river.
+        // Generates an x value which is likely to be on either side of the river.
         if (FastRandom.random() >= 0.5) {
             x = FastRandom.int_min_max(Math.ceil(this.width / 2 + this.river_offset + this.river_radius - 10), this.width - 1);
         } else {

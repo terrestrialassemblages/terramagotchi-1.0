@@ -15,12 +15,12 @@ import { PlantFamilyParticle } from "./plant";
 import { RootParticle } from "./root";
 
 export class BarkParticle extends ShootSystemParticle {
+    /**
+     * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
+     * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
+     * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
+     */
     constructor(x, y, plant_dna=null) {
-        /**
-         * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
-         * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
-         * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
-         */
         super(x, y, plant_dna);
         this.activation_level = 0
 
@@ -29,9 +29,16 @@ export class BarkParticle extends ShootSystemParticle {
         this.__try_populate_roots = (this.dna == this.dna.get_root())
     }
 
-    update(environment) {        
-        this.rerender = true
+    /**
+     * Handles update function for the bark particle
+     * @param {Environment} environment     The current game environment
+     */
+    update(environment) {
         this.health_update(environment)
+        if (this.dead) {
+            this.die(environment)
+            return;
+        }
         this.health = this.max_health // Keep bark alive
 
         // Uncomment to grow roots below all particles
@@ -47,13 +54,13 @@ export class BarkParticle extends ShootSystemParticle {
             this.grow(environment)
     }
 
+    /**
+     * Creates new root systems in soil if underneath, only if current bark is part from the root trunk.
+     * Will only attempt to add roots once; if soil is added underneath bark after the function is run once,
+     * no roots will be spawned underneath
+     * @param {Environment} environment     The current environment of the application
+     */
     populate_roots(environment) {
-        /**
-         * Creates new root systems in soil if underneath, only if current bark is part from the root trunk.
-         * Will only attempt to add roots once; if soil is added underneath bark after the function is run once,
-         * no roots will be spawned underneath
-         * @param {Environment} environment     The current environment of the application
-         */
         if (!this.__try_populate_roots)
             return
         
@@ -68,14 +75,13 @@ export class BarkParticle extends ShootSystemParticle {
         this.__try_populate_roots = false
     }
 
-
+    /**
+     * Handles growing of bark particles from one another.
+     * Will try to grow into 3 neighbouring cells which are closest to the current growth_angle.
+     * Will become inactive at any point where all 3 cells that the bark particle is checking become BarkParticles
+     * @param {Environment} environment Current application game environment
+     */
     grow(environment) {
-        /**
-         * Handles growing of bark particles from one another.
-         * Will try to grow into 3 neighbouring cells which are closest to the current growth_angle.
-         * Will become inactive at any point where all 3 cells that the bark particle is checking become BarkParticles
-         * @param {Environment} environment Current application game environment
-         */
         if (this.__child_directions == null) {
             let [base_x, base_y] = this.convert_angle_to_offset(this.growth_angle)
             this.__child_directions = [[base_x, base_y]]

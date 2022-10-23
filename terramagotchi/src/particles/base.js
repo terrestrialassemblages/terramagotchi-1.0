@@ -145,7 +145,7 @@ export class BaseParticle {
     check_pass_through_loop(new_x, new_y, offset_x, offset_y, environment) {
         let [i, j] = [offset_x, offset_y]
         let check_particle = environment.get(new_x + i, new_y + j);
-        while (check_particle.empty || check_particle.constructor.name == this.constructor.name) {
+        while (check_particle.empty || check_particle.weight < this.weight || check_particle.constructor.name == this.constructor.name) {
             [i, j] = [i + offset_x, j + offset_y];
             check_particle = environment.get(new_x + i, new_y + j);
         }

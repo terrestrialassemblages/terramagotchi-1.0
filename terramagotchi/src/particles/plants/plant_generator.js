@@ -1,14 +1,17 @@
 import { FastRandom } from "../../fast-random"
 
-const PALM_TREE = "PALM"
-const SUNFLOWER = "SUNFLOWER"
-const LAVENDER = "LAVENDER"
 const KAURI = "KAURI"
+const LAVENDER = "LAVENDER"
+const PUMPKIN = "PUMPKIN"
+const SUNFLOWER = "SUNFLOWER"
 
+/**
+ * Generates a DNA-Tree for which a particle can take
+ * @param {String}  TREE_TYPE   The type of tree to make.
+ *                              Default is sunflower
+ * @returns {Object}    Returns a nested object of plant characteristics
+ */
 export function generate_tree_dna(TREE_TYPE=LAVENDER) {
-    /**
-     * Generates a DNA-Tree for which a particle can take
-     */
 let tree_direction, tree_scale, tree_angle_offset, tree_height, tree_color
 switch (TREE_TYPE) {
     case KAURI:
@@ -45,6 +48,7 @@ switch (TREE_TYPE) {
         section_1.root_node_spawn_distance = 5
         section_1.root_length_max = 40
         section_1.root_max_curve_length = 4
+        section_1.root_minimum_distance = 8
 
         section_1.children.push({
             seed_activation_level: 0,
@@ -550,6 +554,10 @@ switch (TREE_TYPE) {
         tree_direction = [-1, 1][FastRandom.int_max(1)]
         tree_angle_offset = -14
         return {
+            root_node_spawn_distance: 6,
+            root_length_max: 5,
+            root_max_curve_length: 2,
+            root_minimum_distance: 1,
             seed_activation_level: 0,
             node_activation_level: 1,
             color: "#3F7B25", // color inspo: https://colorswall.com/palette/34441

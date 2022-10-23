@@ -1,9 +1,9 @@
 export class DNANode {
+    /**
+     * @param {DNANode} parent      Optional parent node for this current node.
+     * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
+     */
     constructor(parent = null, dna_encoding = {}) {
-        /**
-         * @param {DNANode} parent      Optional parent node for this current node.
-         * @param {Object} dna_encoding Optional encoding to construct a DNA Tree.
-         */
         this.parent = parent;
         this.id = (Date.now()/1000) | 0
         this.RANDOM_WEIGHT_GROWWTH_DIRECTION = (dna_encoding.RANDOM_WEIGHT_GROWWTH_DIRECTION==null) ? true : false
@@ -81,10 +81,10 @@ export class DNANode {
         // this.print_dna()
     }
 
+    /**
+     * Gets root node of DNA sequence (greatest ancestor of all nodes)
+     */
     get_root() {
-        /**
-         * Gets root node of DNA sequence (greatest ancestor of all nodes)
-         */
         let current_head = this;
         while (current_head.parent != null && current_head.parent instanceof DNANode) {
             current_head = current_head.parent;
@@ -92,11 +92,11 @@ export class DNANode {
         return current_head
     }
 
+    /**
+     * Retrieves the current DNA branchs absolute current angle
+     * Calculated as the sum of the current nodes angle and all ancestor node angles
+     */
     get_absolute_angle() {
-        /**
-         * Retrieves the current DNA branchs absolute current angle
-         * Calculated as the sum of the current nodes angle and all ancestor node angles
-         */
         let current_node = this
         let current_angle_sum = 0
         do {
@@ -110,34 +110,33 @@ export class DNANode {
         return current_angle_sum
     }
 
+    /**
+     * Adds a child node to current node
+     * @param {DNANode} new_node    A new node to be appended to the current nodes children
+     */
     add_child(new_node) {
-        /**
-         * Adds a child node to current node
-         * @param {DNANode} new_node    A new node to be appended to the current nodes children
-         */
         if (new_node instanceof DNANode) {
             this.children.push(new_node);
             new_node.parent = this;
         }
     }
 
+    /**
+     * Constructs
+     * @param {Array} children  Array of DNA encodings, each element representing a new child node
+     */
     construct_dna_from_encoding(children) {
-        /**
-         * Constructs
-         * @param {Array} children  Array of DNA encodings, each element representing a new child node
-         */
-
         for (let child_node_encoding of children) {
             let new_child = new DNANode(this, child_node_encoding);
             this.add_child(new_child);
         }
     }
 
+    /**
+     * Prints the dna graph in text
+     * @param {String} prefix   Local variable used in recursive calls to format output. If you provide an input the dna string will be returned and not printed.
+     */
     print_dna(prefix = "") {
-        /**
-         * Prints the dna graph in text
-         * @param {String} prefix   Local variable used in recursive calls to format output. If you provide an input the dna string will be returned and not printed.
-         */
         let tree_str =
             prefix +
             "├───" +

@@ -15,7 +15,7 @@ import {
     OrganicParticle,
 } from "./particles";
 
-import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle } from "./particles/plants";
+import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle, LeafParticle } from "./particles/plants";
 
 /**
  * Firebase Config, This is specific to the Terramagotchi Firebase project
@@ -45,7 +45,7 @@ export const sketch = (s) => {
      * Function class for constructing a p5.js object
      */
     const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
-    let cell_size = 3; // Defines cell size in pixels.
+    let cell_size = 6; // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic, organisms_graphic, deep_dark_overlay_graphic;
     let sky_day_color, sky_night_color;
@@ -90,12 +90,18 @@ export const sketch = (s) => {
             }
             if (target_particle instanceof PlantFamilyParticle) {
                 console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
-                console.log("is dead:", target_particle.dead)
+                console.log("Health:", target_particle.health, "/", target_particle.max_health)
+                console.log("Is dead:", target_particle.dead)
+                console.log("Is active: " + target_particle.is_active)
             }
             if (target_particle instanceof RootParticle) {
                 console.log("Is node: " + target_particle.is_node)
                 console.log("Is active: " + target_particle.is_active)
                 console.log("Parent location: " + target_particle.parent_root_particle)
+            }
+            if (target_particle instanceof LeafParticle) {
+                console.log("Is root: " + target_particle.is_leaf_root)
+                console.log("Is active: " + target_particle.is_active)
             }
             console.log("")
         })

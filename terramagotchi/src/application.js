@@ -8,6 +8,7 @@ import { FastRandom } from "./fast-random";
 import {
     SoilParticle,
     WaterParticle,
+    CompostParticle,
 } from "./particles";
 import { SeedParticle } from "./particles/plants";
 
@@ -53,6 +54,9 @@ export class Application {
                     if (change.doc.id == "soil") {
                         this.environment.user_add_particle(SoilParticle);
                     }
+                    if (change.doc.id == "compost") {
+                        this.environment.user_add_particle(CompostParticle);
+                    }
                     if (change.doc.id == "seed") {
                         this.environment.user_add_seed(FastRandom.choice(["LAVENDER", "SUNFLOWER", "KAURI"]));
                     }
@@ -60,7 +64,7 @@ export class Application {
                         this.environment.spawn_organism(FastRandom.int_min_max(5, this.width - 5), FastRandom.int_min_max(160, this.height - 5));
                     }
                     if (change.doc.id == "time") {
-                        this.environment.change_time(4);
+                        this.environment.change_time();
                     }
                 }
             });

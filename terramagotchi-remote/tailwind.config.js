@@ -29,7 +29,12 @@ module.exports = {
             600: '#52a130',
             700: '#3e7a24',
             800: '#2a5219', 
-        }
+        },
+        'compost': {
+            600: '#967733',
+            700: '#6e5726',
+            800: '#483919',
+        },
     }
   },
   plugins: [require('tw-elements/dist/plugin')],

@@ -119,6 +119,9 @@ time_button.addEventListener('click', () => particle_button_click("time"));
 const worm_button = document.getElementById("worm-button");
 worm_button.addEventListener('click', () => particle_button_click("worm"));
 
+const compost_button = document.getElementById("compost-button");
+compost_button.addEventListener('click', () => particle_button_click("compost"));
+
 // Visual cooldown display, uses time in ms
 const start_cooldown = (time) => {
     water_button.disabled = true;
@@ -126,6 +129,7 @@ const start_cooldown = (time) => {
     seed_button.disabled = true;
     time_button.disabled = true;
     worm_button.disabled = true;
+    compost_button.disabled = true;
 
     let curr_time = time;
     status_text.innerText = `Cooldown ${(curr_time / 1000).toFixed(1)}s`;
@@ -142,6 +146,7 @@ const start_cooldown = (time) => {
             seed_button.disabled = false;
             time_button.disabled = false;
             worm_button.disabled = false;
+            compost_button.disabled = false;
             hide_spin();
         }
     }, 100);

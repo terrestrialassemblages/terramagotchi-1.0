@@ -38,14 +38,14 @@ export class PlantFamilyParticle extends OrganicParticle {
 
     static IS_NET_ZERO = true
 
+    /**
+     * Superclass for all plant types, defines basic variables used homogeneously throughout the particle types
+     * @param {Number}          x           Starting x-coordinate for new plant-type particle
+     * @param {Number}          y           Starting y-coordinate for new plant-type particle
+     * @param {DNANode | null}  plant_dna   A DNA Node in a DNA Tree describing the characteristics of this specific
+     *                                      particle and its children
+     */
     constructor(x, y, plant_dna=null) {
-        /**
-         * Superclass for all plant types, defines basic variables used homogeneously throughout the particle types
-         * @param {Number}          x           Starting x-coordinate for new plant-type particle
-         * @param {Number}          y           Starting y-coordinate for new plant-type particle
-         * @param {DNANode | null}  plant_dna   A DNA Node in a DNA Tree describing the characteristics of this specific
-         *                                      particle and its children
-         */
         super(x, y);
 
         // Validate plant DNA-type. If invalid, create new DNA tree against default type
@@ -82,16 +82,15 @@ export class PlantFamilyParticle extends OrganicParticle {
         this.__current_length = 1
     }
     
-
     // Below are some common functions for plant-type particles
+
+    /**
+     * Handles conversion between water/nutrient levels to particle usable "energy"
+     * Energy is what a plant consumes to "grow", not the water/nutrients themselves
+     * A plant will not convert water/nutrients to energy if that conversion will put itself
+     * below a healthy level of water/nutrients
+     */
     generate_energy() {
-        this.rerender = true
-        /**
-         * Handles conversion between water/nutrient levels to particle usable "energy"
-         * Energy is what a plant consumes to "grow", not the water/nutrients themselves
-         * A plant will not convert water/nutrients to energy if that conversion will put itself
-         * below a healthy level of water/nutrients
-         */
         if (
             this.energy < this.energy_capacity &&
             this.water_level >= PlantFamilyParticle.MIN_HEALTHY_WATER + WATER_ENERGY_RATIO &&
@@ -105,12 +104,12 @@ export class PlantFamilyParticle extends OrganicParticle {
         }
     }
 
+    /**
+     * Keeps track of and updates the health-level of plants. Health will heal (increase) towards max_heatlh
+     * when plant is healthy. Plant is unhealthy when below the "healthy" level of water/nutrients
+     * @param {Environment} environment     Contains the current state of the application
+     */
     health_update(environment) {
-        /**
-         * Keeps track of and updates the health-level of plants. Health will heal (increase) towards max_heatlh
-         * when plant is healthy. Plant is unhealthy when below the "healthy" level of water/nutrients
-         * @param {Environment} environment     Contains the current state of the application
-         */
         if (this.dead)
             return this.die(environment)
         
@@ -128,15 +127,14 @@ export class PlantFamilyParticle extends OrganicParticle {
             this.die(environment)
     }
 
+    /**
+     * Handles functionality of plant death. Stores first tick which the particle dies during.
+     * A dead particle will kill all particles around itself if the particle is part of the same plant.
+     * Death update on surrounding plants only happens on a tick after the first death tick to prevent
+     * entire plant dying in 1 frame, and gives death a BFS-type "ripple effect" look
+     * @param {Environment} environment     Contains the current state of the application
+     */
     die(environment) {
-        /**
-         * Handles functionality of plant death. Stores first tick which the particle dies during.
-         * A dead particle will kill all particles around itself if the particle is part of the same plant.
-         * Death update on surrounding plants only happens on a tick after the first death tick to prevent
-         * entire plant dying in 1 frame, and gives death a BFS-type "ripple effect" look
-         * @param {Environment} environment     Contains the current state of the application
-         */
-        
         this.dead = true
         if (this.death_tick == -1)
             this.death_tick = environment.tick
@@ -159,12 +157,12 @@ export class PlantFamilyParticle extends OrganicParticle {
         environment.set(new_dead_plant)
     }
 
+    /**
+     * Returns a random element from an array with a weighted probability of choice.
+     * @param {Array<Object>} items     Array of items to choose from
+     * @param {Array<Number>} weights   (Array) Sequence of weights
+     */
     weighted_random(items, weights) {
-        /**
-         * Returns a random element from an array with a weighted probability of choice.
-         * @param {Array<Object>} items     Array of items to choose from
-         * @param {Array<Number>} weights   (Array) Sequence of weights
-         */
         var i;
 
         for (i = 0; i < weights.length; i++)
@@ -179,31 +177,29 @@ export class PlantFamilyParticle extends OrganicParticle {
         return items[i];
     }
 
+    /**
+     * Takes values for an offset (which specifies a relative direction on a 2D grid),
+     * returns the offset values for the nth neighbour (n=rotation)
+     * @param {Number} offset_x     Integer in range [-1, 1]
+     * @param {Number} offset_y     Integer in range [-1, 1]
+     * @param {Number} rotations    Integer specifying which of n neighbouring directions to return.
+     *                              Rotation direction is counter-clockwise
+     */
     get_rotated_offset(offset_x, offset_y, rotations=0) {
-        /**
-         * Takes values for an offset (which specifies a relative direction on a 2D grid),
-         * returns the offset values for the nth neighbour (n=rotation)
-         * @param {Number} offset_x     Integer in range [-1, 1]
-         * @param {Number} offset_y     Integer in range [-1, 1]
-         * @param {Number} rotations    Integer specifying which of n neighbouring directions to return.
-         *                              Rotation direction is counter-clockwise
-         */
-
         let theta = this.convert_offset_to_base_angle(offset_x, offset_y)
         theta += 45*rotations
         return this.convert_angle_to_offset(theta)
     }
 
+    /**
+     * Converts a given x, y directional offset ([-1 ... 1, -1 ... 1]) to the middle angle
+     * required to produce that offset.
+     * For example, the offset [0, 1] representing the particle above corresponds to the angle 90 degrees
+     * @param {Number} offset_x     Integer in range [-1, 1]
+     * @param {Number} offset_y     Integer in range [-1, 1]
+     */
     convert_offset_to_base_angle(offset_x, offset_y) {
-        /**
-         * Converts a given x, y directional offset ([-1 ... 1, -1 ... 1]) to the middle angle
-         * required to produce that offset.
-         * For example, the offset [0, 1] representing the particle above corresponds to the angle 90 degrees
-         * @param {Number} offset_x     Integer in range [-1, 1]
-         * @param {Number} offset_y     Integer in range [-1, 1]
-         */
-
-         let angle_delta = 45 // Essentially, the degrees difference between each offset
+        let angle_delta = 45 // Essentially, the degrees difference between each offset
         if (offset_x==1 && offset_y==0)
             return 0
         if (offset_x==1 && offset_y==1)
@@ -225,14 +221,13 @@ export class PlantFamilyParticle extends OrganicParticle {
         return 90
     }
 
+    /**
+     * Converts a given angle (in degrees) to an x/y offset that closest matches the given angle
+     * IMPORTANT: ANGLES MEASURED COUNTER-CLOCKWISE FROM X-AXIS LINE, ALWAYS
+     * @param {Number}  angle   An angle (in degrees) to be converted
+     * @param {Boolean} radians (default=false) Whether the given angle is in radians or not
+     */
     convert_angle_to_offset(angle, radians=false) {
-        /**
-         * Converts a given angle (in degrees) to an x/y offset that closest matches the given angle
-         * IMPORTANT: ANGLES MEASURED COUNTER-CLOCKWISE FROM X-AXIS LINE, ALWAYS
-         * @param {Number}  angle   An angle (in degrees) to be converted
-         * @param {Boolean} radians (default=false) Whether the given angle is in radians or not
-         */
-
         // Convert angle to degrees if given in radians
         if (radians)
             angle *= (180/Math.PI)

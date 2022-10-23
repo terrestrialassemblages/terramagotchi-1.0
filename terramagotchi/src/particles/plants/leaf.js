@@ -8,20 +8,27 @@ import {
 import { ShootSystemParticle } from "./shoot_system"
 
 import { FastRandom } from "../../fast-random";
+import { Environment } from "../../environment";
 
 export class LeafParticle extends ShootSystemParticle {
 
-    static REGROWTH_COOLDOWN_CONST = 10*60 // 5 seconds at 60fps
+    static REGROWTH_COOLDOWN_CONST = 60*60 // 30 seconds at 60fps
 
+
+    /**
+     * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
+     * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
+     * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
+     */
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
         this.activation_level = 0
-        this.max_health = this.dna.leaf_max_health || 1200 + FastRandom.int_min_max(-300, 300)
+        this.max_health = this.dna.leaf_max_health || 10*4*1200 + FastRandom.int_min_max(-300, 300)
         this.health = this.max_health
 
-        this.nutrient_capacity = 100
-        this.water_capacity = 100
+        this.nutrient_capacity = 10
+        this.water_capacity = 10
 
         this.leaf_growth_probability = 1/10
         this.cooldown_timer = -1
@@ -33,7 +40,15 @@ export class LeafParticle extends ShootSystemParticle {
         this.__leaf_children = null
     }
 
+    /**
+     * Handles update function for the leaf particle
+     * @param {Environment} environment     The current game environment
+     */
     update(environment) {
+        if (this.dead) {
+            this.die(environment)
+            return;
+        };
         this.absorb_nutrients(environment, false)
         this.absorb_water(environment, false)
         this.generate_energy()
@@ -46,7 +61,9 @@ export class LeafParticle extends ShootSystemParticle {
             this.grow_children(environment)
     }
 
-
+    /**
+     * Selects which neighbours to grow leaf children into and caches the results
+     */
     select_leaf_children() {
         switch (this.dna.leaf_shape) {
             case "sunflower":
@@ -62,8 +79,11 @@ export class LeafParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Attempts to grow new particles
+     * @param {Environment} environment The current state of the game environment
+     */
     grow_children(environment) {
-
         if (FastRandom.random() > this.leaf_growth_probability || this.cooldown_timer >= 0 || this.dead || this.leaf_dead)
             return
 
@@ -94,6 +114,11 @@ export class LeafParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Checks whether the Water/Nutrient levels in a leaf is healthy, dies if not.
+     * Leaf_Death separate from regular death
+     * @param {Environment} environment The current state of the game environment
+     */
     health_update(environment) {
         if (this.dead) {
             this.die(environment)
@@ -116,8 +141,11 @@ export class LeafParticle extends ShootSystemParticle {
         }
     }
 
+    /**
+     * Similar to PlantFamilyParticle.die() except for leaves only
+     * @param {Environment} environment The current state of the game environment
+     */
     leaf_die(environment) {
-
         if (this.is_leaf_root) {
             this.cooldown_timer = LeafParticle.REGROWTH_COOLDOWN_CONST
             this.is_active = false

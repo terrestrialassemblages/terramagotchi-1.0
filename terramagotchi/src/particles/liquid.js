@@ -30,7 +30,7 @@ export class LiquidParticle extends BaseParticle {
                 particle_backward.weight < this.weight;
 
             // Particle ahead cannot be moved
-            if (!can_move_forward && can_move_backward) {
+            if (!can_move_forward) {
                 // Swap direction
                 this.flow_direction *= -1;
 
