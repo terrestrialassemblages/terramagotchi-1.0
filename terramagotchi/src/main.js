@@ -90,7 +90,9 @@ export const sketch = (s) => {
             }
             if (target_particle instanceof PlantFamilyParticle) {
                 console.log("Energy: " + target_particle.energy + " / " + target_particle.energy_capacity)
-                console.log("is dead:", target_particle.dead)
+                console.log("Health:", target_particle.health, "/", target_particle.max_health)
+                console.log("Is dead:", target_particle.dead)
+                console.log("Is active: " + target_particle.is_active)
             }
             if (target_particle instanceof RootParticle) {
                 console.log("Is node: " + target_particle.is_node)
