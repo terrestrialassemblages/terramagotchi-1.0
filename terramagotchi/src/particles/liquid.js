@@ -17,30 +17,26 @@ export class LiquidParticle extends BaseParticle {
                 this.x + this.flow_direction,
                 this.y
             );
-            let particle_backward = environment.get(
-                this.x - this.flow_direction,
-                this.y
-            );
 
             let can_move_forward =
                 particle_forward.moveable_x &&
                 particle_forward.weight < this.weight;
-            let can_move_backward =
-                particle_backward.moveable_x &&
-                particle_backward.weight < this.weight;
+            // let can_move_backward =
+            //     particle_backward.moveable_x &&
+            //     particle_backward.weight < this.weight;
 
             // Particle ahead cannot be moved
-            if (!can_move_forward && can_move_backward) {
+            if (!can_move_forward) {
                 // Swap direction
                 this.flow_direction *= -1;
 
-                const temp1 = particle_forward;
-                particle_forward = particle_backward;
-                particle_backward = temp1;
+                // const temp1 = particle_forward;
+                // particle_forward = particle_backward;
+                // particle_backward = temp1;
 
-                const temp2 = can_move_forward;
-                can_move_forward = can_move_backward;
-                can_move_backward = temp2;
+                // const temp2 = can_move_forward;
+                // can_move_forward = can_move_backward;
+                // can_move_backward = temp2;
             }
 
             // Has space to move forward
