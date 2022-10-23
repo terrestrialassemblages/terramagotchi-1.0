@@ -12,16 +12,16 @@ import { FastRandom } from "../../fast-random";
 // import { FastRandom } from "../../fast-random";
 
 export class ShootSystemParticle extends PlantFamilyParticle {
+    /**
+     * Superclass for all plant types which grow above-ground. Main purpose to better containerise 
+     * the absorption functions which the class will override while allowing Seed/Root particles
+     * to remain using the absorption code in organic.js
+     * @param {Number}      x           Starting x-coordinate for new plant-type particle
+     * @param {Number}      y           Starting y-coordinate for new plant-type particle
+     * @param {DNANode}     plant_dna   A DNA Node in a DNA Tree describing the characteristics of this specific
+     *                                  particle and its children
+     */
     constructor(x, y, plant_dna=null) {
-        /**
-         * Superclass for all plant types which grow above-ground. Main purpose to better containerise 
-         * the absorption functions which the class will override while allowing Seed/Root particles
-         * to remain using the absorption code in organic.js
-         * @param {Number}      x           Starting x-coordinate for new plant-type particle
-         * @param {Number}      y           Starting y-coordinate for new plant-type particle
-         * @param {DNANode}     plant_dna   A DNA Node in a DNA Tree describing the characteristics of this specific
-         *                                      particle and its children
-         */
         super(x, y, plant_dna);
 
         this.nutrient_capacity = 15
@@ -30,11 +30,11 @@ export class ShootSystemParticle extends PlantFamilyParticle {
     }
 
 
+    /**
+     * Handles how ShootSystemParticles absorb water from neighbouring particles
+     * @param {Environment} environment     The current environment in the application
+     */
     absorb_water(environment, is_safe=true) {
-        /**
-         * Handles how ShootSystemParticles absorb water from neighbouring particles
-         * @param {Environment} environment     The current environment in the application
-         */
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour
@@ -62,12 +62,11 @@ export class ShootSystemParticle extends PlantFamilyParticle {
         }
     }
 
-
+    /**
+     * Handles how ShootSystemParticles absorb nutrients from neighbouring particles
+     * @param {Environment} environment     The current environment in the application
+     */
     absorb_nutrients(environment, is_safe=true) {
-        /**
-         * Handles how ShootSystemParticles absorb nutrients from neighbouring particles
-         * @param {Environment} environment     The current environment in the application
-         */
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour

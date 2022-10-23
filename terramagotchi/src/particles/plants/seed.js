@@ -19,9 +19,13 @@ import {
 } from "../../environment";
 
 export class SeedParticle extends PlantFamilyParticle {
-
     static SEED_MAX_HEALTH = 1650 // Seeds will use a unique max-health so they don't die immediately
 
+    /**
+     * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
+     * @param {Number}  y           (Integer) y-coordinate of particle to be constructed
+     * @param {DNANode} plant_dna   The DNA-node object for this plant particle. Represents a node in a tree graph.
+     */
     constructor(x, y, plant_dna=null) {
         super(x, y, plant_dna);
 
@@ -39,11 +43,11 @@ export class SeedParticle extends PlantFamilyParticle {
         this.germinated = false
     }
 
+    /**
+     * Handles update function for the seed particle
+     * @param {Environment} environment     The current game environment
+     */
     update(environment) {
-        /**
-         * Handles update function for the seed particle
-         * @param {Environment} environment     The current game environment
-         */
         this.compute_gravity(environment)
         this.health_update(environment)
         
@@ -59,11 +63,11 @@ export class SeedParticle extends PlantFamilyParticle {
             this.grow(environment)
     }
 
+    /**
+     * Handles growing the seed into a stem and root particle if the conditions are correct
+     * @param {Environment} environment     The current game environment
+    */
     grow(environment) {
-        /**
-         * Handles growing the seed into a stem and root particle if the conditions are correct
-         * @param {Environment} environment     The current game environment
-        */
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.absorb_tier = 1

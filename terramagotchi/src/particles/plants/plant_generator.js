@@ -5,10 +5,13 @@ const LAVENDER = "LAVENDER"
 const PUMPKIN = "PUMPKIN"
 const SUNFLOWER = "SUNFLOWER"
 
+/**
+ * Generates a DNA-Tree for which a particle can take
+ * @param {String}  TREE_TYPE   The type of tree to make.
+ *                              Default is sunflower
+ * @returns {Object}    Returns a nested object of plant characteristics
+ */
 export function generate_tree_dna(TREE_TYPE=LAVENDER) {
-    /**
-     * Generates a DNA-Tree for which a particle can take
-     */
 let tree_direction, tree_scale, tree_angle_offset, tree_height, tree_color
 switch (TREE_TYPE) {
     case KAURI:
