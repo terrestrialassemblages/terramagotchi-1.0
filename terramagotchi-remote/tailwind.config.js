@@ -20,6 +20,16 @@ module.exports = {
             700: '#3163b9',
             800: '#274e91',
         },
+        'worm': {
+            600: '#eb7a7c',
+            700: '#e44e50',
+            800: '#de2124',
+        },
+        'seed': {
+            600: '#52a130',
+            700: '#3e7a24',
+            800: '#2a5219', 
+        }
     }
   },
   plugins: [require('tw-elements/dist/plugin')],

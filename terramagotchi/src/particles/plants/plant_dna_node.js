@@ -12,46 +12,47 @@ export class DNANode {
          * Variables defining the seed behaviour
             ===================================== */
 
-        this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 5
+        this.seed_activation_level =    dna_encoding.seed_activation_level != null ? dna_encoding.seed_activation_level : 0
         this.seed_color =               dna_encoding.seed_color || "#FF80FF"
 
         /** =====================================
-         * Variables defining the seed behaviour
+         * Variables defining the root behaviour
             ===================================== */
 
-        this.root_node_spawn_distance = dna_encoding.root_node_spawn_distance || 7
-        this.root_length_max = dna_encoding.root_length_max || 10
-        this.root_max_curve_length = dna_encoding.root_max_curve_length || 1
+        this.root_node_spawn_distance = dna_encoding.root_node_spawn_distance || 5
+        this.root_length_max =          dna_encoding.root_length_max || 20
+        this.root_max_curve_length = dna_encoding.root_max_curve_length || 4
+        this.root_minimum_distance = dna_encoding.root_minimum_distance || 0
 
         /** ====================================
          * Variables defining the particle type
             ==================================== */
 
-        this.node_type = dna_encoding.node_type || "stem"
-        this.node_activation_level = dna_encoding.node_activation_level || 0
+        this.node_type =            dna_encoding.node_type || "stem"
+        this.node_activation_level =dna_encoding.node_activation_level || 0
 
         /** =================================
          * Variables defining stem behaviour
             ================================= */
 
-        this.color =   dna_encoding.color || "green";
-        this.stem_length =  dna_encoding.stem_length || 0;
-        this.stem_angle =   dna_encoding.stem_angle || 0;
-        this.use_angle_absolute = dna_encoding.use_angle_absolute || false
+        this.color =                dna_encoding.color || "green";
+        this.stem_length =          dna_encoding.stem_length || 0;
+        this.stem_angle =           dna_encoding.stem_angle || 0;
+        this.use_angle_absolute =   dna_encoding.use_angle_absolute || false
         
-        this.stem_curve = dna_encoding.stem_curve || "linear";
+        this.stem_curve =           dna_encoding.stem_curve || "linear";
 
         this.stem_thickness =       dna_encoding.stem_thickness ||  3;
         this.stem_end_thickness =   dna_encoding.stem_end_thickness || 1;
         this.bark_start_direction = dna_encoding.bark_start_direction || -1
 
         // Constant for spherical curve
-        this.curve_radius =     dna_encoding.curve_radius || 10;
-        this.curve_direction =  dna_encoding.curve_direction || -1
+        this.curve_radius =         dna_encoding.curve_radius || 10;
+        this.curve_direction =      dna_encoding.curve_direction || -1
 
         // Constants for bezier curve
-        this.curve_offset_A = dna_encoding.curve_offset_A || [2, 2];
-        this.curve_offset_B = dna_encoding.curve_offset_B || [-2, 4];
+        this.curve_offset_A =       dna_encoding.curve_offset_A || [2, 2];
+        this.curve_offset_B =       dna_encoding.curve_offset_B || [-2, 4];
 
         this.children = new Array();
         this.children_weight_growth_direction = dna_encoding.children_weight_growth_direction || true
@@ -60,15 +61,16 @@ export class DNANode {
          * Variables defining leaf behaviour
             ================================= */
         
+        this.leaf_max_health = dna_encoding.leaf_max_health || 1200
         this.leaf_shape = dna_encoding.leaf_shape || "flat-top"
         this.leaf_direction = dna_encoding.leaf_direction || 1
         this.leaf_size = dna_encoding.leaf_size || 2
         this.growth_destructive = dna_encoding.growth_destructive || false
         // Will currently use stem_angle to determine the angle of leaf growth as well
 
-        /** =================================
-         * Variables defining leaf behaviour
-            ================================= */
+        /** ===================================
+         * Variables defining flower behaviour
+            =================================== */
 
         this.secondary_color = dna_encoding.secondary_color || this.color
         this.secondary_color_length = dna_encoding.secondary_color_length || 999
