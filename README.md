@@ -21,27 +21,27 @@ https://imateapot.atlassian.net/jira/software/projects/TPT/boards/2/roadmap?shar
 [![tailwind](https://img.shields.io/badge/tailwind_css-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![firebase](https://img.shields.io/badge/firebase-F57C00?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 
-| Name                | version | description | terramagotchi | terramagotchi development | remote | remote development | firebase | firebase development |
-|---------------------|---------|-------------|---------------|---------------------------|--------|--------------------|----------|----------------------|
-| p5                  | 1.4.2   |             | &#x2611;      |                           |        |                    |          |                      |
-| simplex-noise       | 4.0.0   |             | &#x2611;      |                           |        |                    |          |                      |
-| html-webpack-plugin | 5.5.0   |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
-| webpack             | 5.74.0  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
-| webpack-cli         | 4.10.0  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
-| webpack-dev-server  | 4.10.1  |             |               | &#x2611;                  |        | &#x2611;           |          |                      |
-| crypto-random-string| 5.0.0   |             | &#x2611;      |                           |        |                    |          |                      |
-| firebase            | 9.12.1  |             | &#x2611;      |                           |&#x2611;|                    |&#x2611;  |                      |
-| qrcode              | 1.5.1   |             | &#x2611;      |                           |        |                    |          |                      |
-| css-loader          | 6.7.1   |             |               |                           |        | &#x2611;           |          |                      |
-| postcss             | 8.4.17  |             |               |                           |        | &#x2611;           |          |                      |
-| postcss-loader      | 7.0.1   |             |               |                           |        | &#x2611;           |          |                      |
-| postcss-preset-env  | 7.8.2   |             |               |                           |        | &#x2611;           |          |                      |
-| style-loader        | 3.3.1   |             |               |                           |        | &#x2611;           |          |                      |
-| tailwindcss         | 3.1.8   |             |               |                           |        | &#x2611;           |          |                      |
-| tw-elements         | 1.0.0-alpha12  |      |               |                           |&#x2611;|                    |          |                      |
-| firebase-admin      | 10.0.2  |             |               |                           |        |                    |&#x2611;  |                      |
-| firebase-functions  | 3.18.0  |             |               |                           |        |                    |&#x2611;  |                      |
-| firebase-functions-test | 0.2.0  |          |               |                           |        |                    |          |&#x2611;              |
+| Name                    | version        | terramagotchi | terramagotchi development | remote | remote development | firebase | firebase development |
+|-------------------------|----------------|---------------|---------------------------|--------|--------------------|----------|----------------------|
+| p5                      | 1.4.2          | &#x2611;      |                           |        |                    |          |                      |
+| simplex-noise           | 4.0.0          | &#x2611;      |                           |        |                    |          |                      |
+| html-webpack-plugin     | 5.5.0          |               | &#x2611;                  |        | &#x2611;           |          |                      |
+| webpack                 | 5.74.0         |               | &#x2611;                  |        | &#x2611;           |          |                      |
+| webpack-cli             | 4.10.0         |               | &#x2611;                  |        | &#x2611;           |          |                      |
+| webpack-dev-server      | 4.10.1         |               | &#x2611;                  |        | &#x2611;           |          |                      |
+| crypto-random-string    | 5.0.0          | &#x2611;      |                           |        |                    |          |                      |
+| firebase                | 9.12.1         | &#x2611;      |                           |&#x2611;|                    |&#x2611;  |                      |
+| qrcode                  | 1.5.1          | &#x2611;      |                           |        |                    |          |                      |
+| css-loader              | 6.7.1          |               |                           |        | &#x2611;           |          |                      |
+| postcss                 | 8.4.17         |               |                           |        | &#x2611;           |          |                      |
+| postcss-loader          | 7.0.1          |               |                           |        | &#x2611;           |          |                      |
+| postcss-preset-env      | 7.8.2          |               |                           |        | &#x2611;           |          |                      |
+| style-loader            | 3.3.1          |               |                           |        | &#x2611;           |          |                      |
+| tailwindcss             | 3.1.8          |               |                           |        | &#x2611;           |          |                      |
+| tw-elements             | 1.0.0-alpha12  |               |                           |&#x2611;|                    |          |                      |
+| firebase-admin          | 10.0.2         |               |                           |        |                    |&#x2611;  |                      |
+| firebase-functions      | 3.18.0         |               |                           |        |                    |&#x2611;  |                      |
+| firebase-functions-test | 0.2.0          |               |                           |        |                    |          |&#x2611;              |
 
 
 ## Usage - Instructions on How to Install and Setup the Project.

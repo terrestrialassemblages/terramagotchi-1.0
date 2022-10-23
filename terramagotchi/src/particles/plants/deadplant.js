@@ -12,10 +12,18 @@ export class DeadPlantParticle extends OrganicParticle {
         
         this.base_color = "#8D5D4F";
         this.pass_through_types = [ StemParticle, BarkParticle, LeafParticle ];
+
+        this.can_erode = true;
     }
 
     update(environment) {
-        this.compute_erosion(environment)
+
+        // Toggle erosion to false after entering the pass-through layer
+        if (this.can_erode && this.passing_through) this.can_erode = false;
+        // Toggle erosion to true after hovering above an empty particle
+        if (!this.can_erode && environment.get(this.x, this.y - 1).empty) this.can_erode = true;
+
+        if (this.can_erode) this.compute_erosion(environment)
         this.compute_gravity(environment)
 
         if (

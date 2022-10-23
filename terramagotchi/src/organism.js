@@ -2,12 +2,10 @@ import { FastRandom } from "./fast-random"
 import { AirParticle, CompostParticle, SoilParticle, WaterParticle } from "./particles"
 import { LiquidParticle } from "./particles/liquid"
 import {
-    BarkParticle,
     DeadPlantParticle,
-    LeafParticle,
     RootParticle,
     SeedParticle,
-    StemParticle,
+    ShootSystemParticle,
 } from "./particles/plants"
 
 // Disabled due to lack of time.
@@ -30,9 +28,7 @@ const CAN_TRAVERSE = [
     CompostParticle,
     RootParticle,
     SeedParticle,
-    BarkParticle,
-    StemParticle,
-    LeafParticle,
+    ShootSystemParticle
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
