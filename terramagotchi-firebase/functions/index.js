@@ -33,6 +33,7 @@ exports.userInteract = functions
             colRef.doc("time").set({ value: 0 });
             colRef.doc("seed").set({ value: 0 });
             colRef.doc("worm").set({ value: 0 });
+            colRef.doc("compost").set({ value: 0 });
 
             return { message: `Successfully created instance ${data.instance_id}` }
         }
