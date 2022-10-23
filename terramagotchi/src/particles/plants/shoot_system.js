@@ -38,14 +38,13 @@ export class ShootSystemParticle extends PlantFamilyParticle {
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour
-            if (this.__water_transferred || this.water_level + target_amount > this.water_capacity)
+            if (this.water_level + target_amount > this.water_capacity)
                 return;
             
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
-                target_particle.__nutrient_transferred ||
                 target_particle.absorb_tier > this.absorb_tier ||
                 (target_particle.water_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_WATER && is_safe) ||
                 FastRandom.random() > this.__transfer_smoothing_constant
@@ -72,24 +71,22 @@ export class ShootSystemParticle extends PlantFamilyParticle {
         let target_amount = 3
         for (let neighbour of this.__neighbours) {
             let [offset_x, offset_y] = neighbour
-            if (this.__nutrient_transferred || this.nutrient_level + target_amount > this.nutrient_capacity)
+            if (this.nutrient_level + target_amount > this.nutrient_capacity)
                 return;
             
             let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
             if (
                 !(target_particle instanceof PlantFamilyParticle) ||
-                target_particle.__nutrient_transferred ||
                 target_particle.absorb_tier > this.absorb_tier ||
                 (target_particle.nutrient_level - target_amount <= PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS && is_safe) ||
                 FastRandom.random() > this.__transfer_smoothing_constant
                 )
                 continue
             
-                if (target_particle instanceof RootParticle)
-                    target_amount = Math.min(target_particle.nutrient_level, this.nutrient_capacity - this.nutrient_level)
-            
-
+            if (target_particle instanceof RootParticle)
+                target_amount = Math.min(target_particle.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+                
             if ((target_particle.nutrient_level > this.nutrient_level || target_particle instanceof RootParticle) && target_particle.nutrient_level >= target_amount) {
                 this.nutrient_level += target_amount
                 target_particle.nutrient_level -= target_amount
