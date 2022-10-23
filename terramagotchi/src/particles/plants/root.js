@@ -39,7 +39,7 @@ export class RootParticle extends PlantFamilyParticle {
     }
     
     update(environment) {
-        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle]);
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle, RootParticle]);
         let particle_to_check = environment.get(this.parent_root_particle[0], this.parent_root_particle[1])
 
         if (particle_to_check.dead == true || particle_to_check instanceof SoilParticle) { // if the parent particle is dead, which is also checked by seeing if its soil, it runs to kill the rest of the root particles.
