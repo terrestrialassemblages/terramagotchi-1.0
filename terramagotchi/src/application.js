@@ -8,6 +8,7 @@ import { FastRandom } from "./fast-random";
 import {
     SoilParticle,
     WaterParticle,
+    CompostParticle,
 } from "./particles";
 import { SeedParticle } from "./particles/plants";
 
@@ -52,6 +53,9 @@ export class Application {
                     }
                     if (change.doc.id == "soil") {
                         this.environment.user_add_particle(SoilParticle);
+                    }
+                    if (change.doc.id == "compost") {
+                        this.environment.user_add_particle(CompostParticle);
                     }
                     if (change.doc.id == "seed") {
                         this.environment.user_add_seed(FastRandom.choice(["LAVENDER", "SUNFLOWER", "KAURI"]));
