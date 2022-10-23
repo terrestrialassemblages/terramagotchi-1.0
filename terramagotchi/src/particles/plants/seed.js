@@ -17,6 +17,7 @@ import {
     NUTRIENT_ENERGY_RATIO,
     WATER_ENERGY_RATIO
 } from "../../environment";
+import { WaterParticle } from "../water";
 
 export class SeedParticle extends PlantFamilyParticle {
     static SEED_MAX_HEALTH = 1650 // Seeds will use a unique max-health so they don't die immediately
@@ -68,6 +69,9 @@ export class SeedParticle extends PlantFamilyParticle {
      * @param {Environment} environment     The current game environment
     */
     grow(environment) {
+        if (environment.get(this.x, this.y + 1) instanceof WaterParticle) {
+            return;
+        }
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.absorb_tier = 1
