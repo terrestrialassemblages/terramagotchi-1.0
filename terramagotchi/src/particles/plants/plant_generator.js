@@ -48,6 +48,7 @@ switch (TREE_TYPE) {
         section_1.root_node_spawn_distance = 5
         section_1.root_length_max = 40
         section_1.root_max_curve_length = 4
+        section_1.root_minimum_distance = 8
 
         section_1.children.push({
             seed_activation_level: 0,
