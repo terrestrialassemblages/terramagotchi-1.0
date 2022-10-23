@@ -15,7 +15,7 @@ import {
     OrganicParticle,
 } from "./particles";
 
-import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle } from "./particles/plants";
+import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle, LeafParticle } from "./particles/plants";
 
 /**
  * Firebase Config, This is specific to the Terramagotchi Firebase project
@@ -96,6 +96,10 @@ export const sketch = (s) => {
                 console.log("Is node: " + target_particle.is_node)
                 console.log("Is active: " + target_particle.is_active)
                 console.log("Parent location: " + target_particle.parent_root_particle)
+            }
+            if (target_particle instanceof LeafParticle) {
+                console.log("Is root: " + target_particle.is_leaf_root)
+                console.log("Is active: " + target_particle.is_active)
             }
             console.log("")
         })
