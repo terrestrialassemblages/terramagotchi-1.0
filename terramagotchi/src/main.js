@@ -32,8 +32,8 @@ const FIREBASE_CONFIG = {
 
 // Check if URL param for id exists, if it does set the instance id to it
 const id_param = (new URL(document.location)).searchParams.get("id");
-const INSTANCE_ID = id_param ? id_param : "main"; // Constant instance id for debug
-//const INSTANCE_ID = id_param ? id_param : cryptoRandomString({ length: 6, type: "alphanumeric" });
+//const INSTANCE_ID = id_param ? id_param : "main"; // Constant instance id for debug
+const INSTANCE_ID = id_param ? id_param : cryptoRandomString({ length: 6, type: "alphanumeric" });
 
 let show_qr = false;
 
