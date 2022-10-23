@@ -46,7 +46,7 @@ export class LeafParticle extends ShootSystemParticle {
      */
     update(environment) {
         if (this.dead) {
-            this.die()
+            this.die(environment)
             return;
         };
         this.absorb_nutrients(environment, false)

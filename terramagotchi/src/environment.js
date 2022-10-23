@@ -293,11 +293,16 @@ export class Environment {
             for (let j = 0; j < 4; j++) {
                 // Checks that the particle being replaced is Air, Cloud or Steam
                 if (this.get(x + i, y + j) instanceof (AirParticle || CloudParticle || SteamParticle)) {
-                    this.set(new particle(x + i, y + j));
+                    if (particle === WaterParticle) {
+                        // Create water particle with water_level = 100
+                        this.set(new particle(x + i, y + j, 100));
+                        this.water_added += 1;
+                    } else {
+                        this.set(new particle(x + i, y + j)); 
+                    }
                     added_particles++;
 
-                    // Increases particle tracking variables
-                    if (particle === WaterParticle) { this.water_added += 1; }
+                    // Increases soil tracking variable
                     if (particle === SoilParticle) { this.soil_added += 1; }
                 }
             }
