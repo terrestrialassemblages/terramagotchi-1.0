@@ -36,7 +36,9 @@ const CAN_TRAVERSE = [
 ]
 
 // The organism will seek in a radial diamond with a radius of MAX_SEEK_DEPTH.
-const MAX_SEEK_DEPTH = 100
+const MAX_SEEK_DEPTH = 50
+// The organism will seek a further depth the lower it is. MAX_SEEK_DEPTH is the lower bound of this.
+const ADJUST_SEEK_BY_CURRENT_Y = true
 
 // The base nutrient and water levels which an organism spawns with and which it keeps after defecating.
 const MIN_NUTRIENTS = 10
@@ -275,8 +277,13 @@ export class Organism {
          * At each depth, it searches in a circular order, starting on the right of itself.
          */
 
+        let max_depth = MAX_SEEK_DEPTH
+        // We adjust to seek further if the organism is lower. 
+        // This means organisms deep in the soil don't just never eat because they're too far away.
+        if (ADJUST_SEEK_BY_CURRENT_Y) max_depth += Math.floor(environment.height / 2 - this.y)
+
         let y = 0
-        for (let depth = 1; depth <= MAX_SEEK_DEPTH; depth++) {
+        for (let depth = 1; depth <= max_depth; depth++) {
             for (let x = depth; x >= -depth; x--) {
                 y = Math.abs(x) - depth
                 if (
