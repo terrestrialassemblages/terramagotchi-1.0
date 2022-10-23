@@ -1,7 +1,8 @@
 # Terramagotchi
-Terramagotchi is a web app which aims to educate people about the nature cycles and the processes which underlie them. 
-This includes a simulation of nutrient and water transfer between soil, plants and organisms, as well as water evaporation and weather.
-It is separated into 3 parts: The main application where the environment is simulated, the remote which sends signals to the main application to spawn in particles by anyone, and the Firebase database which acts as the conduit to allow communication between the main application and any connected remotes.
+Terramagotchi is a web app which aims to educate people about the cycles in nature and the processes which underlie them. The project is separated into 3 parts: The main application, the remote application, and the Firebase database.
+* The main application is where the environment is simulated. It includes includes a simulation of nutrient and water transfer between soil, plants, and organisms, as well as water evaporation and condensation,
+* The remote application sends signals to instances of the main application allowing users to interact with the environment by adding particles.
+* The Firebase database enables communication between the main application and any connected remotes.
 
 ## Project Management Tool
 
