@@ -134,7 +134,7 @@ export class Environment {
 
         for (let i = 0; i < 15; i++) {
             const x = FastRandom.int_min_max(5, this.width - 5)
-            const y = FastRandom.int_max(this.get_horizon(x) - 5)
+            const y = FastRandom.int_min_max(5, this.get_horizon(x) - 5)
             this.spawn_organism(x, y)
         }
 
