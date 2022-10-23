@@ -64,7 +64,7 @@ export class Application {
                         this.environment.spawn_organism(FastRandom.int_min_max(5, this.width - 5), FastRandom.int_min_max(160, this.height - 5));
                     }
                     if (change.doc.id == "time") {
-                        this.environment.change_time(4);
+                        this.environment.change_time();
                     }
                 }
             });
