@@ -35,6 +35,10 @@ export class BarkParticle extends ShootSystemParticle {
      */
     update(environment) {
         this.health_update(environment)
+        if (this.dead) {
+            this.die(environment)
+            return;
+        }
         this.health = this.max_health // Keep bark alive
 
         // Uncomment to grow roots below all particles
