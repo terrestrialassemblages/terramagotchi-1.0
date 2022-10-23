@@ -36,7 +36,7 @@ export class RootParticle extends PlantFamilyParticle {
         this.has_checked_surroundings = false; // checks if a surrounding check has been done before. needs to be done at least once, details on it below
         this.minimum_distance = this.dna.root_minimum_distance || 5; // the minimum distance a root needs to go before its randomness kicks in.
         this.max_root_neighbours = 7; // how many neighbours of a root particle can be root particles. Made to prevent loops.
-        this.update_speed = 20;
+        this.update_speed = FastRandom.int_min_max(12, 20);
     }
     
     update(environment) {
