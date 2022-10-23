@@ -45,7 +45,7 @@ export const sketch = (s) => {
      * Function class for constructing a p5.js object
      */
     const application = new Application(180, 320, INSTANCE_ID, FIREBASE_CONFIG);
-    let cell_size = 3; // Defines cell size in pixels.
+    let cell_size = 6; // Defines cell size in pixels.
 
     let night_overlay_graphic, main_graphic, organisms_graphic, deep_dark_overlay_graphic;
     let sky_day_color, sky_night_color;
