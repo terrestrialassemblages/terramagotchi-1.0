@@ -13,7 +13,7 @@ import { Environment } from "../../environment";
 
 export class LeafParticle extends ShootSystemParticle {
 
-    static REGROWTH_COOLDOWN_CONST = 60*60 // 30 seconds at 60fps
+    static REGROWTH_COOLDOWN_CONST = 5*60 // 5 seconds at 60fps
 
 
     /**
@@ -25,13 +25,13 @@ export class LeafParticle extends ShootSystemParticle {
         super(x, y, plant_dna);
 
         this.activation_level = 0
-        this.max_health = this.dna.leaf_max_health || 10*4*1200 + FastRandom.int_min_max(-300, 300)
+        this.max_health = this.dna.leaf_max_health || (3600 + FastRandom.int_min_max(-600, 600)) * 60
         this.health = this.max_health
 
         this.nutrient_capacity = 10
         this.water_capacity = 10
 
-        this.leaf_growth_probability = 1/10
+        this.leaf_growth_probability = 1/120
         this.cooldown_timer = -1
 
         this.is_leaf_root = true
