@@ -26,7 +26,7 @@ import { FastRandom } from "../../fast-random";
 export class PlantFamilyParticle extends OrganicParticle {
 
     static DEFAULT_ACTIVATION_ENERGY = 0    // Default amount of energy required for a plant particle to grow
-    static DEFAULT_MAX_HEALTH = 30*60*2     // Effectively how many frames (*2) a plant survives while "unhealthy" until dying
+    static DEFAULT_MAX_HEALTH = 60*60*2     // How many ticks *2 a plant survives while "unhealthy" until dying
                                             // Can be set in DNA per-plant, else defaults to this value
                                             // *2 because health decrements for each condition of being too low in water and nutrients
                                         

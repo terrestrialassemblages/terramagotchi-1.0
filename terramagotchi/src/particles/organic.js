@@ -100,16 +100,14 @@ export class OrganicParticle extends BaseParticle {
          */
         
         // How much water to transfer
-        // Absorb up to 10 water or up to the difference between levels if lower
-        let transfer_amount = Math.min(FastRandom.int_max(10), neighbour.water_level - this.water_level)
-
+        // Absorb up to 10 water or up to half the difference between levels if lower
+        let transfer_amount = Math.min(FastRandom.int_max(10), ((neighbour.water_level - this.water_level) / 2) | 0)
         // Only absorb as much as the capacity will allow
         transfer_amount = Math.min(transfer_amount, this.water_capacity - this.water_level)
 
         // Attempt to absorb water from random neighbour
         if (transfer_amount > 0 &&
             FastRandom.random() < (transfer_amount / 10) &&
-            this.water_level + transfer_amount < neighbour.water_level - transfer_amount &&
             !neighbour.__water_transferred &&
             !this.__water_transferred
         ) {
@@ -164,14 +162,16 @@ export class OrganicParticle extends BaseParticle {
     }
 
     get_color(s) {
-        //if (this.nutrient_capacity != 0) {
-        //   s.push()
-        //   s.colorMode(s.RGB)
-        //   //this.color = s.color((this.water_level - 30) * 10)
-        //   this.color = s.color((this.water_level / this.water_capacity) * 255)
-        //   s.pop()
-        //   return this.color
-        //}
+
+        // s.push()
+        // s.colorMode(s.RGB)
+        // this.color = s.color((this.water_level - 30) * 10)
+        // let red = 255*(this.nutrient_level/((this.nutrient_capacity == 0) ? 255 : this.nutrient_capacity))
+        // let blue = 255*(this.water_level/((this.water_capacity == 0) ? 255 : this.water_capacity))
+        // this.color = s.color(red, 0, blue)
+        
+        // s.pop()
+        // return this.color
 
         // Initialise colour if needed
         if (this.color === "#FF00FF") {

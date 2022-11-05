@@ -202,4 +202,57 @@ export class RootParticle extends PlantFamilyParticle {
         }
         this.has_checked_surroundings = true;
     }
+
+    absorb_water(neighbour) {
+        // Absorb as much as possible from lower roots
+        if (neighbour instanceof RootParticle && neighbour.y < this.y) {
+
+            // How much water to transfer
+            // Absorb as much as the capacity will allow
+            let transfer_amount = Math.min(neighbour.water_level, this.water_capacity - this.water_level)
+
+            // Attempt to absorb water from random neighbour
+            if (transfer_amount > 0 &&
+                !neighbour.__water_transferred &&
+                !this.__water_transferred
+            ) {
+                // Transfer water
+                this.water_level += transfer_amount;
+                neighbour.water_level -= transfer_amount;
+
+                // Ensure water is not transfered again this tick
+                this.__water_transferred = true;
+                neighbour.__water_transferred = true;
+            }
+        }
+        else {
+            super.absorb_water(neighbour);
+        }
+    }
+
+    absorb_nutrients(neighbour) {
+        // Absorb as much as possible from lower roots 
+        if (neighbour instanceof RootParticle && neighbour.y < this.y) {
+            // How much nutrients to transfer
+            // Absorb as much as the capacity will allow
+            let transfer_amount = Math.min(neighbour.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+
+            // Attempt to absorb nutrients from random neighbour
+            if (transfer_amount > 0 &&
+                !neighbour.__nutrient_transferred &&
+                !this.__nutrient_transferred
+            ) {
+                // Transfer nutrients
+                this.nutrient_level += transfer_amount;
+                neighbour.nutrient_level -= transfer_amount;
+
+                // Ensure nutrients is not transfered again this tick
+                this.__nutrient_transferred = true;
+                neighbour.__nutrient_transferred = true;
+            }
+        }
+        else {
+            super.absorb_nutrients(neighbour);
+        }
+    }
 }
