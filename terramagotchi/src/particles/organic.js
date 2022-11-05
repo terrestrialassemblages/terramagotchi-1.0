@@ -109,6 +109,7 @@ export class OrganicParticle extends BaseParticle {
         // Attempt to absorb water from random neighbour
         if (transfer_amount > 0 &&
             FastRandom.random() < (transfer_amount / 10) &&
+            this.water_level + transfer_amount < neighbour.water_level - transfer_amount &&
             !neighbour.__water_transferred &&
             !this.__water_transferred
         ) {

@@ -5,7 +5,7 @@ import { OrganicParticle } from "./organic";
 import { SteamParticle } from "./steam";
 
 export class WaterParticle extends LiquidParticle {
-    constructor(x, y, water_level = 1000) {
+    constructor(x, y, water_level = 100) {
         super(x, y);
         this.base_color = "#5080D0";
         this.moveable = true;

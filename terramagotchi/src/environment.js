@@ -86,6 +86,14 @@ export class Environment {
     }
 
     generate() {
+
+        // Store the positions of all surface-level river particles
+        let river_positions = []
+        for (let x = (90 + this.river_offset - this.river_radius) | 0; 
+             x < (90 + this.river_offset + this.river_radius) | 0; x++) { 
+            river_positions.push([x, this.get_horizon(x) | 0])
+        }
+        
         /**
          * Populates the application environment with particles
          */
@@ -98,8 +106,15 @@ export class Environment {
                 // Set Soil Particles
                 else if (y < this.get_horizon(x)) {
                     let new_soil = new SoilParticle(x, y)
-                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
                     new_soil.nutrient_level = (new_soil.nutrient_capacity / 2) | 0
+                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
+
+                    // Set water level based on distance from river
+                    for (let river_position of river_positions) { 
+                        new_soil.water_level = Math.max(new_soil.water_level, 100 - 
+                            Math.abs(x - river_position[0]) - Math.abs(y - river_position[1]))
+                    }
+
                     this.set(new_soil);
                 } 
                 // Set Water Particles
@@ -120,18 +135,22 @@ export class Environment {
             }
         }
 
+        // Add Kauri Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("KAURI")
         }
         
+        // Add Lavender Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("LAVENDER")
         }
 
+        // Add Sunflower Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("SUNFLOWER")
         }
 
+        // Add Worms
         for (let i = 0; i < 15; i++) {
             const x = FastRandom.int_min_max(5, this.width - 5)
             const y = FastRandom.int_min_max(5, this.get_horizon(x) - 5)
@@ -143,6 +162,7 @@ export class Environment {
     }
 
     update() {
+        // Update all particles in the pass-through layer
         for (let i = this.__pass_through_layer.length - 1; i > -1; i--) {
             let particle = this.__pass_through_layer[i];
             if (!particle.destroyed) {
@@ -150,12 +170,14 @@ export class Environment {
             }
         }
         
+        // Update all particles in the main grid
         for (let particle of [...this.__particle_grid]) {
             if (!particle.destroyed) {
                 particle.update(this);
             }
         }
 
+        // Update all organisms
         for (let organism of this.__organisms) {
             organism.update(this);
         }
@@ -167,10 +189,11 @@ export class Environment {
     }
 
     refresh() {
-        
+        // Refresh all once-per-tick particles on main grid
         for (let particle of this.__particle_grid) {
             particle.refresh();
         }
+        // Refresh all once-per-tick particles in the pass-through layer
         for (let particle of this.__pass_through_layer) {
             particle.refresh();
         }
