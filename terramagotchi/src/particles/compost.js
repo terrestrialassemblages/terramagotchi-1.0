@@ -23,6 +23,7 @@ export class CompostParticle extends OrganicParticle {
         this.compute_gravity(environment);
         this.compute_erosion(environment);
 
+        this.compute_transpiration(environment);
         this.disperse_nutrients(environment);
     }
 

@@ -25,7 +25,7 @@ export class OrganicParticle extends BaseParticle {
         this.__nutrient_transferred = false;
 
         // Per-tick chance for transpiration (evaporate water_level into steam)
-        this.transpiration_chance = 0.00001;
+        this.transpiration_chance = 0.00002;
     }
 
     set water_level(level) {

@@ -108,7 +108,7 @@ export class Environment {
                 else if (y < this.get_horizon(x)) {
                     let new_soil = new SoilParticle(x, y)
                     new_soil.nutrient_level = (new_soil.nutrient_capacity / 2) | 0
-                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
+                    new_soil.water_level = 0
 
                     // Set water level based on distance from river
                     for (let river_position of river_positions) { 
