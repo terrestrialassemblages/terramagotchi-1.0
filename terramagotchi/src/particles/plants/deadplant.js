@@ -35,14 +35,17 @@ export class DeadPlantParticle extends OrganicParticle {
         if (this.can_erode) this.compute_erosion(environment)
         this.compute_gravity(environment)
 
-        this.compute_compact(environment)
+        // Not in the pass-through layer
+        if (!this.passing_through) {
+            this.compute_compact(environment)
 
-        if (
-            this.water_level == 0 &&
-            this.nutrient_level == 0 &&
-            FastRandom.random() < DESPAWN_IF_EMPTY_CHANCE
-        ) {
-            environment.set(new AirParticle(this.x, this.y))
+            if (
+                this.water_level == 0 &&
+                this.nutrient_level == 0 &&
+                FastRandom.random() < DESPAWN_IF_EMPTY_CHANCE
+            ) {
+                environment.set(new AirParticle(this.x, this.y))
+            }
         }
     }
 

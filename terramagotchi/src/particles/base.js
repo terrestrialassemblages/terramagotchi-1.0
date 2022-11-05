@@ -20,6 +20,8 @@ export class BaseParticle {
         this.passing_through = false;
         // The list of particle class types that a particle can pass through
         this.pass_through_types = [];
+        // Particle left the pass-through layer this tick
+        this.was_passing_through = false;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
@@ -40,6 +42,7 @@ export class BaseParticle {
             this.moveable_x = true;
             this.moveable_y = true;
         }
+        this.was_passing_through = false;
     }
 
     destroy(environment) {
@@ -57,11 +60,13 @@ export class BaseParticle {
          * twice in one update
          */
 
-        this.attempt_pass_through(this.x, this.y - 1, environment);
+        this.attempt_pass_through(this.x, this.y - 1, environment)
 
-        const particle_below = environment.get(this.x, this.y - 1);
-        if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
-            environment.swap(this.x, this.y, this.x, this.y - 1);
+        if (!this.passing_through && !this.was_passing_through) {
+            const particle_below = environment.get(this.x, this.y - 1);
+            if (this.moveable_y && particle_below.moveable_y && this.weight > particle_below.weight) {
+                environment.swap(this.x, this.y, this.x, this.y - 1);
+            }
         }
     }
 
@@ -70,7 +75,8 @@ export class BaseParticle {
          * Prevents single-cell hills from forming through artificial erosion
          */
         if (
-            this.moveable_y && !this.passing_through &&
+            this.moveable_x &&
+            this.moveable_y &&
             environment.get(this.x - 1, this.y + 1).weight < this.weight &&
             environment.get(this.x, this.y + 1).weight < this.weight &&
             environment.get(this.x + 1, this.y + 1).weight < this.weight
@@ -96,9 +102,11 @@ export class BaseParticle {
                 if (offset != 0) {
 
                     this.attempt_pass_through(this.x + offset, this.y, environment);
-                    if (this.moveable_x) {
+
+                    if (!this.passing_through && !this.was_passing_through) {
                         environment.swap(this.x, this.y, this.x + offset, this.y);
                     }
+                    
                 }
             }
         }

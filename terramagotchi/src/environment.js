@@ -24,6 +24,7 @@ import {
     SeedParticle,
     StemParticle,
     generate_tree_dna,
+    BarkParticle,
 } from "./particles/plants";
 
 export const NUTRIENT_ENERGY_RATIO = 1
@@ -213,6 +214,10 @@ export class Environment {
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroy(this);
 
+        if (destroyed_particle instanceof BarkParticle && particle instanceof AirParticle) {
+            console.log("How")
+        }
+
         if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
             particle.water_level += destroyed_particle.water_level
             particle.nutrient_level += destroyed_particle.nutrient_level
@@ -276,6 +281,8 @@ export class Environment {
             passing_particle.passing_through = false;
             // Remove from __pass_through_layer
             this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+            // Store was_passing_through to prevent further movement
+            passing_particle.was_passing_through = false;
         }
     }
 
