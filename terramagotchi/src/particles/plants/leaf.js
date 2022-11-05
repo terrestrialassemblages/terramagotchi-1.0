@@ -58,6 +58,7 @@ export class LeafParticle extends ShootSystemParticle {
         this.absorb_nutrients(environment, false)
         this.absorb_water(environment, false)
         this.generate_energy()
+        this.compute_transpiration(environment)
         this.health_update(environment)
         
         if (this.is_active &&
