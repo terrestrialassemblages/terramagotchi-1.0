@@ -36,7 +36,7 @@ export class RootParticle extends PlantFamilyParticle {
         this.has_checked_surroundings = false; // checks if a surrounding check has been done before. needs to be done at least once, details on it below
         this.minimum_distance = this.dna.root_minimum_distance || 5; // the minimum distance a root needs to go before its randomness kicks in.
         this.max_root_neighbours = 7; // how many neighbours of a root particle can be root particles. Made to prevent loops.
-        this.update_speed = FastRandom.int_min_max(12, 20);
+        this.update_speed = FastRandom.int_min_max(30, 50);
     }
     
     update(environment) {
@@ -178,7 +178,7 @@ export class RootParticle extends PlantFamilyParticle {
 
     root_random_genocide(environment) { // when a root's parent dies, it sets itself to dead and then randomly changes into soil. The next root particle sees this and does the same.
         this.dead = true;
-        let die_chance = FastRandom.int_max(300) // this chance controls how fast the entire system will fade out.
+        let die_chance = FastRandom.int_max(600) // this chance controls how fast the entire system will fade out.
         if (die_chance == 1) {
             let soil_replacement_particle = new SoilParticle(this.x, this.y);
             environment.set(soil_replacement_particle);
