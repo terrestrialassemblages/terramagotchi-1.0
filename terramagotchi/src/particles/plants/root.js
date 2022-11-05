@@ -231,8 +231,9 @@ export class RootParticle extends PlantFamilyParticle {
     }
 
     absorb_nutrients(neighbour) {
-        // Absorb as much as possible from lower roots 
-        if (neighbour instanceof RootParticle && neighbour.y < this.y) {
+        // Absorb as much as possible from soil or lower roots
+        if (neighbour instanceof SoilParticle ||
+            (neighbour instanceof RootParticle && neighbour.y < this.y)) {
             // How much nutrients to transfer
             // Absorb as much as the capacity will allow
             let transfer_amount = Math.min(neighbour.nutrient_level, this.nutrient_capacity - this.nutrient_level)

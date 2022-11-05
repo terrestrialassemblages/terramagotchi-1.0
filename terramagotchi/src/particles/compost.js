@@ -13,8 +13,8 @@ export class CompostParticle extends OrganicParticle {
         this.water_capacity = 0;
         this.nutrient_capacity = 0;
 
+        this.water_level = 10;
         this.nutrient_level = 1000;
-        this.water_level = 100;
 
         this.decay_into = AirParticle;
     }

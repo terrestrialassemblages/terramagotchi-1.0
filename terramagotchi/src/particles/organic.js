@@ -128,8 +128,8 @@ export class OrganicParticle extends BaseParticle {
          */
 
         // How much nutrients to transfer
-        // Absorb half of the difference between levels, or as much as possible if the capacity is too low
-        let transfer_amount = Math.min((((neighbour.nutrient_level - this.nutrient_level) / 2) | 0), this.nutrient_capacity - this.nutrient_level);
+        // Absorb half of the difference between levels (rounded up), or as much as possible if the capacity is too low
+        let transfer_amount = Math.min(((((neighbour.nutrient_level - this.nutrient_level) / 2) + 0.999) | 0), this.nutrient_capacity - this.nutrient_level);
 
         // Attempt to absorb nutrients from random neighbour
         if (transfer_amount > 0 &&
