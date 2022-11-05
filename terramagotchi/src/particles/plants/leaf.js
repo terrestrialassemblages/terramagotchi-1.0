@@ -25,7 +25,7 @@ export class LeafParticle extends ShootSystemParticle {
         super(x, y, plant_dna);
 
         this.activation_level = 0
-        this.max_health = this.dna.leaf_max_health || (3600 + FastRandom.int_min_max(-600, 600)) * 60
+        this.max_health = /*this.dna.leaf_max_health ||*/ FastRandom.int_min_max(45, 120) * 60
         this.health = this.max_health
 
         this.nutrient_capacity = 10

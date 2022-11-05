@@ -1,3 +1,5 @@
+import { FastRandom } from "../../fast-random";
+
 export class DNANode {
     /**
      * @param {DNANode} parent      Optional parent node for this current node.
