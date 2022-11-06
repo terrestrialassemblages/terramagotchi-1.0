@@ -53,7 +53,7 @@ export class SeedParticle extends PlantFamilyParticle {
         this.compute_gravity(environment)
         this.health_update(environment)
         
-        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle, CompostParticle])
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle])
         this.generate_energy()
 
         if (!this.germinated)
@@ -93,6 +93,48 @@ export class SeedParticle extends PlantFamilyParticle {
             new_root.is_first_particle = true; // makes that particle know its the first particle, same reason why
             new_root.parent_root_particle = [this.x, this.y]; // set's it's parent particle as the stem particle spawned by the seed. Used for death code
             environment.set(new_root)
+        }
+    }
+
+    absorb_water(neighbour) {
+        
+        // How much water to transfer
+        // Absorb as much as the capacity will allow
+        let transfer_amount = Math.min(neighbour.water_level, this.water_capacity - this.water_level)
+
+        // Attempt to absorb water from random neighbour
+        if (transfer_amount > 0 &&
+            !neighbour.__water_transferred &&
+            !this.__water_transferred
+        ) {
+            // Transfer water
+            this.water_level += transfer_amount;
+            neighbour.water_level -= transfer_amount;
+
+            // Ensure water is not transfered again this tick
+            this.__water_transferred = true;
+            neighbour.__water_transferred = true;
+        }
+    }
+
+    absorb_nutrients(neighbour) {
+
+        // How much nutrients to transfer
+        // Absorb as much as the capacity will allow
+        let transfer_amount = Math.min(neighbour.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+
+        // Attempt to absorb nutrients from random neighbour
+        if (transfer_amount > 0 &&
+            !neighbour.__nutrient_transferred &&
+            !this.__nutrient_transferred
+        ) {
+            // Transfer nutrients
+            this.nutrient_level += transfer_amount;
+            neighbour.nutrient_level -= transfer_amount;
+
+            // Ensure nutrients is not transfered again this tick
+            this.__nutrient_transferred = true;
+            neighbour.__nutrient_transferred = true;
         }
     }
 }
