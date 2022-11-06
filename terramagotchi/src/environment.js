@@ -54,6 +54,8 @@ export class Environment {
         this.river_radius = 40;
         // How deep the river is
         this.river_depth = 25;
+        // How high the river's surface level is
+        this.river_surface_level = 140
 
         this.__water_added = 0; // Amount of water added to the environment
         this.__soil_added = 0; // Amount of soil added to the environment
@@ -88,11 +90,13 @@ export class Environment {
 
     generate() {
 
-        // Store the positions of all surface-level river particles
+        // Store the positions of all river particles touching the soil horizon
         let river_positions = []
         for (let x = (90 + this.river_offset - this.river_radius) | 0; 
              x < (90 + this.river_offset + this.river_radius) | 0; x++) { 
-            river_positions.push([x, this.get_horizon(x) | 0])
+            if (this.get_horizon(x) < this.river_surface_level) {
+                river_positions.push([x, this.get_horizon(x) | 0])
+            }
         }
         
         /**
@@ -119,7 +123,7 @@ export class Environment {
                     this.set(new_soil);
                 } 
                 // Set Water Particles
-                else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
+                else if (y < this.river_surface_level && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
                 }
                 // Set Cloud Particles
