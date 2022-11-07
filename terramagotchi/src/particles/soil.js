@@ -10,13 +10,10 @@ export class SoilParticle extends OrganicParticle {
         super(x, y);
 
         this.base_color = "#92745B";
-        this.pass_through_types = [ StemParticle, BarkParticle, LeafParticle ];
+        this.pass_through_types = [ ShootSystemParticle ];
 
         // Poisson distribution chance to grow grass
         this.grass_grow_chance = 0.001;
-
-        this.__water_render_step = 5
-        this.__nutrient_render_step = 5
     }
 
     update(environment) {
