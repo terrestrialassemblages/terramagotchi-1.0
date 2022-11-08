@@ -1,6 +1,7 @@
 import { PlantFamilyParticle } from "./plant";
 import { SoilParticle } from "../soil";
 import { FastRandom } from "../../fast-random";
+import { BoundaryParticle } from "../boundary";
 
 
 export class RootParticle extends PlantFamilyParticle {
@@ -31,7 +32,7 @@ export class RootParticle extends PlantFamilyParticle {
         
         this.current_curve_length = 0 // counts how much the current curve is. Measured in particles
 
-        this.parent_root_particle = [0,0]; // holds what its parent particle's coordinates it. Its coordinates as it can dynamically check if its still a plant/root or it was turned into soil
+        this.parent_root_particle = [-1,-1]; // holds what its parent particle's coordinates it. Its coordinates as it can dynamically check if its still a plant/root or it was turned into soil
         this.is_first_particle = false; // checks if its the first root particle for a plant, as there are special properties for it
         this.has_checked_surroundings = false; // checks if a surrounding check has been done before. needs to be done at least once, details on it below
         this.minimum_distance = this.dna.root_minimum_distance || 5; // the minimum distance a root needs to go before its randomness kicks in.
@@ -93,7 +94,6 @@ export class RootParticle extends PlantFamilyParticle {
 
     grow_child_root(environment) {
         let new_root = null;
-        let soil_particle_check = null;
         this.is_active = false; // check to make it stop growing further
         let [offset_x, offset_y] = [[-1, 0], [0, -1], [1, 0], [-1, -1], [1, -1]][this.direction]; // is the possible directions it can grow, and the one its set to grow in
         let all_directions = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]]; // all 8 neighbours of a particle, held as an offset to said particle. is used in 2 places.
@@ -127,35 +127,48 @@ export class RootParticle extends PlantFamilyParticle {
             this.root_straight_length++;
         }
 
-        /** When growing, it checks if the new potential location is a neighbour of a root particle, if it is, then it doesn't grow. This is to prevent it from touching a root and forming a pocket or stealing nutrients
-         * it still forms pockets and touches other roots due to multiple roots growing at the same tick, but at least its reduced
+        /** While gorwing, checks neighbours to determine if a root loop would be created. Doesn't create root if so.
          */
-        if (this.is_first_particle == false && this.__current_length > this.minimum_distance) {
-            let new_x = this.x + offset_x
-            let new_y = this.y + offset_y
-            let check = true
-            let opposite_direction = [offset_x * -1, offset_y * -1]
-            
-            for (let i = 0; i < 8; i++) {
-                let check_coord = all_directions[i]
-                if (check_coord[0] != opposite_direction[0] && check_coord[1] != opposite_direction[1]) {
-                    soil_particle_check = environment.get(new_x + check_coord[0], new_y + check_coord[1]);
-                    if (!(soil_particle_check instanceof SoilParticle)) {
+        let new_x = this.x + offset_x
+        let new_y = this.y + offset_y
+        let check = true
+        
+        for (let i = 0; i < 8; i++) {
+            let check_coord = all_directions[i]
+            if (!(new_x + check_coord[0] == this.x && new_y + check_coord[1] == this.y)) {
+                let particle_check = environment.get(new_x + check_coord[0], new_y + check_coord[1]);
+
+                if (particle_check instanceof RootParticle) {
+                    if (particle_check.dna.parent != this.dna.parent) {
                         check = false;
+                        break
+                    }
+                    else if (!particle_check.is_first_particle &&
+                        !((particle_check.parent_root_particle[0] == this.x &&
+                            particle_check.parent_root_particle[1] == this.y) ||
+                        (particle_check.x == this.parent_root_particle[0] &&
+                          particle_check.y == this.parent_root_particle[1]) ||
+                        Math.abs(particle_check.x - this.x) + Math.abs(particle_check.y - this.y) <= 1)) {
+
+                        let check_grandparent = environment.get(particle_check.parent_root_particle[0],
+                            particle_check.parent_root_particle[1]).parent_root_particle
+
+                        if (!(check_grandparent[0] == this.x && check_grandparent[1] == this.y)) {
+
+                            check = false;
+                            break
+                        }
                     }
                 }
-                if (check == false) {
+                else if (particle_check instanceof BoundaryParticle){
+                    check = false;
                     break
                 }
             }
-            if (check == true) {
-                if (environment.get(this.x + offset_x, this.y + offset_y) instanceof SoilParticle) {
-                    new_root = new RootParticle(this.x + offset_x, this.y + offset_y, this.plant_dna);
-                }
-            }
-        } else { // if its the first particle then it just grows normally in all 5 directions for a minimum distance. No checks except a soil check is done, so it only grows into soil
-            if (environment.get(this.x + offset_x, this.y + offset_y) instanceof SoilParticle) {
-                new_root = new RootParticle(this.x + offset_x, this.y + offset_y, this.plant_dna);
+        }
+        if (check == true) {
+            if (environment.get(new_x, new_y) instanceof SoilParticle) {
+                new_root = new RootParticle(new_x, new_y, this.plant_dna);
             }
         }
 
