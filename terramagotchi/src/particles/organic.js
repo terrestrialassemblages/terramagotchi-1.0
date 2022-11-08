@@ -25,7 +25,7 @@ export class OrganicParticle extends BaseParticle {
         this.__nutrient_transferred = false;
 
         // Per-tick chance for transpiration (evaporate water_level into steam)
-        this.transpiration_chance = 0.00002;
+        this.transpiration_chance = 0.00005;
     }
 
     set water_level(level) {
@@ -148,7 +148,7 @@ export class OrganicParticle extends BaseParticle {
 
     compute_transpiration(environment) {
         // Evaporate water_level into steam in correct conditions
-        if (FastRandom.random() < this.transpiration_chance &&
+        if (FastRandom.random() < this.transpiration_chance * (this.water_level / this.water_capacity) &&
             environment.get(this.x, this.y + 1) instanceof AirParticle &&
             !environment.is_raining &&
             this.water_level > 0 && 
