@@ -22,6 +22,8 @@ export class BaseParticle {
         this.pass_through_types = [];
         // Particle left the pass-through layer this tick
         this.was_passing_through = false;
+        // Whether particle is allowed to erodate (changes due to fall-through-layer)
+        this.can_erode = true;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
@@ -74,7 +76,13 @@ export class BaseParticle {
         /**
          * Prevents single-cell hills from forming through artificial erosion
          */
-        if (
+
+        // Toggle erosion to false after entering the pass-through layer
+        if (this.can_erode && this.passing_through) this.can_erode = false;
+        // Toggle erosion to true after hovering above an empty particle
+        if (!this.can_erode && environment.get(this.x, this.y - 1).empty) this.can_erode = true;
+
+        if (this.can_erode &&
             this.moveable_x &&
             this.moveable_y &&
             environment.get(this.x - 1, this.y + 1).weight < this.weight &&
