@@ -65,9 +65,9 @@ export class Environment {
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
         // When there are this many or more cloud particles, start raining
-        this.rain_on_cloud_count = 3250;
+        this.rain_on_cloud_count = 3750;
         // When there are this many or less cloud particles, stop raining
-        this.rain_until_cloud_count = 2000;
+        this.rain_until_cloud_count = 3000;
         // The number of cloud particles
         this.cloud_particle_count = 0;
         // The noise offset which determines cloud shapes
