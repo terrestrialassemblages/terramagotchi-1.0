@@ -153,7 +153,8 @@ export class RootParticle extends PlantFamilyParticle {
                         let check_grandparent = environment.get(particle_check.parent_root_particle[0],
                             particle_check.parent_root_particle[1]).parent_root_particle
 
-                        if (!(check_grandparent[0] == this.x && check_grandparent[1] == this.y)) {
+                        if (!(check_grandparent != undefined && 
+                            check_grandparent[0] == this.x && check_grandparent[1] == this.y)) {
 
                             check = false;
                             break
