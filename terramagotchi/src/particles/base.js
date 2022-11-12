@@ -171,10 +171,15 @@ export class BaseParticle {
 
     // Can this particle continue to pass through the particles in the offset direction without relocation
     recursive_pass_through_check(new_x, new_y, offset_x, offset_y, environment) {
+        let count = 0
         let [i, j] = [offset_x, offset_y]
         // Recursively checking in the offset direction until a non-pass-through particle is found
         while (this.can_pass_through(new_x + i, new_y + j, environment)) {
             [i, j] = [i + offset_x, j + offset_y];
+
+            // Assume everything is fine after many checks (prevents things from getting stuck on high ledges)
+            count++;
+            if (count > 10) return true;
         }
         // Return whether this particle could continue move through without relocation
         return environment.get(new_x + i, new_y + j).empty;
