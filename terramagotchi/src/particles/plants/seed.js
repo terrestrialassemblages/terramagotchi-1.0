@@ -70,13 +70,22 @@ export class SeedParticle extends PlantFamilyParticle {
      * @param {Environment} environment     The current game environment
     */
     grow(environment) {
-        if (environment.get(this.x, this.y + 1) instanceof WaterParticle && environment.get(this.x, this.y - 1) instanceof SoilParticle) {
-            let new_dead_plant = new DeadPlantParticle(this.x, this.y);
-            environment.set(new_dead_plant);
+
+        for (let offset of [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]]) {
+            if (environment.get(this.x + offset[0], this.y + offset[1] - 1) instanceof RootParticle) {
+                environment.set(new DeadPlantParticle(this.x, this.y));
+                return;
+            }
+        }
+
+        if (environment.get(this.x, this.y - 1) instanceof SoilParticle &&
+            !(environment.get(this.x, this.y + 1) instanceof AirParticle &&
+              environment.get(this.x, this.y + 2) instanceof AirParticle)) {
+            environment.set(new DeadPlantParticle(this.x, this.y));
+            return;
         }
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle
-            && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)
-            && !(environment.get(this.x, this.y + 1) instanceof WaterParticle)) {
+            && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
 
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.absorb_tier = 1
