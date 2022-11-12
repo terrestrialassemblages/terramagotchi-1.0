@@ -128,17 +128,19 @@ export class BaseParticle {
 
         // Particle can move in specified direction
         if (this.moveable && (this.moveable_x || this.x == check_x) && (this.moveable_y || this.y == check_y)) {
-            // Check if this particle can pass through check_particle
-            let check_particle = environment.get(check_x, check_y);
 
-            // Particle can pass through check_particle or particle is already passing and is now in empty particle
-            if (this.can_pass_through(check_x, check_y, environment) || (this.passing_through && check_particle.empty)) {
+            let check_particle = environment.get(check_x, check_y);
+            let [offset_x, offset_y] = [check_x - this.x, check_y - this.y]
+
+            // Particle can pass through check_particle or particle is already passing and is now in an empty particle
+            if ((this.can_pass_through(check_x, check_y, environment) && 
+                 this.recursive_pass_through_check(check_x, check_y, offset_x, offset_y, environment)) ||
+                (!this.can_pass_through(check_x, check_y, environment) && this.passing_through && check_particle.empty)) {
 
                 environment.pass_through(this, check_x, check_y);
             }
             // Passing particle needs relocation to closest empty particle away from pass-through types
             else if (this.passing_through) {
-                let [offset_x, offset_y] = [check_x - this.x, check_y - this.y]
                 let neighbour = environment.get(this.x, this.y);
                 let checking_neighbours = [neighbour];
                 let neighbour_offsets = [[1,0],[-1,0],[0,-1],[0,1]];
@@ -161,12 +163,25 @@ export class BaseParticle {
     check_pass_through_loop(new_x, new_y, offset_x, offset_y, environment) {
         let [i, j] = [offset_x, offset_y]
         let check_particle = environment.get(new_x + i, new_y + j);
+        // Recursively checking in the offset direction, skip particles that this particle could move through
         while (check_particle.empty || check_particle.weight < this.weight || 
             check_particle.constructor.name == this.constructor.name) {
             [i, j] = [i + offset_x, j + offset_y];
             check_particle = environment.get(new_x + i, new_y + j);
         }
+        // Return whether this particle could move through the predicted end-point after moving
         return this.can_pass_through(new_x + i, new_y + j, environment)
+    }
+
+    // Can this particle continue to pass through the particles in the offset direction without relocation
+    recursive_pass_through_check(new_x, new_y, offset_x, offset_y, environment) {
+        let [i, j] = [offset_x, offset_y]
+        // Recursively checking in the offset direction until a non-pass-through particle is found
+        while (this.can_pass_through(new_x + i, new_y + j, environment)) {
+            [i, j] = [i + offset_x, j + offset_y];
+        }
+        // Return whether this particle could continue move through without relocation
+        return environment.get(new_x + i, new_y + j).empty;
     }
 
     // Can this particle pass through the particle type at coordinates new_x, new_y
