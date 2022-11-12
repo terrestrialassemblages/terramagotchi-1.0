@@ -133,10 +133,17 @@ export class LeafParticle extends ShootSystemParticle {
         }
 
         if (this.is_leaf_root) {
-            if (this.cooldown_timer == 0) {
+            if (!(environment.get(this.x, this.y + 1) instanceof AirParticle ||
+                  environment.get(this.x, this.y + 1) instanceof PlantFamilyParticle)) {
+
+                this.health -= 1
+
+                if (this.health <= 0)
+                    this.die(environment)
+            }
+            else if (this.cooldown_timer == 0) {
                 this.cooldown_timer -= 1
                 this.is_active = true
-                return
             } else if (this.cooldown_timer > 0) {
                 this.cooldown_timer -= 1
             }
