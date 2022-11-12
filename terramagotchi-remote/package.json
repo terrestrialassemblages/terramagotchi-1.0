@@ -20,6 +20,7 @@
   "homepage": "https://github.com/uoa-compsci399-s2-2022/Terramagochi#readme",
   "devDependencies": {
     "css-loader": "^6.7.1",
+    "dotenv-webpack": "^8.0.1",
     "html-webpack-plugin": "^5.5.0",
     "postcss": "^8.4.17",
     "postcss-loader": "^7.0.1",

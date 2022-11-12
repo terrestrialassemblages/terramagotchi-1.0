@@ -9,12 +9,12 @@ import 'tw-elements';
  * To use a different firebase project you will need to use a new config found in project settings
  */
 const firebaseConfig = {
-    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
-    authDomain: "terramagotchi.firebaseapp.com",
-    projectId: "terramagotchi",
-    storageBucket: "terramagotchi.appspot.com",
-    messagingSenderId: "983152859921",
-    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID
 };
 
 // Initialize Firebase

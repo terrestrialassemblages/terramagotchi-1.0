@@ -53,6 +53,23 @@ Prior to using these applications, you must have Node.js (with npm) installed on
 
 As there are three sub-packages, each one must be installed/used separately.
 
+Before building the project create a `.env` file at the root of the project containing the following variables.
+```
+// Firebase Variables
+API_KEY=
+AUTH_DOMAIN=
+PROJECT_ID=
+STORAGE_BUCKET=
+MESSAGING_SENDER_ID=
+APP_ID=
+
+// Instance Generation
+RANDOM_INSTANCE="TRUE"
+```
+The Firebase variables can be found in the General tab of Project settings in a Firebase web project.
+
+To enable random instance generation, leave RANDOM_INSTANCE as "TRUE", otherwise remove this variable.
+
 ### Terramagotchi (Main Application)
 
 Navigate to `./terramagotchi/` From here run the following commands:
