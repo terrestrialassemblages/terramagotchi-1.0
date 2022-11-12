@@ -22,8 +22,6 @@ export class BaseParticle {
         this.pass_through_types = [];
         // Particle left the pass-through layer this tick
         this.was_passing_through = false;
-        // Whether particle is allowed to erodate (changes due to fall-through-layer)
-        this.can_erode = true;
 
         /* Moveable: Describes whether a particle can be displaced due to any process
             Includes gravity and erosion 
@@ -77,12 +75,7 @@ export class BaseParticle {
          * Prevents single-cell hills from forming through artificial erosion
          */
 
-        // Toggle erosion to false after entering the pass-through layer
-        if (this.can_erode && this.passing_through) this.can_erode = false;
-        // Toggle erosion to true after hovering above an empty particle
-        if (!this.can_erode && environment.get(this.x, this.y - 1).empty) this.can_erode = true;
-
-        if (this.can_erode &&
+        if (
             this.moveable_x &&
             this.moveable_y &&
             environment.get(this.x - 1, this.y + 1).weight < this.weight &&
@@ -145,7 +138,10 @@ export class BaseParticle {
                 let checking_neighbours = [neighbour];
                 let neighbour_offsets = [[1,0],[-1,0],[0,-1],[0,1]];
                 let i = 0;
-                while (!neighbour.empty || this.check_pass_through_loop(neighbour.x, neighbour.y, offset_x, offset_y, environment)) {
+                while (!neighbour.empty || 
+                       (this.can_pass_through(neighbour.x + offset_x, neighbour.y + offset_y, environment) &&
+                        !this.recursive_pass_through_check(neighbour.x, neighbour.y, offset_x, offset_y, environment))) {
+
                     for (let offset of neighbour_offsets) {
                         let new_neighbour = environment.get(neighbour.x + offset[0], neighbour.y + offset[1]);
                         if (new_neighbour.weight != 4 && !checking_neighbours.includes(new_neighbour)) {
@@ -159,19 +155,19 @@ export class BaseParticle {
         }
     }
 
-    // Checks if relocation to this position will cause an infinite pass-through relocation loop
-    check_pass_through_loop(new_x, new_y, offset_x, offset_y, environment) {
-        let [i, j] = [offset_x, offset_y]
-        let check_particle = environment.get(new_x + i, new_y + j);
-        // Recursively checking in the offset direction, skip particles that this particle could move through
-        while (check_particle.empty || check_particle.weight < this.weight || 
-            check_particle.constructor.name == this.constructor.name) {
-            [i, j] = [i + offset_x, j + offset_y];
-            check_particle = environment.get(new_x + i, new_y + j);
-        }
-        // Return whether this particle could move through the predicted end-point after moving
-        return this.can_pass_through(new_x + i, new_y + j, environment)
-    }
+    // // Checks if relocation to this position will cause an infinite pass-through relocation loop
+    // check_pass_through_loop(new_x, new_y, offset_x, offset_y, environment) {
+    //     let [i, j] = [offset_x, offset_y]
+    //     let check_particle = environment.get(new_x + i, new_y + j);
+    //     // Recursively checking in the offset direction, skip particles that this particle could move through
+    //     while (check_particle.empty || check_particle.weight < this.weight || 
+    //         check_particle.constructor.name == this.constructor.name) {
+    //         [i, j] = [i + offset_x, j + offset_y];
+    //         check_particle = environment.get(new_x + i, new_y + j);
+    //     }
+    //     // Return whether this particle could move through the predicted end-point after moving
+    //     return this.can_pass_through(new_x + i, new_y + j, environment)
+    // }
 
     // Can this particle continue to pass through the particles in the offset direction without relocation
     recursive_pass_through_check(new_x, new_y, offset_x, offset_y, environment) {
