@@ -250,22 +250,22 @@ const sketchInstance = new p5(sketch);
 // Generate QR Code for the remote app
 const qr_code_canvas = document.getElementById("qr-code");
 const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
-generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
-document.getElementById("remote-url").innerText = remote_url;
+generate_QR(qr_code_canvas, remote_url);
+// document.getElementById("remote-url").innerText = remote_url;
 
-// If . is pressed, toggle QR code visibility
-document.addEventListener("keyup", (e) => {
-    if (e.key === ".") {
-        if (show_qr) {
-            sketchInstance.loop();
-            document.querySelector("main").style.display = "flex";
-            document.getElementById("qr-container").style.display = "none";
-            show_qr = false;
-        } else {
-            sketchInstance.noLoop();
-            document.querySelector("main").style.display = "none";
-            document.getElementById("qr-container").style.display = "flex";
-            show_qr = true;
-        }
-    }
-});
+// // If . is pressed, toggle QR code visibility
+// document.addEventListener("keyup", (e) => {
+//     if (e.key === ".") {
+//         if (show_qr) {
+//             sketchInstance.loop();
+//             document.querySelector("main").style.display = "flex";
+//             document.getElementById("qr-container").style.display = "none";
+//             show_qr = false;
+//         } else {
+//             sketchInstance.noLoop();
+//             document.querySelector("main").style.display = "none";
+//             document.getElementById("qr-container").style.display = "flex";
+//             show_qr = true;
+//         }
+//     }
+// });
