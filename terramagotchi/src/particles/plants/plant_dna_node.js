@@ -135,6 +135,13 @@ export class DNANode {
     }
 
     /**
+     * Returns the oldest ancestor (top node of the DNA tree)
+     */
+    get_top_node() {
+        return (this.parent != null) ? this.parent.get_top_node() : this;
+    }
+
+    /**
      * Prints the dna graph in text
      * @param {String} prefix   Local variable used in recursive calls to format output. If you provide an input the dna string will be returned and not printed.
      */

@@ -161,8 +161,14 @@ export class StemParticle extends ShootSystemParticle {
         }
 
         let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
-        if (!(target_particle instanceof AirParticle || target_particle instanceof BarkParticle || (target_particle instanceof PlantFamilyParticle && !target_particle.is_active)))
+        if (!(target_particle instanceof AirParticle || 
+              (target_particle instanceof PlantFamilyParticle && 
+               target_particle.dna.get_top_node() == this.dna.get_top_node()))) {
+            this.health--;
+            if (this.health <= 0)
+                this.die(environment)
             return;
+        }
         
         let new_particle = new StemParticle(this.x + offset_x, this.y + offset_y, this.dna)
 
