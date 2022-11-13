@@ -57,10 +57,11 @@ export class Environment {
         // How high the river's surface level is
         this.river_surface_level = 140
 
+        this.seed_or_first_root_count = 0; // The number of seeds or first-root particles
         this.__water_added = 0; // Amount of water added to the environment
         this.__soil_added = 0; // Amount of soil added to the environment
-        this.max_water_added = 1000; // Max amount of water added before environment reloads
-        this.max_soil_added = 1000; // Max amount of soil added before environment reloads
+        this.max_water_added = 25000; // Max amount of water added before environment reloads
+        this.max_soil_added = 25000; // Max amount of soil added before environment reloads
 
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
@@ -191,6 +192,7 @@ export class Environment {
 
         this.compute_day_night_cycle();
         this.compute_rain();
+        this.compute_reset();
     }
 
     refresh() {
@@ -234,6 +236,10 @@ export class Environment {
     swap(x1, y1, x2, y2) {
         const particle1 = this.get(x1, y1)
         const particle2 = this.get(x2, y2)
+
+        if (particle1 instanceof BoundaryParticle || particle2 instanceof BoundaryParticle) {
+            return
+        }
 
         particle1.x = x2
         particle1.y = y2
@@ -426,5 +432,17 @@ export class Environment {
     }
     set light_level(_val) {
         this.__light_level = _val;
+    }
+
+    compute_reset() {
+        // Reset environment if there are no plants
+        if (this.seed_or_first_root_count == 0) {
+            location.reload()
+            this.seed_or_first_root_count = -1
+        }
+        // Reset counter (unless reloading)
+        if (this.seed_or_first_root_count > 0) {
+            this.seed_or_first_root_count = 0
+        }
     }
 }

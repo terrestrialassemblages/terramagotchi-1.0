@@ -63,6 +63,9 @@ export class SeedParticle extends PlantFamilyParticle {
         // Separated out so plant grows
         if (this.germinated)
             this.grow(environment)
+
+        // Increment counter used for reseting environment
+        environment.seed_or_first_root_count++;
     }
 
     /**

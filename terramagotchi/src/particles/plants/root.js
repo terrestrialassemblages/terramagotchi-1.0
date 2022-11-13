@@ -55,6 +55,11 @@ export class RootParticle extends PlantFamilyParticle {
         if (this.is_active == true && environment.tick % this.update_speed == 0) {
             this.check_growth_conditions(environment);
         }
+
+        // Increment counter used for reseting environment
+        if (this.is_first_particle) {
+            environment.seed_or_first_root_count++;
+        }
     }
 
     check_growth_conditions(environment) {
