@@ -127,7 +127,7 @@ export class BaseParticle {
 
             // Particle can pass through check_particle or particle is already passing and is now in an empty particle
             if ((this.can_pass_through(check_x, check_y, environment) && 
-                 this.recursive_pass_through_check(check_x, check_y, offset_x, offset_y, environment)) ||
+                 this.recursive_pass_through_check(check_x, check_y, offset_x, offset_y, 10, environment)) ||
                 (!this.can_pass_through(check_x, check_y, environment) && this.passing_through && check_particle.empty)) {
 
                 environment.pass_through(this, check_x, check_y);
@@ -140,7 +140,7 @@ export class BaseParticle {
                 let i = 0;
                 while (!neighbour.empty || 
                        (this.can_pass_through(neighbour.x + offset_x, neighbour.y + offset_y, environment) &&
-                        !this.recursive_pass_through_check(neighbour.x, neighbour.y, offset_x, offset_y, environment))) {
+                        !this.recursive_pass_through_check(neighbour.x, neighbour.y, offset_x, offset_y, 100, environment))) {
 
                     for (let offset of neighbour_offsets) {
                         let new_neighbour = environment.get(neighbour.x + offset[0], neighbour.y + offset[1]);
@@ -170,7 +170,7 @@ export class BaseParticle {
     // }
 
     // Can this particle continue to pass through the particles in the offset direction without relocation
-    recursive_pass_through_check(new_x, new_y, offset_x, offset_y, environment) {
+    recursive_pass_through_check(new_x, new_y, offset_x, offset_y, max_check, environment) {
         let count = 0
         let [i, j] = [offset_x, offset_y]
         // Recursively checking in the offset direction until a non-pass-through particle is found
@@ -179,7 +179,7 @@ export class BaseParticle {
 
             // Assume everything is fine after many checks (prevents things from getting stuck on high ledges)
             count++;
-            if (count > 10) return true;
+            if (count > max_check) return true;
         }
         // Return whether this particle could continue move through without relocation
         return environment.get(new_x + i, new_y + j).empty;

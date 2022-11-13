@@ -220,10 +220,6 @@ export class Environment {
         const destroyed_particle = this.get(particle.x, particle.y);
         if (destroyed_particle) destroyed_particle.destroy(this);
 
-        if (destroyed_particle instanceof BarkParticle && particle instanceof AirParticle) {
-            console.log("How")
-        }
-
         if (destroyed_particle instanceof OrganicParticle && particle instanceof OrganicParticle) {
             particle.water_level += destroyed_particle.water_level
             particle.nutrient_level += destroyed_particle.nutrient_level
