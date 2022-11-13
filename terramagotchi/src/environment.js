@@ -334,7 +334,7 @@ export class Environment {
     // Creates a 4x4 with of the given particle at a random valid position (for user interaction purposes)
     user_add_particle(particle) {
         // x, y position is random within bounds and above land
-        const [x, y] = [FastRandom.int_min_max(1, this.width - 5), FastRandom.int_min_max(160, this.height - 5)];
+        const [x, y] = [FastRandom.int_min_max(1, this.width - 5), FastRandom.int_min_max(160, this.height - 45)];
         let added_particles = 0
 
         for (let i = 0; i < 4; i++) {
@@ -364,7 +364,7 @@ export class Environment {
     // Creates a seed with of the given plant at a random valid position (for user interaction purposes)
     user_add_seed(plant) {
         // x, y position is random within bounds and above land
-        const y = FastRandom.int_min_max(160, this.height - 1);
+        const y = FastRandom.int_min_max(160, this.height - 45);
         let x = 0;
         // Generates an x value which is likely to be on either side of the river.
         if (FastRandom.random() >= 0.5) {
