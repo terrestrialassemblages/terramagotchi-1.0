@@ -119,7 +119,7 @@ export class Environment {
                             Math.abs(x - river_position[0]) - Math.abs(y - river_position[1]))
                     }
                     // Set nutrient level
-                    new_soil.nutrient_level = 5
+                    new_soil.nutrient_level = Math.min(6, new_soil.nutrient_capacity)
 
                     this.set(new_soil);
                 } 

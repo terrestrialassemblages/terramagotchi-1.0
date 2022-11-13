@@ -44,7 +44,7 @@ export class SoilParticle extends OrganicParticle {
 
     //     s.push()
     //     s.colorMode(s.RGB)
-    //     let red = 255*(this.nutrient_level/5)
+    //     let red = 255*(this.nutrient_level/6)
     //     let blue = 0
     //     this.color = s.color(red, 0, blue)
         
