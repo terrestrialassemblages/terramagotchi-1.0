@@ -21,7 +21,7 @@ import { WaterParticle } from "../water";
 import { DeadPlantParticle } from "./deadplant";
 
 export class SeedParticle extends PlantFamilyParticle {
-    static SEED_MAX_HEALTH = 1650 // Seeds will use a unique max-health so they don't die immediately
+    static SEED_MAX_HEALTH = 60*60 // Seeds will use a unique max-health so they don't die immediately
 
     /**
      * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
