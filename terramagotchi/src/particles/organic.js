@@ -165,7 +165,6 @@ export class OrganicParticle extends BaseParticle {
 
         // s.push()
         // s.colorMode(s.RGB)
-        // this.color = s.color((this.water_level - 30) * 10)
         // let red = 255*(this.nutrient_level/((this.nutrient_capacity == 0) ? 255 : this.nutrient_capacity))
         // let blue = 255*(this.water_level/((this.water_capacity == 0) ? 255 : this.water_capacity))
         // this.color = s.color(red, 0, blue)

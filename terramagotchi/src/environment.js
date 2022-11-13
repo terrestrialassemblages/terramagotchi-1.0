@@ -60,8 +60,8 @@ export class Environment {
         this.seed_or_first_root_count = 0; // The number of seeds or first-root particles
         this.__water_added = 0; // Amount of water added to the environment
         this.__soil_added = 0; // Amount of soil added to the environment
-        this.max_water_added = 25000; // Max amount of water added before environment reloads
-        this.max_soil_added = 25000; // Max amount of soil added before environment reloads
+        this.max_water_added = 20000; // Max amount of water added before environment reloads
+        this.max_soil_added = 20000; // Max amount of soil added before environment reloads
 
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
@@ -119,7 +119,7 @@ export class Environment {
                             Math.abs(x - river_position[0]) - Math.abs(y - river_position[1]))
                     }
                     // Set nutrient level
-                    new_soil.nutrient_level = (new_soil.nutrient_capacity / 10) | 0
+                    new_soil.nutrient_level = 5
 
                     this.set(new_soil);
                 } 

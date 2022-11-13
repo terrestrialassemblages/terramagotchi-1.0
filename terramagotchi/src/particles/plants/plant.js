@@ -67,7 +67,8 @@ export class PlantFamilyParticle extends OrganicParticle {
         this.energy_capacity =  (this.dna.max_energy != null) ? this.dna.max_energy : PlantFamilyParticle.MAX_ENERGY
         this.max_health =       (this.dna.max_health != null) ? this.dna.max_health : PlantFamilyParticle.DEFAULT_MAX_HEALTH
 
-        
+        // this.__water_render_step = 1
+        // this.__nutrient_render_step = 1
         
         this.activation_level = (this.dna.node_activation_level != null) ? this.dna.node_activation_level : PlantFamilyParticle.DEFAULT_ACTIVATION_ENERGY
         this.health =           (this.dna.max_health != null) ? this.dna.max_health : PlantFamilyParticle.DEFAULT_MAX_HEALTH
@@ -119,8 +120,8 @@ export class PlantFamilyParticle extends OrganicParticle {
         if (this.nutrient_level < PlantFamilyParticle.MIN_HEALTHY_NUTRIENTS)
             damage_to_take++
         
-        if (damage_to_take == 0)
-            this.health = Math.min(this.health + 2, this.max_health)
+        if (damage_to_take == 0 && FastRandom.random() < 0.5)
+            this.health = Math.min(this.health + 1, this.max_health)
             
         this.health -= damage_to_take
         if (this.health <= 0)
@@ -260,32 +261,4 @@ export class PlantFamilyParticle extends OrganicParticle {
         // swag logic, no else needed
         return [1, 0]
     }
-    
-    // Debug colouring code
-    // get_color(s) {
-    //     if (this.nutrient_capacity != 0) {
-    //         s.push()
-    //         s.colorMode(s.RGB)
-    //         this.color = s.color((this.water_level - 30) * 10)
-    //         let red = 255*(this.nutrient_level/this.nutrient_capacity)
-    //         let blue = 255*(this.water_level/this.water_capacity)
-    //         this.color = s.color(red, 0, blue)
-            
-    //         s.pop()
-    //         return this.color
-    //     }
-
-    //     // Initialise colour if needed
-    //     if (this.color === "#000000") {
-    //         super.get_color(s);
-    //     }
-
-    //     this.color = s.color(
-    //         s.hue(this.color),
-    //         s.saturation(this.base_color) * this.saturation_offset,
-    //         s.brightness(this.base_color) * this.brightness_offset -
-    //             this.water_level / 4
-    //     );
-    //     return this.color;
-    // }
 }

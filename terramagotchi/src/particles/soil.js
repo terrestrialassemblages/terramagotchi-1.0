@@ -14,6 +14,9 @@ export class SoilParticle extends OrganicParticle {
 
         // Poisson distribution chance to grow grass
         this.grass_grow_chance = 0.001;
+
+        // this.__water_render_step = 1
+        // this.__nutrient_render_step = 1
     }
 
     update(environment) {
@@ -36,6 +39,18 @@ export class SoilParticle extends OrganicParticle {
             environment.set(new GrassParticle(this.x,this.y+1));
         }
     }
+
+    // get_color(s) {
+
+    //     s.push()
+    //     s.colorMode(s.RGB)
+    //     let red = 255*(this.nutrient_level/5)
+    //     let blue = 0
+    //     this.color = s.color(red, 0, blue)
+        
+    //     s.pop()
+    //     return this.color
+    // }
 }
 
 export class GrassParticle extends SoilParticle {
