@@ -3,7 +3,7 @@ import { AirParticle } from "./air";
 import { CompostParticle } from "./compost";
 import { WaterParticle } from "./water";
 import { FastRandom } from "../fast-random";
-import { ShootSystemParticle } from "./plants";
+import { BarkParticle, ShootSystemParticle } from "./plants";
 
 export class SoilParticle extends OrganicParticle {
     constructor(x, y) {
@@ -69,9 +69,10 @@ export class GrassParticle extends SoilParticle {
 
         let particel_above = environment.get(this.x,this.y+1);
 
-        // Particle above is not Air, Water or Grass, and Poisson Distribution chance
+        // Particle is being crushed with a random check
         if (!(particel_above instanceof AirParticle || 
             particel_above instanceof GrassParticle || 
+            particel_above instanceof BarkParticle || 
             particel_above instanceof WaterParticle) && 
             FastRandom.random() < this.grass_death_chance) {
             // Kill Grass (Turn into Compost)
