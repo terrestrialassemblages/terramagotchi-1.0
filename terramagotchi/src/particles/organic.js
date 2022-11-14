@@ -148,7 +148,7 @@ export class OrganicParticle extends BaseParticle {
 
     compute_transpiration(environment) {
         // Evaporate water_level into steam in correct conditions
-        if (FastRandom.random() < this.transpiration_chance * (this.water_level / this.water_capacity) &&
+        if (FastRandom.random() < this.transpiration_chance * Math.max((this.water_level / Math.max(this.water_capacity, 1)), 1) &&
             environment.get(this.x, this.y + 1) instanceof AirParticle &&
             !environment.is_raining &&
             this.water_level > 0 && 
