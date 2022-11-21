@@ -18,8 +18,6 @@ export class DeadPlantParticle extends OrganicParticle {
         
         this.base_color = "#a66832";
         this.pass_through_types = [ StemParticle, BarkParticle, LeafParticle ];
-
-        this.can_erode = true;
     }
 
     /**
@@ -27,22 +25,21 @@ export class DeadPlantParticle extends OrganicParticle {
      * @param {Environment} environment     The current game environment
      */
     update(environment) {
-        // Toggle erosion to false after entering the pass-through layer
-        if (this.can_erode && this.passing_through) this.can_erode = false;
-        // Toggle erosion to true after hovering above an empty particle
-        if (!this.can_erode && environment.get(this.x, this.y - 1).empty) this.can_erode = true;
-
-        if (this.can_erode) this.compute_erosion(environment)
+        
+        this.compute_erosion(environment)
         this.compute_gravity(environment)
 
-        this.compute_compact(environment)
+        // Not in the pass-through layer
+        if (!this.passing_through) {
+            this.compute_compact(environment)
 
-        if (
-            this.water_level == 0 &&
-            this.nutrient_level == 0 &&
-            FastRandom.random() < DESPAWN_IF_EMPTY_CHANCE
-        ) {
-            environment.set(new AirParticle(this.x, this.y))
+            if (
+                this.water_level == 0 &&
+                this.nutrient_level == 0 &&
+                FastRandom.random() < DESPAWN_IF_EMPTY_CHANCE
+            ) {
+                environment.set(new AirParticle(this.x, this.y))
+            }
         }
     }
 

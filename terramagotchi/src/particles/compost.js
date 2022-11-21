@@ -2,6 +2,7 @@ import { OrganicParticle } from "./organic";
 import { AirParticle } from "./air";
 import { FastRandom } from "../fast-random";
 import { ShootSystemParticle } from "./plants";
+import { WaterParticle } from "./water";
 
 export class CompostParticle extends OrganicParticle {
     constructor(x, y) {
@@ -13,8 +14,8 @@ export class CompostParticle extends OrganicParticle {
         this.water_capacity = 0;
         this.nutrient_capacity = 0;
 
+        this.water_level = 10;
         this.nutrient_level = 1000;
-        this.water_level = 100;
 
         this.decay_into = AirParticle;
     }
@@ -23,6 +24,7 @@ export class CompostParticle extends OrganicParticle {
         this.compute_gravity(environment);
         this.compute_erosion(environment);
 
+        this.compute_transpiration(environment);
         this.disperse_nutrients(environment);
     }
 
@@ -66,9 +68,16 @@ export class CompostParticle extends OrganicParticle {
                 this.water_level -= transfer_amount;
             }
 
-            // Has transfered all nutrients and water contents
-            if (this.nutrient_level == 0 && this.water_level == 0) {
-                environment.set(new this.decay_into(this.x, this.y));
+            // Transfered all nutrients
+            if (this.nutrient_level == 0) {
+                // Also transfered all water levels
+                if (this.water_level == 0) {
+                    environment.set(new this.decay_into(this.x, this.y));
+                }
+                // Some water level remains, convert to water particle
+                else if (this.decay_into == AirParticle) {
+                    environment.set(new WaterParticle(this.x, this.y, this.water_level))
+                }
             }
         }
     }

@@ -74,7 +74,7 @@ export class Organism {
     water_capacity = 300
     nutrient_level = MIN_NUTRIENTS
     water_level = MIN_WATER
-    energy = 500
+    energy = FastRandom.int_min_max(500, 1000)
 
     x = 120
     y = 120

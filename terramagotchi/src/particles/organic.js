@@ -25,7 +25,7 @@ export class OrganicParticle extends BaseParticle {
         this.__nutrient_transferred = false;
 
         // Per-tick chance for transpiration (evaporate water_level into steam)
-        this.transpiration_chance = 0.00001;
+        this.transpiration_chance = 0.00005;
     }
 
     set water_level(level) {
@@ -100,9 +100,8 @@ export class OrganicParticle extends BaseParticle {
          */
         
         // How much water to transfer
-        // Absorb up to 10 water or up to the difference between levels if lower
-        let transfer_amount = Math.min(FastRandom.int_max(10), neighbour.water_level - this.water_level)
-
+        // Absorb up to 10 water or up to half the difference between levels if lower
+        let transfer_amount = Math.min(FastRandom.int_max(10), ((neighbour.water_level - this.water_level) / 2) | 0)
         // Only absorb as much as the capacity will allow
         transfer_amount = Math.min(transfer_amount, this.water_capacity - this.water_level)
 
@@ -129,8 +128,8 @@ export class OrganicParticle extends BaseParticle {
          */
 
         // How much nutrients to transfer
-        // Absorb half of the difference between levels, or as much as possible if the capacity is too low
-        let transfer_amount = Math.min((((neighbour.nutrient_level - this.nutrient_level) / 2) | 0), this.nutrient_capacity - this.nutrient_level);
+        // Absorb half of the difference between levels (rounded up), or as much as possible if the capacity is too low
+        let transfer_amount = Math.min(((((neighbour.nutrient_level - this.nutrient_level) / 2) + 0.999) | 0), this.nutrient_capacity - this.nutrient_level);
 
         // Attempt to absorb nutrients from random neighbour
         if (transfer_amount > 0 &&
@@ -149,7 +148,7 @@ export class OrganicParticle extends BaseParticle {
 
     compute_transpiration(environment) {
         // Evaporate water_level into steam in correct conditions
-        if (FastRandom.random() < this.transpiration_chance &&
+        if (FastRandom.random() < this.transpiration_chance * Math.max((this.water_level / Math.max(this.water_capacity, 1)), 1) &&
             environment.get(this.x, this.y + 1) instanceof AirParticle &&
             !environment.is_raining &&
             this.water_level > 0 && 
@@ -163,14 +162,15 @@ export class OrganicParticle extends BaseParticle {
     }
 
     get_color(s) {
-        //if (this.nutrient_capacity != 0) {
-        //   s.push()
-        //   s.colorMode(s.RGB)
-        //   //this.color = s.color((this.water_level - 30) * 10)
-        //   this.color = s.color((this.water_level / this.water_capacity) * 255)
-        //   s.pop()
-        //   return this.color
-        //}
+
+        // s.push()
+        // s.colorMode(s.RGB)
+        // let red = 255*(this.nutrient_level/((this.nutrient_capacity == 0) ? 255 : this.nutrient_capacity))
+        // let blue = 255*(this.water_level/((this.water_capacity == 0) ? 255 : this.water_capacity))
+        // this.color = s.color(red, 0, blue)
+        
+        // s.pop()
+        // return this.color
 
         // Initialise colour if needed
         if (this.color === "#FF00FF") {

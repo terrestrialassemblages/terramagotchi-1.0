@@ -16,7 +16,7 @@ export class SteamParticle extends GasParticle {
         // How much water this particle contains
         this.water_level = water_level;
         // How many ticks the steam particle will take to turn into water
-        this.water_condensation_time = 1200;
+        this.water_condensation_time = 10 * 60;
         // The Y level this steam will convert to a cloud particle
         this.cloud_condensation_height = FastRandom.int_min_max(280, 310);
 

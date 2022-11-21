@@ -3,6 +3,7 @@ import { ShootSystemParticle } from "./shoot_system";
 import {
     AirParticle,
     SoilParticle,
+    GrassParticle,
 } from "..";
 
 import {
@@ -98,7 +99,7 @@ export class BarkParticle extends ShootSystemParticle {
         let [offset_x, offset_y] = this.__child_directions.shift()
         let target_particle = environment.get(this.x+offset_x, this.y+offset_y)
 
-        if (target_particle instanceof AirParticle) {
+        if (target_particle instanceof AirParticle || target_particle instanceof GrassParticle) {
             let new_bark_particle = new BarkParticle(this.x+offset_x, this.y+offset_y, this.dna)
             new_bark_particle.__current_length = this.__current_length + 1
             new_bark_particle.__thickness = this.__thickness

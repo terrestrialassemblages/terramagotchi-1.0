@@ -1,3 +1,5 @@
+import { FastRandom } from "../../fast-random";
+
 export class DNANode {
     /**
      * @param {DNANode} parent      Optional parent node for this current node.
@@ -130,6 +132,13 @@ export class DNANode {
             let new_child = new DNANode(this, child_node_encoding);
             this.add_child(new_child);
         }
+    }
+
+    /**
+     * Returns the oldest ancestor (top node of the DNA tree)
+     */
+    get_top_node() {
+        return (this.parent != null) ? this.parent.get_top_node() : this;
     }
 
     /**

@@ -21,7 +21,7 @@ import { WaterParticle } from "../water";
 import { DeadPlantParticle } from "./deadplant";
 
 export class SeedParticle extends PlantFamilyParticle {
-    static SEED_MAX_HEALTH = 1650 // Seeds will use a unique max-health so they don't die immediately
+    static SEED_MAX_HEALTH = 60*60 // Seeds will use a unique max-health so they don't die immediately
 
     /**
      * @param {Number}  x           (Integer) x-coordinate of particle to be constructed
@@ -53,7 +53,7 @@ export class SeedParticle extends PlantFamilyParticle {
         this.compute_gravity(environment)
         this.health_update(environment)
         
-        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle, CompostParticle])
+        this.absorb_from_neighbours(environment, this.__neighbours, [SoilParticle])
         this.generate_energy()
 
         if (!this.germinated)
@@ -63,6 +63,9 @@ export class SeedParticle extends PlantFamilyParticle {
         // Separated out so plant grows
         if (this.germinated)
             this.grow(environment)
+
+        // Increment counter used for reseting environment
+        environment.seed_or_first_root_count++;
     }
 
     /**
@@ -70,13 +73,22 @@ export class SeedParticle extends PlantFamilyParticle {
      * @param {Environment} environment     The current game environment
     */
     grow(environment) {
-        if (environment.get(this.x, this.y + 1) instanceof WaterParticle && environment.get(this.x, this.y - 1) instanceof SoilParticle) {
-            let new_dead_plant = new DeadPlantParticle(this.x, this.y);
-            environment.set(new_dead_plant);
+
+        for (let offset of [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]]) {
+            if (environment.get(this.x + offset[0], this.y + offset[1] - 1) instanceof RootParticle) {
+                environment.set(new DeadPlantParticle(this.x, this.y));
+                return;
+            }
+        }
+
+        if (environment.get(this.x, this.y - 1) instanceof SoilParticle &&
+            !(environment.get(this.x, this.y + 1) instanceof AirParticle &&
+              environment.get(this.x, this.y + 2) instanceof AirParticle)) {
+            environment.set(new DeadPlantParticle(this.x, this.y));
+            return;
         }
         if (environment.get(this.x, this.y - 1) instanceof SoilParticle
-            && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)
-            && !(environment.get(this.x, this.y + 1) instanceof WaterParticle)) {
+            && !(environment.get(this.x, this.y - 1) instanceof GrassParticle)) {
 
             let new_stem_cell = new StemParticle(this.x, this.y, this.dna)
             new_stem_cell.absorb_tier = 1
@@ -93,6 +105,48 @@ export class SeedParticle extends PlantFamilyParticle {
             new_root.is_first_particle = true; // makes that particle know its the first particle, same reason why
             new_root.parent_root_particle = [this.x, this.y]; // set's it's parent particle as the stem particle spawned by the seed. Used for death code
             environment.set(new_root)
+        }
+    }
+
+    absorb_water(neighbour) {
+        
+        // How much water to transfer
+        // Absorb as much as the capacity will allow
+        let transfer_amount = Math.min(neighbour.water_level, this.water_capacity - this.water_level)
+
+        // Attempt to absorb water from random neighbour
+        if (transfer_amount > 0 &&
+            !neighbour.__water_transferred &&
+            !this.__water_transferred
+        ) {
+            // Transfer water
+            this.water_level += transfer_amount;
+            neighbour.water_level -= transfer_amount;
+
+            // Ensure water is not transfered again this tick
+            this.__water_transferred = true;
+            neighbour.__water_transferred = true;
+        }
+    }
+
+    absorb_nutrients(neighbour) {
+
+        // How much nutrients to transfer
+        // Absorb as much as the capacity will allow
+        let transfer_amount = Math.min(neighbour.nutrient_level, this.nutrient_capacity - this.nutrient_level)
+
+        // Attempt to absorb nutrients from random neighbour
+        if (transfer_amount > 0 &&
+            !neighbour.__nutrient_transferred &&
+            !this.__nutrient_transferred
+        ) {
+            // Transfer nutrients
+            this.nutrient_level += transfer_amount;
+            neighbour.nutrient_level -= transfer_amount;
+
+            // Ensure nutrients is not transfered again this tick
+            this.__nutrient_transferred = true;
+            neighbour.__nutrient_transferred = true;
         }
     }
 }

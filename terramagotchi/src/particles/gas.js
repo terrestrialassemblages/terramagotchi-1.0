@@ -4,23 +4,34 @@ import { BaseParticle } from "./base";
 export class GasParticle extends BaseParticle {
     constructor(x, y) {
         super(x, y)
-        this.x_move_probability = 0.25
-        this.y_move_probability = 1
+        this.x_move_probability = 0.3
+        this.up_move_probability = 1
+        this.down_move_probability = 0.1
     }
 
     compute_rise(environment) {
         // Can move vertically this tick
         if (this.moveable_y) {
             const particle_above = environment.get(this.x, this.y + 1)
+            const particle_below = environment.get(this.x, this.y - 1)
 
-            // Attempt to rise upwards
+            // Attempt to rise upwards first
             if (!(particle_above instanceof GasParticle) &&
-                Math.random() < this.y_move_probability &&
+                Math.random() < this.up_move_probability &&
                 particle_above.moveable_y &&
                 particle_above.weight <= this.weight
             ) {
                 // Move upwards
                 environment.swap(this.x, this.y, this.x, this.y + 1)
+            }
+            // Attempt to move downwards if rising upwards didn't work
+            else if (!(particle_below instanceof GasParticle) &&
+                     Math.random() < this.down_move_probability &&
+                     particle_below.moveable_y &&
+                     particle_below.weight <= this.weight
+            ) {
+                // Move downwards
+                environment.swap(this.x, this.y, this.x, this.y - 1)
             }
 
             // Randomly decide to move horizontally

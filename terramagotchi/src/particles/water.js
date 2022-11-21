@@ -5,7 +5,7 @@ import { OrganicParticle } from "./organic";
 import { SteamParticle } from "./steam";
 
 export class WaterParticle extends LiquidParticle {
-    constructor(x, y, water_level = 1000) {
+    constructor(x, y, water_level = 100) {
         super(x, y);
         this.base_color = "#5080D0";
         this.moveable = true;
@@ -15,7 +15,7 @@ export class WaterParticle extends LiquidParticle {
         // Per-tick chance to evaporate into steam
         this.evaporation_chance = 0.0001;
         // How much water_level to evaporate
-        this.evaporate_water_level = 50;
+        this.evaporate_water_level = 75;
     }
 
     update(environment) {

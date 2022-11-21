@@ -13,7 +13,7 @@ import { Environment } from "../../environment";
 
 export class LeafParticle extends ShootSystemParticle {
 
-    static REGROWTH_COOLDOWN_CONST = 60*60 // 30 seconds at 60fps
+    static REGROWTH_COOLDOWN_CONST = 5*60 // 5 seconds at 60fps
 
 
     /**
@@ -25,13 +25,13 @@ export class LeafParticle extends ShootSystemParticle {
         super(x, y, plant_dna);
 
         this.activation_level = 0
-        this.max_health = this.dna.leaf_max_health || 10*4*1200 + FastRandom.int_min_max(-300, 300)
+        this.max_health = /*this.dna.leaf_max_health ||*/ FastRandom.int_min_max(45, 120) * 60
         this.health = this.max_health
 
         this.nutrient_capacity = 10
         this.water_capacity = 10
 
-        this.leaf_growth_probability = 1/10
+        this.leaf_growth_probability = 1/120
         this.cooldown_timer = -1
 
         this.is_leaf_root = true
@@ -58,6 +58,7 @@ export class LeafParticle extends ShootSystemParticle {
         this.absorb_nutrients(environment, false)
         this.absorb_water(environment, false)
         this.generate_energy()
+        this.compute_transpiration(environment)
         this.health_update(environment)
         
         if (this.is_active &&
@@ -132,10 +133,17 @@ export class LeafParticle extends ShootSystemParticle {
         }
 
         if (this.is_leaf_root) {
-            if (this.cooldown_timer == 0) {
+            if (!(environment.get(this.x, this.y + 1) instanceof AirParticle ||
+                  environment.get(this.x, this.y + 1) instanceof PlantFamilyParticle)) {
+
+                this.health -= 1
+
+                if (this.health <= 0)
+                    this.die(environment)
+            }
+            else if (this.cooldown_timer == 0) {
                 this.cooldown_timer -= 1
                 this.is_active = true
-                return
             } else if (this.cooldown_timer > 0) {
                 this.cooldown_timer -= 1
             }

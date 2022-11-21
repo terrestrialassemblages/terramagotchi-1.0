@@ -24,6 +24,7 @@ import {
     SeedParticle,
     StemParticle,
     generate_tree_dna,
+    BarkParticle,
 } from "./particles/plants";
 
 export const NUTRIENT_ENERGY_RATIO = 1
@@ -53,18 +54,21 @@ export class Environment {
         this.river_radius = 40;
         // How deep the river is
         this.river_depth = 25;
+        // How high the river's surface level is
+        this.river_surface_level = 140
 
+        this.seed_or_first_root_count = 0; // The number of seeds or first-root particles
         this.__water_added = 0; // Amount of water added to the environment
         this.__soil_added = 0; // Amount of soil added to the environment
-        this.max_water_added = 1000; // Max amount of water added before environment reloads
-        this.max_soil_added = 1000; // Max amount of soil added before environment reloads
+        this.max_water_added = 20000; // Max amount of water added before environment reloads
+        this.max_soil_added = 20000; // Max amount of soil added before environment reloads
 
         // Whether clouds are allowed to currently rain
         this.is_raining = false;
         // When there are this many or more cloud particles, start raining
-        this.rain_on_cloud_count = 3250;
+        this.rain_on_cloud_count = 3750;
         // When there are this many or less cloud particles, stop raining
-        this.rain_until_cloud_count = 2000;
+        this.rain_until_cloud_count = 3000;
         // The number of cloud particles
         this.cloud_particle_count = 0;
         // The noise offset which determines cloud shapes
@@ -86,6 +90,16 @@ export class Environment {
     }
 
     generate() {
+
+        // Store the positions of all river particles touching the soil horizon
+        let river_positions = []
+        for (let x = (90 + this.river_offset - this.river_radius) | 0; 
+             x < (90 + this.river_offset + this.river_radius) | 0; x++) { 
+            if (this.get_horizon(x) < this.river_surface_level) {
+                river_positions.push([x, this.get_horizon(x) | 0])
+            }
+        }
+        
         /**
          * Populates the application environment with particles
          */
@@ -98,12 +112,19 @@ export class Environment {
                 // Set Soil Particles
                 else if (y < this.get_horizon(x)) {
                     let new_soil = new SoilParticle(x, y)
-                    new_soil.water_level = (new_soil.water_capacity / 2) | 0
-                    new_soil.nutrient_level = (new_soil.nutrient_capacity / 2) | 0
+
+                    // Set water level based on distance from river
+                    for (let river_position of river_positions) { 
+                        new_soil.water_level = Math.max(new_soil.water_level, new_soil.water_capacity - 
+                            Math.abs(x - river_position[0]) - Math.abs(y - river_position[1]))
+                    }
+                    // Set nutrient level
+                    new_soil.nutrient_level = Math.min(6, new_soil.nutrient_capacity)
+
                     this.set(new_soil);
                 } 
                 // Set Water Particles
-                else if (y < 140 && Math.abs(90 - x + this.river_offset) < this.river_radius) {
+                else if (y < this.river_surface_level && Math.abs(90 - x + this.river_offset) < this.river_radius) {
                     this.set(new WaterParticle(x, y));
                 }
                 // Set Cloud Particles
@@ -120,18 +141,22 @@ export class Environment {
             }
         }
 
+        // Add Kauri Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("KAURI")
         }
         
+        // Add Lavender Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("LAVENDER")
         }
 
+        // Add Sunflower Seeds
         for (let i = 0; i < 2; i++) {
             this.user_add_seed("SUNFLOWER")
         }
 
+        // Add Worms
         for (let i = 0; i < 15; i++) {
             const x = FastRandom.int_min_max(5, this.width - 5)
             const y = FastRandom.int_min_max(5, this.get_horizon(x) - 5)
@@ -143,6 +168,7 @@ export class Environment {
     }
 
     update() {
+        // Update all particles in the pass-through layer
         for (let i = this.__pass_through_layer.length - 1; i > -1; i--) {
             let particle = this.__pass_through_layer[i];
             if (!particle.destroyed) {
@@ -150,12 +176,14 @@ export class Environment {
             }
         }
         
+        // Update all particles in the main grid
         for (let particle of [...this.__particle_grid]) {
             if (!particle.destroyed) {
                 particle.update(this);
             }
         }
 
+        // Update all organisms
         for (let organism of this.__organisms) {
             organism.update(this);
         }
@@ -164,13 +192,15 @@ export class Environment {
 
         this.compute_day_night_cycle();
         this.compute_rain();
+        this.compute_reset();
     }
 
     refresh() {
-        
+        // Refresh all once-per-tick particles on main grid
         for (let particle of this.__particle_grid) {
             particle.refresh();
         }
+        // Refresh all once-per-tick particles in the pass-through layer
         for (let particle of this.__pass_through_layer) {
             particle.refresh();
         }
@@ -202,6 +232,10 @@ export class Environment {
     swap(x1, y1, x2, y2) {
         const particle1 = this.get(x1, y1)
         const particle2 = this.get(x2, y2)
+
+        if (particle1 instanceof BoundaryParticle || particle2 instanceof BoundaryParticle) {
+            return
+        }
 
         particle1.x = x2
         particle1.y = y2
@@ -253,6 +287,8 @@ export class Environment {
             passing_particle.passing_through = false;
             // Remove from __pass_through_layer
             this.__pass_through_layer.splice(this.__pass_through_layer.indexOf(passing_particle), 1);
+            // Store was_passing_through to prevent further movement
+            passing_particle.was_passing_through = false;
         }
     }
 
@@ -392,5 +428,17 @@ export class Environment {
     }
     set light_level(_val) {
         this.__light_level = _val;
+    }
+
+    compute_reset() {
+        // Reset environment if there are no plants
+        if (this.seed_or_first_root_count == 0) {
+            location.reload()
+            this.seed_or_first_root_count = -1
+        }
+        // Reset counter (unless reloading)
+        if (this.seed_or_first_root_count > 0) {
+            this.seed_or_first_root_count = 0
+        }
     }
 }
