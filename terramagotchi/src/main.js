@@ -19,23 +19,27 @@ import { SeedParticle, DeadPlantParticle, PlantFamilyParticle, RootParticle, Lea
 
 /**
  * Firebase Config, This is specific to the Terramagotchi Firebase project
- * To use a different firebase project you will need to use a new config found in project settings
+ * These parameters are found in Firebase console project settings
+ * Define them in a .env file in the root of the project
  */
 const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAR_EPf5oGeR6l0OhcUn6VUkwOcJCh2xjc",
-    authDomain: "terramagotchi.firebaseapp.com",
-    projectId: "terramagotchi",
-    storageBucket: "terramagotchi.appspot.com",
-    messagingSenderId: "983152859921",
-    appId: "1:983152859921:web:0cfd2e706ed003c6484ab0"
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID
 };
 
 // Check if URL param for id exists, if it does set the instance id to it
 const id_param = (new URL(document.location)).searchParams.get("id");
-//const INSTANCE_ID = id_param ? id_param : "main"; // Constant instance id for debug
-const INSTANCE_ID = id_param ? id_param : cryptoRandomString({ length: 6, type: "alphanumeric" });
 
-let show_qr = false;
+// Checks if INSTANCE_GEN env variable exists, if it does, generate a random instance id
+const INSTANCE_ID = id_param ? id_param : 
+                    process.env.RANDOM_INSTANCE ? cryptoRandomString({ length: 6, type: "alphanumeric" }) : "main";
+
+// Sets the QR Code display mode from .env, 0 = Hidden, 1 = Overlay, 2 = Full
+let qr_mode = process.env.QR_DISPLAY_MODE ? (parseInt(process.env.QR_DISPLAY_MODE) + 2) % 3 : 2;
 
 // cringe safety feature
 p5.disableFriendlyErrors = true
@@ -114,6 +118,11 @@ export const sketch = (s) => {
         banded_darkness_intensity = 0.7;
 
         s.paint_deep_dark_overlay()
+
+        // Hides main if generated after QR Code display is updated
+        if (qr_mode === 2) {
+            document.querySelector("main").style.display = "none";
+        }
     }
 
     s.paint_deep_dark_overlay = () => {
@@ -246,23 +255,39 @@ const sketchInstance = new p5(sketch);
 
 // Generate QR Code for the remote app
 const qr_code_canvas = document.getElementById("qr-code");
-const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
-generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
+const remote_url = document.location.origin + "/remote/?id=" + INSTANCE_ID;
+generate_QR(qr_code_canvas, remote_url);
+// Sets URL text to remote location
 document.getElementById("remote-url").innerText = remote_url;
 
-// If . is pressed, toggle QR code visibility
+const qr_container = document.getElementById("qr-container");
+
+// Cycles through QR Code display modes. 0 = Hidden, 1 = Overlay, 2 = Full Display
+const cycle_qr_display = () => {
+    if (qr_mode === 0) {
+        qr_container.className = "qr-overlay";
+        generate_QR(qr_code_canvas, remote_url);
+        qr_mode = 1;
+    } else if (qr_mode === 1) {
+        sketchInstance.noLoop();
+        if (document.querySelector("main")) { document.querySelector("main").style.display = "none" }
+        qr_container.className = "qr-full";
+        generate_QR(qr_code_canvas, remote_url, { width: 400, height: 400 });
+        qr_mode = 2;
+    } else if (qr_mode === 2) {
+        sketchInstance.loop();
+        qr_container.className = "qr-hidden";
+        qr_mode = 0;
+        if (document.querySelector("main")) { document.querySelector("main").style.display = "flex" }
+    }
+}
+
+// Compute once to update div classes
+cycle_qr_display();
+
+// If . is pressed, cycle QR code display
 document.addEventListener("keyup", (e) => {
     if (e.key === ".") {
-        if (show_qr) {
-            sketchInstance.loop();
-            document.querySelector("main").style.display = "flex";
-            document.getElementById("qr-container").style.display = "none";
-            show_qr = false;
-        } else {
-            sketchInstance.noLoop();
-            document.querySelector("main").style.display = "none";
-            document.getElementById("qr-container").style.display = "flex";
-            show_qr = true;
-        }
+        cycle_qr_display();
     }
 });

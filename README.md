@@ -53,6 +53,29 @@ Prior to using these applications, you must have Node.js (with npm) installed on
 
 As there are three sub-packages, each one must be installed/used separately.
 
+Before building the project create a `.env` file at the root of the project containing the following variables.
+```
+// Firebase Variables
+API_KEY=
+AUTH_DOMAIN=
+PROJECT_ID=
+STORAGE_BUCKET=
+MESSAGING_SENDER_ID=
+APP_ID=
+
+// Instance Generation
+RANDOM_INSTANCE="TRUE"
+
+QR_DISPLAY_MODE="1"
+```
+The Firebase variables can be found in the General tab of Project settings in a Firebase web project.
+
+To enable random instance generation, leave RANDOM_INSTANCE as "TRUE", otherwise remove this variable.
+
+QR_DISPLAY_MODE sets the default display mode of the QR Code. 0 is hidden (Default), 1 is Overlayed, 2 is Fully covering the environment.
+
+The display mode can be toggled with the period `.` key once running.
+
 ### Terramagotchi (Main Application)
 
 Navigate to `./terramagotchi/` From here run the following commands:

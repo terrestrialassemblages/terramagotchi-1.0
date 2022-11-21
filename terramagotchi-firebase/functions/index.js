@@ -13,11 +13,8 @@ const DEFAULT_COOLDOWN_LENGTH = 1000;
  * Global Variables can be set in !global/variables/ within the Firestore client.
  */
 exports.userInteract = functions
-    .runWith({
-        // Reduces cold starts by keeping 5 instances of the function "warm"
-        minInstances: 5,
-    })
-    .region("australia-southeast1")
+    // This can be set to australia-southeast1 if not worried about cost.
+    .region("asia-east1")
     .https.onCall((data, context) => {
         const colRef = admin.firestore().collection(data.instance_id);
 
