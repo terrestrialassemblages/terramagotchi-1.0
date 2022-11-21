@@ -146,6 +146,31 @@ npm run build
 
 This will build the application. It can then be accessed in the `dist` folder. To run the application, open the `index.html` file (found in said `dist` folder) in your browser.
 
+#### Hosting
+
+The webpacked files can be hosting anywhere once built. For the remote to route properly the dist files for `terramagotchi-remote` must be routed with `/remote`.
+
+If using firebase to host you can use the following `firebase.json` to route it correctly.
+```js
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+      "rewrites": [ {
+      "source": "**",
+      "destination": "/index.html"
+    }, {
+      "source": "/remote",
+      "destination": "/remote/index.html"
+    }]
+  }
+}
+```
+
 ## Usage Examples (if available).
 
 This project is an application which is made to be shown in an art gallery setting.
