@@ -255,7 +255,7 @@ const sketchInstance = new p5(sketch);
 
 // Generate QR Code for the remote app
 const qr_code_canvas = document.getElementById("qr-code");
-const remote_url = document.location.host + "/remote/?id=" + INSTANCE_ID;
+const remote_url = document.location.origin + "/remote/?id=" + INSTANCE_ID;
 generate_QR(qr_code_canvas, remote_url);
 // Sets URL text to remote location
 document.getElementById("remote-url").innerText = remote_url;

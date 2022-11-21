@@ -24,7 +24,7 @@ export class Application {
         this.firebase_app = initializeApp(firebase_config);
         this.db = getFirestore(this.firebase_app);
         signInAnonymously(getAuth(this.firebase_app)); // To keep the firestore secure, authentication is required from the client 
-        this.create_instance = httpsCallable(getFunctions(this.firebase_app, "australia-southeast1"), "userInteract");
+        this.create_instance = httpsCallable(getFunctions(this.firebase_app, "asia-east1"), "userInteract");
         this.initialize_db();
     }
 

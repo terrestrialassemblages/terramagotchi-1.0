@@ -19,7 +19,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const functions = getFunctions(app, "australia-southeast1");
+const functions = getFunctions(app, "asia-east1");
 const auth = getAuth(app);
 const userInteract = httpsCallable(functions, "userInteract");
 
