@@ -1,4 +1,8 @@
 # Terramagotchi
+## URL of the Website Where the Project Has Been Deployed
+
+https://terramagotchi.web.app  
+https://terramagotchi.web.app/remote
 Terramagotchi is a web app which aims to educate people about the cycles in nature and the processes which underlie them. The project is separated into 3 parts: The main application, the remote application, and the Firebase code.
 * The main application is where the environment is simulated. It includes includes a simulation of nutrient and water transfer between soil, plants, and organisms, as well as water evaporation and condensation.
 * The remote application is the interface that will enable users to authenticate and communicate to Firebase through an external device.
@@ -174,11 +178,6 @@ If using firebase to host you can use the following `firebase.json` to route it 
 ## Usage Examples (if available).
 
 This project is an application which is made to be shown in an art gallery setting.
-
-## URL of the Website Where the Project Has Been Deployed
-
-https://terramagotchi.web.app  
-https://terramagotchi.web.app/remote
 
 ## Future Plan (Ideas for Future releases)
 
